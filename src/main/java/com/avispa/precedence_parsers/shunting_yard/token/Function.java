@@ -1,5 +1,8 @@
 package com.avispa.precedence_parsers.shunting_yard.token;
 
+import lombok.Getter;
+
+@Getter
 public enum Function implements Token {
 	MODULO("mod", 2),
 	SQRT("sqrt", 1),
@@ -7,18 +10,10 @@ public enum Function implements Token {
 	MIN("min", 2);
 	
 	private final String symbol;
-	private final Integer maxArgs;
+	private final int maxArgs;
 	
-	Function(final String symbol, final Integer maxArgs) {
+	Function(final String symbol, final int maxArgs) {
 		this.symbol = symbol;
 		this.maxArgs = maxArgs;
-	}
-
-	public String getSymbol() {
-		return symbol;
-	}
-
-	public Integer getMaxArgs() {
-		return maxArgs;
 	}
 }

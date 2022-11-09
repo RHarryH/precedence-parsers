@@ -1,34 +1,31 @@
 package com.avispa.precedence_parsers.shunting_yard.token;
 
-import calculator.SyntaxAssociativity;
-import com.avispa.precedence_parsers.shunting_yard.SyntaxAssociativity;
+import com.avispa.precedence_parsers.shunting_yard.OperatorAssociativity;
+import lombok.Getter;
 
+@Getter
 public enum Operator implements Token {
-	ADD("+", 1, SyntaxAssociativity.LEFT),
-	SUBTRACT("-", 1, SyntaxAssociativity.LEFT),
-	MULTIPLY("*", 2, SyntaxAssociativity.LEFT),
-	DIVIDE("/", 2, SyntaxAssociativity.LEFT),
-	POWER("^", 3, SyntaxAssociativity.RIGHT);
+	ADD("+", 1, OperatorAssociativity.LEFT),
+	SUBTRACT("-", 1, OperatorAssociativity.LEFT),
+	MULTIPLY("*", 2, OperatorAssociativity.LEFT),
+	DIVIDE("/", 2, OperatorAssociativity.LEFT),
+	POWER("^", 3, OperatorAssociativity.RIGHT);
 	
 	private final String symbol;
-	private final Integer priority;
-	private final SyntaxAssociativity ass;
+	private final Integer precedence;
+	private final OperatorAssociativity associativity;
 	
-	Operator(final String symbol, final Integer priority, final SyntaxAssociativity ass) {
+	Operator(final String symbol, final Integer precedence, final OperatorAssociativity associativity) {
 		this.symbol = symbol;
-		this.priority = priority;
-		this.ass = ass;
-	}
-	
-	public String getSymbol() {
-		return symbol;
+		this.precedence = precedence;
+		this.associativity = associativity;
 	}
 
-	public Integer getPriority() {
-		return priority;
+	public boolean isLeftAssociative() {
+		return OperatorAssociativity.LEFT == this.associativity;
 	}
 
-	public SyntaxAssociativity getSyntaxAssociativity() {
-		return ass;
+	public boolean isRightAssociative() {
+		return OperatorAssociativity.RIGHT == this.associativity;
 	}
 }

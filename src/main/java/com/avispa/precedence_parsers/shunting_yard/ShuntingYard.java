@@ -27,8 +27,6 @@ public class ShuntingYard {
 			log.debug("Expression \"{}\" has been tokenized to: {}", expression, tokens);
 		}
 
-		//expression = unaryPreprocess(expression);
-
 		for(Token token : tokens) {
 			if(token instanceof Operand) {
 				output.add(token);
@@ -75,23 +73,9 @@ public class ShuntingYard {
 		}
 		stack.push(operator);
 	}
-
-	/*private String unaryPreprocess(String expression) {
-		expression = expression.replace(" ", "").replace("(-", "(0-")
-				.replace(",-", ",0-");
-		if(expression.startsWith("-(")) {
-			expression = "-1*(" + expression.substring(2);
-		}
-		if(expression.charAt(0) == '-') {
-			expression = "0" + expression;
-		}
-		return expression;
-	}*/
     
     private void lookForTokens(StringBuilder sb, Deque<Token> stack, List<Object> output) throws ParseException {
-        /*unaryMinus(stack, output);
-        
-        if(!stack.isEmpty() && stack.peek() instanceof Function) {
+        /*if(!stack.isEmpty() && stack.peek() instanceof Function) {
         	if(!sb.toString().startsWith(Misc.LEFT_PARENTHESIS.getSymbol()))
         		throw new ParseException("Parenthesis is expected after function name", 0);
         }*/
@@ -144,16 +128,6 @@ public class ShuntingYard {
         	sb = sb.delete(0, symbolLength);
         }
     }
-
-	/*private void unaryMinus(Deque<Token> stack, List<Object> output) {
-		if(output.size() >= 2) {
-    		if(!stack.isEmpty() && stack.peek().equals(Operator.SUBTRACT) && output.get(output.size() - 2).equals("0") ) {
-    			stack.pop();
-    			output.remove(output.size() - 2);
-    			output.set(output.size() - 1, "-" + output.get(output.size() - 1));
-    		}
-    	}
-	}*/
     
     /*private boolean processFunctions(StringBuilder sb, Deque<Token> stack) {
     	// functions

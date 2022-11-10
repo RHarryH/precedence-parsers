@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author Rafał Hiszpański
  */
 @Getter
-public enum UnaryOperator implements Operator {
+public enum UnaryOperator implements MathOperator {
     PLUS("+", 3, OperatorAssociativity.RIGHT),
     MINUS("-", 3, OperatorAssociativity.RIGHT);
 

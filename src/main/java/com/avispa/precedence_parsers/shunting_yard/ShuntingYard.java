@@ -1,13 +1,13 @@
 package com.avispa.precedence_parsers.shunting_yard;
 
+import com.avispa.precedence_parsers.shunting_yard.token.Function;
 import com.avispa.precedence_parsers.shunting_yard.token.Misc;
 import com.avispa.precedence_parsers.shunting_yard.token.Operand;
-import com.avispa.precedence_parsers.shunting_yard.token.Operator;
+import com.avispa.precedence_parsers.shunting_yard.token.MathOperator;
 import com.avispa.precedence_parsers.shunting_yard.token.Token;
 import com.avispa.precedence_parsers.shunting_yard.tokenizer.Tokenizer;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.ParseException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -15,11 +15,16 @@ import java.util.List;
 
 @Slf4j
 public class ShuntingYard {
-    //private int argsCount = 1;
-    
+
+	/**
+	 * Runs Shunting-yard algorithm for expressions parsing
+	 * @param expression input string expression
+	 * @return list of parsed tokens
+	 */
     public List<Token> parse(String expression) {
 		List<Token> output = new ArrayList<>();
-		Deque<Token> stack = new ArrayDeque<>();
+		Deque<Token> opStack = new ArrayDeque<>();
+		Deque<Call> callStack = new ArrayDeque<>();
 
 		Tokenizer tokenizer = new Tokenizer();
 		List<Token> tokens = tokenizer.tokenize(expression);
@@ -28,25 +33,30 @@ public class ShuntingYard {
 		}
 
 		for(Token token : tokens) {
-			if(token instanceof Operand) {
+			if (token instanceof Operand) {
 				output.add(token);
-			} else if(token instanceof Operator) {
-				processOperator(output, stack, (Operator) token);
-			} else if(Misc.LEFT_PARENTHESIS.equals(token)) {
-				stack.push(token);
-			} else if(Misc.RIGHT_PARENTHESIS.equals(token)) {
-				while(!Misc.LEFT_PARENTHESIS.equals(stack.peek())) {
-					output.add(stack.pop());
-					if(stack.isEmpty()) {
-						throw new IllegalStateException("Missing left parenthesis");
-					}
-				}
-				stack.pop();
+			} else if (token instanceof Function) {
+				Call call = new Call((Function) token);
+				callStack.push(call);
+				opStack.push(token);
+			} else if (Misc.COMMA.equals(token)) {
+				closeParenthesesGroup(opStack, output);
+
+				incrementPeekFunctionArgumentCount(callStack);
+			} else if ( token instanceof MathOperator) {
+				processOperator((MathOperator) token, opStack, output);
+			} else if ( Misc.LEFT_PARENTHESIS.equals(token) ) {
+				opStack.push(token);
+			} else if ( Misc.RIGHT_PARENTHESIS.equals(token) ) {
+				closeParenthesesGroup(opStack, output);
+				opStack.pop(); // pop left parenthesis from the stack and ignore
+
+				processFunctionClosure(opStack, callStack, output);
 			}
 		}
 
-		while(!stack.isEmpty()) {
-			Token token = stack.pop();
+		while(!opStack.isEmpty()) {
+			Token token = opStack.pop();
 			if(Misc.LEFT_PARENTHESIS.equals(token)) {
 				throw new IllegalStateException("Mismatched parentheses!");
 			}
@@ -60,85 +70,71 @@ public class ShuntingYard {
         return output;
     }
 
-	private void processOperator(List<Token> output, Deque<Token> stack, Operator operator) {
-		while(stack.peek() instanceof Operator) {
-			Operator topOperator = (Operator) stack.peek();
+	/**
+	 * Pops back to the place where the parenthesis was found. Left parenthesis is not popped from
+	 * the stack.
+	 * @param opStack operators stack
+	 * @param output output token list
+	 */
+	private void closeParenthesesGroup(Deque<Token> opStack, List<Token> output) {
+		while(!Misc.LEFT_PARENTHESIS.equals(opStack.peek())) {
+			output.add(opStack.pop());
+			if(opStack.isEmpty()) {
+				throw new IllegalStateException("Missing left parenthesis");
+			}
+		}
+	}
+
+	/**
+	 * When the call stack is not empty, increment argument list for the last element on the call stack.
+	 * @param callStack stack containing information about functions
+	 */
+	private void incrementPeekFunctionArgumentCount(Deque<Call> callStack) {
+		if(!callStack.isEmpty()) {
+			callStack.peek().incArgumentCount();
+		} else {
+			throw new IllegalStateException("No function found. Comma used in the wrong place.");
+		}
+	}
+
+	/**
+	 * Standard Shunting-yard algorithm for processing (math) operators.
+	 * @param operator current operator
+	 * @param opStack operators stack
+	 * @param output output token list
+	 */
+	private void processOperator(MathOperator operator, Deque<Token> opStack, List<Token> output) {
+		while(opStack.peek() instanceof MathOperator) {
+			MathOperator topOperator = (MathOperator) opStack.peek();
 
 			if(topOperator.getPrecedence() > operator.getPrecedence() ||
 					(operator.isLeftAssociative() && topOperator.getPrecedence() == operator.getPrecedence())) {
-				output.add(stack.pop());
+				output.add(opStack.pop());
 			} else {
 				break;
 			}
 		}
-		stack.push(operator);
+		opStack.push(operator);
 	}
-    
-    private void lookForTokens(StringBuilder sb, Deque<Token> stack, List<Object> output) throws ParseException {
-        /*if(!stack.isEmpty() && stack.peek() instanceof Function) {
-        	if(!sb.toString().startsWith(Misc.LEFT_PARENTHESIS.getSymbol()))
-        		throw new ParseException("Parenthesis is expected after function name", 0);
-        }*/
 
-        if(/*!processFunctions(sb, stack) &&*/ /*!processOperators(sb, stack, output)*/true) {
-        	int symbolLength = 1;
-        	
-        	if(sb.toString().startsWith(Misc.COMMA.getValue())) {
-        		while(stack.peek() != Misc.LEFT_PARENTHESIS) {
-        			output.add(stack.pop());
-        			if(stack.isEmpty()) {
-						throw new ParseException("Missing left parenthesis", 0);
-					}
-	        	}
-        		//argsCount++;
-        	} else if(sb.toString().startsWith(Misc.LEFT_PARENTHESIS.getValue()))
-	        	stack.push(Misc.LEFT_PARENTHESIS);
-        	else if(sb.toString().startsWith(Misc.RIGHT_PARENTHESIS.getValue())) {
-	        	while(stack.peek() != Misc.LEFT_PARENTHESIS) {
-	                output.add(stack.pop());
-	                if(stack.isEmpty()) {
-						throw new ParseException("Missing left parenthesis", 0);
-					}
-	        	}
-	            stack.pop(); // pop left parenthesis
-	            
-	            /*if(!stack.isEmpty() && stack.peek() instanceof Function) {
-	            	Function function = (Function)stack.pop();
-	            	if(function.getArgsNum() != argsCount) {
-						throw new ParseException("Incorrect arguments count for function " + function.getSymbol() + ". Expected count: " + function.getArgsNum(), 0);
-					}
-	            	argsCount = 1;
-	            	output.add(function);
-	            }*/
-	        } else {
-	        	StringBuilder variable = new StringBuilder();
-	        	
-	            for(int i = 0; i < sb.length(); ++i) {
-	            	char c = sb.charAt(i);
-	            	if(Character.isLetterOrDigit(c) || c == '.') // for floating point numbers
-	            		variable.append(c);
-	            	else 
-	            		break;
-	                    
-	            }
-	            output.add(variable.toString());
-	            symbolLength = variable.length();
-	        }
-        	
-        	sb = sb.delete(0, symbolLength);
-        }
-    }
-    
-    /*private boolean processFunctions(StringBuilder sb, Deque<Token> stack) {
-    	// functions
-    	for(Function function : Function.values()) {
-    		if(sb.toString().startsWith(function.getSymbol())) {
-	        	stack.push(function); 
-	        	sb = sb.delete(0, function.getSymbol().length());
-    			return true;
-    		}
-    	}
-    
-    	return false;
-    }*/
+	/**
+	 * Invoked when right parenthesis was detected. Checks if the parenthesis was related to a function.
+	 * If yes then simple validation is performed and function is eventually added to the result.
+	 * @param opStack operators stack
+	 * @param callStack stack containing information about functions
+	 * @param output output token list
+	 */
+	private void processFunctionClosure(Deque<Token> opStack, Deque<Call> callStack, List<Token> output) {
+		if(opStack.peek() instanceof Function) {
+			Call call = callStack.pop();
+
+			call.incArgumentCount(); // right parenthesis closed last argument
+			if(call.hasAllArguments()) {
+				output.add(opStack.pop());
+			} else {
+				String message = String.format("Function does not have all arguments defined. Expected: %s, is: %s", call.getFunction().getExpectedArgCount(), call.getArgCount());
+				throw new IllegalStateException(message);
+			}
+		}
+	}
 }

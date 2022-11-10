@@ -28,37 +28,37 @@ class ShuntingYardTest {
 
     @Test
     void givenSimpleAddition_whenParse_thenCorrectOutput() {
-        assertEquals("23+", joinTokens(shuntingYard.parse("2+3")));
+        assertEquals("2 3 +", joinTokens(shuntingYard.parse("2+3")));
     }
 
     @Test
     void givenInputWithWhitespaces_whenParse_thenCorrectOutput() {
-        assertEquals("23+", joinTokens(shuntingYard.parse("   2 \t + \r\n 3 \t")));
+        assertEquals("2 3 +", joinTokens(shuntingYard.parse("   2 \t + \r\n 3 \t")));
     }
 
     @Test
     void givenMultipleAdditions_whenParse_thenCorrectOutput() {
-        assertEquals("23+4+", joinTokens(shuntingYard.parse("2+3+4")));
+        assertEquals("2 3 + 4 +", joinTokens(shuntingYard.parse("2+3+4")));
     }
 
     @Test
     void givenOperatorsWithHigherPrecedence_whenParse_thenCorrectOutput() {
-        assertEquals("234*+", joinTokens(shuntingYard.parse("2+3*4")));
+        assertEquals("2 3 4 * +", joinTokens(shuntingYard.parse("2+3*4")));
     }
 
     @Test
     void givenRightAssociativeOperator_whenParse_thenCorrectOutput() {
-        assertEquals("23^4+", joinTokens(shuntingYard.parse("2^3+4")));
+        assertEquals("2 3 ^ 4 +", joinTokens(shuntingYard.parse("2^3+4")));
     }
 
     @Test
     void givenParentheses_whenParse_thenCorrectOutput() {
-        assertEquals("23+4*", joinTokens(shuntingYard.parse("(2+3)*4")));
+        assertEquals("2 3 + 4 *", joinTokens(shuntingYard.parse("(2+3)*4")));
     }
 
     @Test
     void givenNestedParentheses_whenParse_thenCorrectOutput() {
-        assertEquals("42*3+4*", joinTokens(shuntingYard.parse("((4*2)+3)*4")));
+        assertEquals("4 2 * 3 + 4 *", joinTokens(shuntingYard.parse("((4*2)+3)*4")));
     }
 
     @Test
@@ -71,7 +71,37 @@ class ShuntingYardTest {
         assertThrows(IllegalStateException.class, () -> shuntingYard.parse("(4*2)+3)*4"));
     }
 
+    @Test
+    void givenFunction_whenParse_thenCorrectOutput() {
+        assertEquals("4 sqrt", joinTokens(shuntingYard.parse("sqrt(4)")));
+    }
+
+    @Test
+    void givenTwoArgumentFunction_whenParse_thenCorrectOutput() {
+        assertEquals("4 2 max", joinTokens(shuntingYard.parse("max(4, 2)")));
+    }
+
+    @Test
+    void givenFunctionWithExpressionArgument_whenParse_thenCorrectOutput() {
+        assertEquals("4 3 * 2 max", joinTokens(shuntingYard.parse("max(4 * 3, 2)")));
+    }
+
+    @Test
+    void givenNestedFunction_whenParse_thenCorrectOutput() {
+        assertEquals("4 sqrt sqrt", joinTokens(shuntingYard.parse("sqrt(sqrt(4))")));
+    }
+
+    @Test
+    void givenTwoArgumentNestedFunction_whenParse_thenCorrectOutput() {
+        assertEquals("4 3 max sqrt", joinTokens(shuntingYard.parse("sqrt(max(4, 3))")));
+    }
+
+    @Test
+    void givenIncorrectArgumentsNumberToFunction_whenParse_thenThrowException() {
+        assertThrows(IllegalStateException.class, () -> shuntingYard.parse("max(4)"));
+    }
+
     private String joinTokens(List<Token> tokens) {
-        return tokens.stream().map(Token::getValue).collect(Collectors.joining());
+        return tokens.stream().map(Token::getValue).collect(Collectors.joining(" "));
     }
 }

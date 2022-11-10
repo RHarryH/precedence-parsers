@@ -13,10 +13,10 @@ public enum Function implements Token {
 	MIN("min", 2);
 	
 	private final String value;
-	private final int argsNum;
+	private final int expectedArgCount;
 	
-	Function(final String value, final int argsNum) {
+	Function(final String value, final int expectedArgCount) {
 		this.value = value;
-		this.argsNum = argsNum;
+		this.expectedArgCount = expectedArgCount;
 	}
 }

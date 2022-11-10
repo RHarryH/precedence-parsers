@@ -1,6 +1,7 @@
 package com.avispa.precedence_parsers.shunting_yard.tokenizer;
 
 import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperator;
+import com.avispa.precedence_parsers.shunting_yard.token.Function;
 import com.avispa.precedence_parsers.shunting_yard.token.Misc;
 import com.avispa.precedence_parsers.shunting_yard.token.Operand;
 import com.avispa.precedence_parsers.shunting_yard.token.Token;
@@ -27,7 +28,8 @@ public class Tokenizer {
         log.debug("Expression: \"{}\"", expression);
 
         while(!expression.isEmpty()) {
-            boolean tokenFound = searchUnaryOperators(expression, tokens) ||
+            boolean tokenFound = searchFunctions(expression, tokens) ||
+                                 searchUnaryOperators(expression, tokens) ||
                                  searchBinaryOperators(expression, tokens) ||
                                  searchMisc(expression, tokens) ||
                                  searchOperands(expression, tokens);
@@ -42,14 +44,12 @@ public class Tokenizer {
         return tokens;
     }
 
+    private boolean searchFunctions(String expression, List<Token> tokens) {
+        return searchEnumSymbols(Function.class, expression, tokens);
+    }
+
     private boolean searchUnaryOperators(String expression, List<Token> tokens) {
-        Token foundToken = null;
-        for(UnaryOperator token : UnaryOperator.values()) {
-            if(expression.startsWith(token.getValue())) {
-                foundToken = token;
-                break;
-            }
-        }
+        Token foundToken = searchToken(UnaryOperator.class, expression);
 
         if(null != foundToken && isUnaryOperator(tokens)) {
             tokens.add(foundToken);
@@ -77,13 +77,7 @@ public class Tokenizer {
     }
 
     private <E extends Enum<E> & Token> boolean searchEnumSymbols(Class<E> enumToken, String expression, List<Token> tokens) {
-        Token foundToken = null;
-        for(E token : enumToken.getEnumConstants()) {
-            if(expression.startsWith(token.getValue())) {
-                foundToken = token;
-                break;
-            }
-        }
+        Token foundToken = searchToken(enumToken, expression);
 
         if(null != foundToken) {
             tokens.add(foundToken);
@@ -91,6 +85,17 @@ public class Tokenizer {
         }
 
         return false;
+    }
+
+    private <E extends Enum<E> & Token> Token searchToken(Class<E> enumToken, String expression) {
+        Token foundToken = null;
+        for(E token : enumToken.getEnumConstants()) {
+            if(expression.startsWith(token.getValue())) {
+                foundToken = token;
+                break;
+            }
+        }
+        return foundToken;
     }
 
     private boolean searchOperands(String expression, List<Token> tokens) {

@@ -9,11 +9,11 @@ public enum Function implements Token {
 	MAX("max", 2),
 	MIN("min", 2);
 	
-	private final String symbol;
-	private final int maxArgs;
+	private final String value;
+	private final int argsNum;
 	
-	Function(final String symbol, final int maxArgs) {
-		this.symbol = symbol;
-		this.maxArgs = maxArgs;
+	Function(final String value, final int argsNum) {
+		this.value = value;
+		this.argsNum = argsNum;
 	}
 }

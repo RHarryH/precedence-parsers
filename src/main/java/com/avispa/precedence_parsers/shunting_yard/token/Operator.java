@@ -11,12 +11,12 @@ public enum Operator implements Token {
 	DIVIDE("/", 2, OperatorAssociativity.LEFT),
 	POWER("^", 3, OperatorAssociativity.RIGHT);
 	
-	private final String symbol;
-	private final Integer precedence;
+	private final String value;
+	private final int precedence;
 	private final OperatorAssociativity associativity;
 	
-	Operator(final String symbol, final Integer precedence, final OperatorAssociativity associativity) {
-		this.symbol = symbol;
+	Operator(final String value, final int precedence, final OperatorAssociativity associativity) {
+		this.value = value;
 		this.precedence = precedence;
 		this.associativity = associativity;
 	}

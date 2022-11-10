@@ -5,13 +5,12 @@ import lombok.Getter;
 @Getter
 public enum Misc implements Token {
 	COMMA(","),
-	PERCENT("%"),
 	LEFT_PARENTHESIS("("),
 	RIGHT_PARENTHESIS(")");
 
-	private final String symbol;
+	private final String value;
 	
-	Misc(final String symbol) {
-		this.symbol = symbol;
+	Misc(final String value) {
+		this.value = value;
 	}
 }

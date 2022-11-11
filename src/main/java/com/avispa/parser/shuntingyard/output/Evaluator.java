@@ -1,11 +1,11 @@
-package com.avispa.precedence_parsers.shunting_yard.output;
+package com.avispa.parser.shuntingyard.output;
 
-import com.avispa.precedence_parsers.shunting_yard.IParser;
-import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperatorToken;
-import com.avispa.precedence_parsers.shunting_yard.token.FunctionToken;
-import com.avispa.precedence_parsers.shunting_yard.token.Operand;
-import com.avispa.precedence_parsers.shunting_yard.token.Token;
-import com.avispa.precedence_parsers.shunting_yard.token.UnaryOperatorToken;
+import com.avispa.parser.shuntingyard.IParser;
+import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
+import com.avispa.parser.shuntingyard.token.FunctionToken;
+import com.avispa.parser.shuntingyard.token.Operand;
+import com.avispa.parser.shuntingyard.token.Token;
+import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
 
 import java.math.BigDecimal;
 import java.util.ArrayDeque;

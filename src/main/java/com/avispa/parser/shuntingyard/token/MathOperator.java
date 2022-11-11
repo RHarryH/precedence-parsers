@@ -1,4 +1,4 @@
-package com.avispa.precedence_parsers.shunting_yard.token;
+package com.avispa.parser.shuntingyard.token;
 
 public interface MathOperator extends Token {
 	int getPrecedence();

@@ -1,9 +1,9 @@
-package com.avispa.precedence_parsers.shunting_yard.tokenizer;
+package com.avispa.parser.shuntingyard.tokenizer;
 
-import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperatorToken;
-import com.avispa.precedence_parsers.shunting_yard.token.Misc;
-import com.avispa.precedence_parsers.shunting_yard.token.Operand;
-import com.avispa.precedence_parsers.shunting_yard.token.UnaryOperatorToken;
+import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
+import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
+import com.avispa.parser.shuntingyard.token.Misc;
+import com.avispa.parser.shuntingyard.token.Operand;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

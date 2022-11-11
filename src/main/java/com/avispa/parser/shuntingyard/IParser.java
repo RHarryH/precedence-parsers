@@ -1,6 +1,6 @@
-package com.avispa.precedence_parsers.shunting_yard;
+package com.avispa.parser.shuntingyard;
 
-import com.avispa.precedence_parsers.shunting_yard.token.Token;
+import com.avispa.parser.shuntingyard.token.Token;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package com.avispa.precedence_parsers.shunting_yard.output;
+package com.avispa.parser.shuntingyard.output;
 
-import com.avispa.precedence_parsers.shunting_yard.IParser;
-import com.avispa.precedence_parsers.shunting_yard.ShuntingYard;
+import com.avispa.parser.shuntingyard.IParser;
+import com.avispa.parser.shuntingyard.ShuntingYard;
 import lombok.AccessLevel;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
-package com.avispa.precedence_parsers.shunting_yard.token;
+package com.avispa.parser.shuntingyard.token;
 
-import com.avispa.precedence_parsers.shunting_yard.OperatorAssociativity;
+import com.avispa.parser.shuntingyard.OperatorAssociativity;
 import lombok.AccessLevel;
 import lombok.Getter;
 

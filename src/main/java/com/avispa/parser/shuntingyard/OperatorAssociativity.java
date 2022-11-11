@@ -1,4 +1,4 @@
-package com.avispa.precedence_parsers.shunting_yard;
+package com.avispa.parser.shuntingyard;
 
 public enum OperatorAssociativity {
 	NOT_APPLICABLE,

@@ -1,4 +1,4 @@
-package com.avispa.precedence_parsers.shunting_yard.output;
+package com.avispa.parser.shuntingyard.output;
 
 /**
  * @author Rafał Hiszpański

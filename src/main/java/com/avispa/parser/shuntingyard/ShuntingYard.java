@@ -1,11 +1,11 @@
-package com.avispa.precedence_parsers.shunting_yard;
+package com.avispa.parser.shuntingyard;
 
-import com.avispa.precedence_parsers.shunting_yard.token.FunctionToken;
-import com.avispa.precedence_parsers.shunting_yard.token.MathOperator;
-import com.avispa.precedence_parsers.shunting_yard.token.Misc;
-import com.avispa.precedence_parsers.shunting_yard.token.Operand;
-import com.avispa.precedence_parsers.shunting_yard.token.Token;
-import com.avispa.precedence_parsers.shunting_yard.tokenizer.Tokenizer;
+import com.avispa.parser.shuntingyard.token.Token;
+import com.avispa.parser.shuntingyard.token.FunctionToken;
+import com.avispa.parser.shuntingyard.token.MathOperator;
+import com.avispa.parser.shuntingyard.token.Misc;
+import com.avispa.parser.shuntingyard.token.Operand;
+import com.avispa.parser.shuntingyard.tokenizer.Tokenizer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;

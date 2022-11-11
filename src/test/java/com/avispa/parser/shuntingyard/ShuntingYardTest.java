@@ -1,6 +1,6 @@
-package com.avispa.precedence_parsers.shunting_yard;
+package com.avispa.parser.shuntingyard;
 
-import com.avispa.precedence_parsers.shunting_yard.output.StringReversePolishNotation;
+import com.avispa.parser.shuntingyard.output.StringReversePolishNotation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,11 +1,11 @@
 package com.avispa.precedence_parsers.shunting_yard.tokenizer;
 
-import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperator;
-import com.avispa.precedence_parsers.shunting_yard.token.Function;
+import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperatorToken;
+import com.avispa.precedence_parsers.shunting_yard.token.FunctionToken;
 import com.avispa.precedence_parsers.shunting_yard.token.Misc;
 import com.avispa.precedence_parsers.shunting_yard.token.Operand;
 import com.avispa.precedence_parsers.shunting_yard.token.Token;
-import com.avispa.precedence_parsers.shunting_yard.token.UnaryOperator;
+import com.avispa.precedence_parsers.shunting_yard.token.UnaryOperatorToken;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -45,11 +45,11 @@ public class Tokenizer {
     }
 
     private boolean searchFunctions(String expression, List<Token> tokens) {
-        return searchEnumSymbols(Function.class, expression, tokens);
+        return searchEnumSymbols(FunctionToken.class, expression, tokens);
     }
 
     private boolean searchUnaryOperators(String expression, List<Token> tokens) {
-        Token foundToken = searchToken(UnaryOperator.class, expression);
+        Token foundToken = searchToken(UnaryOperatorToken.class, expression);
 
         if(null != foundToken && isUnaryOperator(tokens)) {
             tokens.add(foundToken);
@@ -62,14 +62,14 @@ public class Tokenizer {
     private boolean isUnaryOperator(List<Token> tokens) {
         if(!tokens.isEmpty()) {
             Token lastToken = tokens.get(tokens.size() -1);
-            return lastToken instanceof BinaryOperator || lastToken.equals(Misc.LEFT_PARENTHESIS);
+            return lastToken instanceof BinaryOperatorToken || lastToken.equals(Misc.LEFT_PARENTHESIS);
         }
 
         return true;
     }
 
     private boolean searchBinaryOperators(String expression, List<Token> tokens) {
-        return searchEnumSymbols(BinaryOperator.class, expression, tokens);
+        return searchEnumSymbols(BinaryOperatorToken.class, expression, tokens);
     }
 
     private boolean searchMisc(String expression, List<Token> tokens) {
@@ -102,7 +102,7 @@ public class Tokenizer {
         Matcher matcher = operandPattern.matcher(expression);
 
         if(matcher.find()) {
-            tokens.add(new Operand(matcher.group()));
+            tokens.add(Operand.from(matcher.group()));
             return true;
         }
 

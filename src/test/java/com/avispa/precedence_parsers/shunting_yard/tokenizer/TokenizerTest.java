@@ -1,9 +1,9 @@
 package com.avispa.precedence_parsers.shunting_yard.tokenizer;
 
-import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperator;
+import com.avispa.precedence_parsers.shunting_yard.token.BinaryOperatorToken;
 import com.avispa.precedence_parsers.shunting_yard.token.Misc;
 import com.avispa.precedence_parsers.shunting_yard.token.Operand;
-import com.avispa.precedence_parsers.shunting_yard.token.UnaryOperator;
+import com.avispa.precedence_parsers.shunting_yard.token.UnaryOperatorToken;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class TokenizerTest {
 
     private static final Tokenizer tokenizer = new Tokenizer();
-    private static final Operand two = new Operand("2");
+    private static final Operand two = Operand.from("2");
 
     @Test
     void givenEmptyString_whenTokenize_thenEmptyArray() {
@@ -36,7 +36,7 @@ class TokenizerTest {
 
     @Test
     void givenBinaryOperator_whenTokenize_thenCorrectOutput() {
-        assertEquals(List.of(BinaryOperator.DIVIDE).toString(), tokenizer.tokenize("/").toString());
+        assertEquals(List.of(BinaryOperatorToken.DIVIDE).toString(), tokenizer.tokenize("/").toString());
     }
 
     @Test
@@ -46,32 +46,32 @@ class TokenizerTest {
 
     @Test
     void givenSingleMinus_whenTokenize_thenCorrectOutput() {
-        assertEquals(List.of(UnaryOperator.MINUS).toString(), tokenizer.tokenize("-").toString());
+        assertEquals(List.of(UnaryOperatorToken.MINUS).toString(), tokenizer.tokenize("-").toString());
     }
 
     @Test
     void givenSubtraction_whenTokenize_thenCorrectOutput() {
-        assertEquals(List.of(two, BinaryOperator.SUBTRACT, two).toString(), tokenizer.tokenize("2-2").toString());
+        assertEquals(List.of(two, BinaryOperatorToken.SUBTRACT, two).toString(), tokenizer.tokenize("2-2").toString());
     }
 
     @Test
     void givenMinusPrecedingOperator_whenTokenize_thenUnaryOperatorDetected() {
-        assertEquals(List.of(two, BinaryOperator.ADD, UnaryOperator.MINUS, two).toString(), tokenizer.tokenize("2+-2").toString());
+        assertEquals(List.of(two, BinaryOperatorToken.ADD, UnaryOperatorToken.MINUS, two).toString(), tokenizer.tokenize("2+-2").toString());
     }
 
     @Test
     void givenMinusPrecedingLeftParenthesis_whenTokenize_thenUnaryOperatorDetected() {
-        assertEquals(List.of(two, BinaryOperator.ADD, Misc.LEFT_PARENTHESIS, UnaryOperator.MINUS, two, Misc.RIGHT_PARENTHESIS).toString(), tokenizer.tokenize("2+(-2)").toString());
+        assertEquals(List.of(two, BinaryOperatorToken.ADD, Misc.LEFT_PARENTHESIS, UnaryOperatorToken.MINUS, two, Misc.RIGHT_PARENTHESIS).toString(), tokenizer.tokenize("2+(-2)").toString());
     }
 
     @Test
     void givenSubtractionBeforeLeftParenthesis_whenTokenize_thenBinaryOperatorDetected() {
-        assertEquals(List.of(two, BinaryOperator.SUBTRACT, Misc.LEFT_PARENTHESIS, two, BinaryOperator.ADD, two, Misc.RIGHT_PARENTHESIS).toString(), tokenizer.tokenize("2-(2+2)").toString());
+        assertEquals(List.of(two, BinaryOperatorToken.SUBTRACT, Misc.LEFT_PARENTHESIS, two, BinaryOperatorToken.ADD, two, Misc.RIGHT_PARENTHESIS).toString(), tokenizer.tokenize("2-(2+2)").toString());
     }
 
     @Test
     void givenOperatorWithOperands_whenTokenize_thenCorrectOutput() {
-        var expected = List.of(two, BinaryOperator.MULTIPLY, new Operand("3"));
+        var expected = List.of(two, BinaryOperatorToken.MULTIPLY, Operand.from("3"));
         assertEquals(expected.toString(), tokenizer.tokenize("2*3").toString());
     }
 }

@@ -1,9 +1,9 @@
 package com.avispa.precedence_parsers.shunting_yard;
 
-import com.avispa.precedence_parsers.shunting_yard.token.Function;
+import com.avispa.precedence_parsers.shunting_yard.token.FunctionToken;
+import com.avispa.precedence_parsers.shunting_yard.token.MathOperator;
 import com.avispa.precedence_parsers.shunting_yard.token.Misc;
 import com.avispa.precedence_parsers.shunting_yard.token.Operand;
-import com.avispa.precedence_parsers.shunting_yard.token.MathOperator;
 import com.avispa.precedence_parsers.shunting_yard.token.Token;
 import com.avispa.precedence_parsers.shunting_yard.tokenizer.Tokenizer;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +14,14 @@ import java.util.Deque;
 import java.util.List;
 
 @Slf4j
-public class ShuntingYard {
+public class ShuntingYard implements IParser{
 
 	/**
 	 * Runs Shunting-yard algorithm for expressions parsing
 	 * @param expression input string expression
 	 * @return list of parsed tokens
 	 */
+	@Override
     public List<Token> parse(String expression) {
 		List<Token> output = new ArrayList<>();
 		Deque<Token> opStack = new ArrayDeque<>();
@@ -35,8 +36,8 @@ public class ShuntingYard {
 		for(Token token : tokens) {
 			if (token instanceof Operand) {
 				output.add(token);
-			} else if (token instanceof Function) {
-				Call call = new Call((Function) token);
+			} else if (token instanceof FunctionToken) {
+				Call call = new Call((FunctionToken) token);
 				callStack.push(call);
 				opStack.push(token);
 			} else if (Misc.COMMA.equals(token)) {
@@ -125,14 +126,14 @@ public class ShuntingYard {
 	 * @param output output token list
 	 */
 	private void processFunctionClosure(Deque<Token> opStack, Deque<Call> callStack, List<Token> output) {
-		if(opStack.peek() instanceof Function) {
+		if(opStack.peek() instanceof FunctionToken) {
 			Call call = callStack.pop();
 
 			call.incArgumentCount(); // right parenthesis closed last argument
 			if(call.hasAllArguments()) {
 				output.add(opStack.pop());
 			} else {
-				String message = String.format("Function does not have all arguments defined. Expected: %s, is: %s", call.getFunction().getExpectedArgCount(), call.getArgCount());
+				String message = String.format("Function does not have all arguments defined. Expected: %s, is: %s", call.getFunctionToken().getExpectedArgCount(), call.getArgCount());
 				throw new IllegalStateException(message);
 			}
 		}

@@ -1,6 +1,6 @@
 package com.avispa.precedence_parsers.shunting_yard;
 
-import com.avispa.precedence_parsers.shunting_yard.token.Function;
+import com.avispa.precedence_parsers.shunting_yard.token.FunctionToken;
 import lombok.Getter;
 
 /**
@@ -8,11 +8,11 @@ import lombok.Getter;
  */
 @Getter
 public class Call {
-    private final Function function;
+    private final FunctionToken functionToken;
     private int argCount;
 
-    public Call(Function function) {
-        this.function = function;
+    public Call(FunctionToken functionToken) {
+        this.functionToken = functionToken;
         this.argCount = 0;
     }
 
@@ -21,6 +21,6 @@ public class Call {
     }
 
     public boolean hasAllArguments() {
-        return function.getExpectedArgCount() == argCount;
+        return functionToken.getExpectedArgCount() == argCount;
     }
 }

@@ -1,10 +1,13 @@
 package com.avispa.parser.shuntingyard.token;
 
+import lombok.EqualsAndHashCode;
+
 import java.math.BigDecimal;
 
 /**
  * @author Rafał Hiszpański
  */
+@EqualsAndHashCode
 public class Operand implements Token {
     private final BigDecimal value;
 

@@ -1,10 +1,10 @@
 package com.avispa.parser.shuntingyard;
 
-import com.avispa.parser.shuntingyard.token.Token;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.MathOperator;
 import com.avispa.parser.shuntingyard.token.Misc;
 import com.avispa.parser.shuntingyard.token.Operand;
+import com.avispa.parser.shuntingyard.token.Token;
 import com.avispa.parser.shuntingyard.tokenizer.Tokenizer;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+/**
+ * @author Rafał Hiszpański
+ */
 @Slf4j
 public class ShuntingYard implements IParser{
 

@@ -14,6 +14,11 @@ class EvaluatorTest {
     private static final Evaluator evaluator = new Evaluator();
 
     @Test
+    void givenNothing_whenParse_thenReturnZero() {
+        assertEquals(new BigDecimal("0"), evaluator.parse(""));
+    }
+
+    @Test
     void givenSimpleUnaryOperation_whenParse_thenCorrectResult() {
         assertEquals(new BigDecimal("-2"), evaluator.parse("-2"));
     }

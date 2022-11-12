@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * @author Rafał Hiszpański
  */
-public class StringReversePolishNotation extends AbstractOutputTransformer<String> {
+public final class StringReversePolishNotation extends AbstractOutputTransformer<String> {
     public StringReversePolishNotation() {
         super();
     }

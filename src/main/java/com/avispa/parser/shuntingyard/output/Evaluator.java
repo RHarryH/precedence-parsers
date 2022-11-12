@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 /**
  * @author Rafał Hiszpański
  */
-public class Evaluator extends AbstractOutputTransformer<BigDecimal> {
+public final class Evaluator extends AbstractOutputTransformer<BigDecimal> {
     public Evaluator() {
         super();
     }
@@ -28,6 +28,10 @@ public class Evaluator extends AbstractOutputTransformer<BigDecimal> {
     @Override
     public BigDecimal parse(String expression) {
         List<Token> output = getParser().parse(expression);
+
+        if(output.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
 
         Deque<Operand> operandStack = new ArrayDeque<>();
         for(Token token : output) {

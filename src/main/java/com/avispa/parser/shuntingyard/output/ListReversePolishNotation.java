@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * @author Rafał Hiszpański
  */
-public class ListReversePolishNotation extends AbstractOutputTransformer<List<String>> {
+public final class ListReversePolishNotation extends AbstractOutputTransformer<List<String>> {
     public ListReversePolishNotation() {
         super();
     }

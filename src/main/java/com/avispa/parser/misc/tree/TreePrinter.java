@@ -1,4 +1,4 @@
-package com.avispa.parser.util.tree;
+package com.avispa.parser.misc.tree;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

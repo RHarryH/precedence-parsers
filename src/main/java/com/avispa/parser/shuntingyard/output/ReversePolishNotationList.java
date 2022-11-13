@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 /**
  * @author Rafał Hiszpański
  */
-public final class ListReversePolishNotation extends AbstractOutputTransformer<List<String>> {
-    public ListReversePolishNotation() {
+public final class ReversePolishNotationList extends AbstractOutputTransformer<List<String>> {
+    public ReversePolishNotationList() {
         super();
     }
 
-    public ListReversePolishNotation(IParser parser) {
+    public ReversePolishNotationList(IParser parser) {
         super(parser);
     }
 

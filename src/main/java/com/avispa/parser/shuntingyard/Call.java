@@ -7,7 +7,7 @@ import lombok.Getter;
  * @author Rafał Hiszpański
  */
 @Getter
-public class Call {
+final class Call {
     private final FunctionToken functionToken;
     private int argCount;
 

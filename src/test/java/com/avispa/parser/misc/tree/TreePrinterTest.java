@@ -1,4 +1,4 @@
-package com.avispa.parser.util.tree;
+package com.avispa.parser.misc.tree;
 
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;

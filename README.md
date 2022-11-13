@@ -1,4 +1,36 @@
+# Precedence parser
+
+This tool presents the implementation of parsers for precedence grammars. Supported algorithms:
+- shunting-yard (special case of parser for operator-precedence grammar)
+
+## Usage
+
+Please see help message running following command:
+`java -jar precedence-parsers-<version> -h`
+
+Examples:
+
+- `java -jar precedence-parsers-<version> -i 2+2` - returns list of parsed tokens `[2, 2, ADD]`
+- `java -jar precedence-parsers-<version> -i 2+2 -o rpn` - returns expression using reversed polish notation `2 2 +`
+- `java -jar precedence-parsers-<version> -i 2+2 -o evaluated` - returns evaluated value `4`
+- `java -jar precedence-parsers-<version> -i 2+2 -o expression-tree` - returns expression tree for the input expression
+
+### Expression tree
+
+Printing of expression tree uses UTF-8 characters. On Windows the console by default
+is not able to print these values. To fix this run `chcp 65001` and run application
+with `-Dfile.encoding=UTF-8` option.
+
+```
+ADD
+├── 2
+└── 2
+```
+
 ## Shunting-yard algorithm
+
+Shunting-yard algorithm is a method for parsing arithmetical expressions. It is a special case
+of operator-precedence parser for operator-precedence grammar.
 
 ### Dealing with unary operators
 

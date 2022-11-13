@@ -1,6 +1,6 @@
 package com.avispa.parser.shuntingyard;
 
-import com.avispa.parser.shuntingyard.output.StringReversePolishNotation;
+import com.avispa.parser.shuntingyard.output.ReversePolishNotationText;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class ShuntingYardTest {
 
-    private static final StringReversePolishNotation shuntingYard = new StringReversePolishNotation();
+    private static final ReversePolishNotationText shuntingYard = new ReversePolishNotationText();
 
     @Test
     void givenEmptyString_whenParse_thenEmptyArray() {

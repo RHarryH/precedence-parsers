@@ -1,0 +1,9 @@
+grammar IncorrectGrammar;
+
+COUNTRY_CODE: [A-Z]{2};
+NUMBER: [0-9];
+
+This is incorrect line.
+
+expression: COUNTRY_CODE number;
+number: NUMBER;

@@ -1,0 +1,6 @@
+grammar IncorrectGrammar;
+
+COUNTRY_CODE: [A-Z]{2};
+
+expression: COUNTRY_CODE number;
+number: NUMBER;

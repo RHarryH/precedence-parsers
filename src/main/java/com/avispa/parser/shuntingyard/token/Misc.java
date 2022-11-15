@@ -1,5 +1,6 @@
 package com.avispa.parser.shuntingyard.token;
 
+import com.avispa.parser.token.Token;
 import lombok.Getter;
 
 /**

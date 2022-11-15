@@ -1,6 +1,6 @@
 package com.avispa.parser.shuntingyard;
 
-import com.avispa.parser.shuntingyard.token.Token;
+import com.avispa.parser.token.Token;
 
 import java.util.List;
 

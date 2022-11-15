@@ -1,7 +1,7 @@
 package com.avispa.parser.shuntingyard.output;
 
 import com.avispa.parser.shuntingyard.IParser;
-import com.avispa.parser.shuntingyard.token.Token;
+import com.avispa.parser.token.Token;
 
 import java.util.List;
 import java.util.stream.Collectors;

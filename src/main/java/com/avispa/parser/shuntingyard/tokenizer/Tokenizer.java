@@ -2,10 +2,10 @@ package com.avispa.parser.shuntingyard.tokenizer;
 
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
-import com.avispa.parser.shuntingyard.token.Token;
-import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.Misc;
 import com.avispa.parser.shuntingyard.token.Operand;
+import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
+import com.avispa.parser.token.Token;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;

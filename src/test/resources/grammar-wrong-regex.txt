@@ -1,0 +1,7 @@
+grammar CorrectGrammar;
+
+COUNTRY_CODE: {;
+NUMBER: [0-9];
+
+expression: COUNTRY_CODE number;
+number: NUMBER;

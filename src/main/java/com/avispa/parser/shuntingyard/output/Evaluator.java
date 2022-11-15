@@ -4,8 +4,8 @@ import com.avispa.parser.shuntingyard.IParser;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Operand;
-import com.avispa.parser.shuntingyard.token.Token;
 import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
+import com.avispa.parser.token.Token;
 
 import java.math.BigDecimal;
 import java.util.ArrayDeque;

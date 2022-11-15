@@ -4,8 +4,8 @@ import com.avispa.parser.misc.tree.TreeNode;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Operand;
-import com.avispa.parser.shuntingyard.token.Token;
 import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
+import com.avispa.parser.token.Token;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

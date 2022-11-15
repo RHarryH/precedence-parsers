@@ -4,7 +4,7 @@ import com.avispa.parser.misc.tree.TreeNode;
 import com.avispa.parser.misc.tree.TreePrinter;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.Operand;
-import com.avispa.parser.shuntingyard.token.Token;
+import com.avispa.parser.token.Token;
 import org.apache.commons.cli.MissingArgumentException;
 import org.junit.jupiter.api.Test;
 

@@ -3,8 +3,8 @@ package com.avispa.parser.misc.tree;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Operand;
-import com.avispa.parser.shuntingyard.token.Token;
 import com.avispa.parser.shuntingyard.token.UnaryOperatorToken;
+import com.avispa.parser.token.Token;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

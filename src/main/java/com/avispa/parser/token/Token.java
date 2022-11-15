@@ -1,4 +1,4 @@
-package com.avispa.parser.shuntingyard.token;
+package com.avispa.parser.token;
 
 /**
  * @author Rafał Hiszpański

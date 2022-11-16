@@ -120,7 +120,7 @@ public class GrammarFile {
             String[] rightHandSideProduction = rightHandSideProductions.split("\\|");
 
             for(String rightHandSideTokens : rightHandSideProduction) {
-                String[] tokenNames = rightHandSideTokens.split("\\s");
+                String[] tokenNames = rightHandSideTokens.trim().split("\\s");
 
                 List<GenericToken> rhs = convertTokenNamesToTokens(tokenNames);
 

@@ -39,6 +39,18 @@ class GrammarFileTest {
     }
 
     @Test
+    void givenGrammarWithWhitespaceAfterAlternative_whenRead_thenCreated() throws IncorrectGrammarException {
+        IGrammar grammar = new GrammarFile("src/test/resources/grammar-alternative-whitespaces.txt").read();
+
+        assertEquals("CorrectGrammar", grammar.getName());
+        assertEquals("expression", grammar.getStart().getValue());
+        assertEquals(Set.of("COUNTRY_CODE", "NUMBER"), terminalsToValues(grammar));
+        assertEquals(Set.of("expression", "number"), nonTerminalsToValues(grammar));
+        assertEquals(3, grammar.getProductions().size());
+        assertEquals(List.of("expression -> [COUNTRY_CODE, number]", "expression -> [COUNTRY_CODE]", "number -> [NUMBER]"), productionsToStrings(grammar));
+    }
+
+    @Test
     void givenGrammarWithIncorrectLine_whenRead_thenCreated() throws IncorrectGrammarException {
         IGrammar grammar = new GrammarFile("src/test/resources/grammar-incorrect-line.txt").read();
 

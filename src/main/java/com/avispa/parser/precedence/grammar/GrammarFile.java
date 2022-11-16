@@ -61,7 +61,12 @@ public class GrammarFile {
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
             stream.forEach(this::parseLine);
         } catch (IOException e) {
-            log.error("Can't read input grammar file: {}", fileName, e);
+            String message = String.format("Can't read input grammar file: %s", fileName);
+            if(log.isDebugEnabled()) {
+                log.error(message);
+                log.error("Original exception: ", e);
+            }
+            throw new IncorrectGrammarException(message);
         }
 
         return new ContextFreeGrammar(name, new HashSet<>(terminals.values()), productions);

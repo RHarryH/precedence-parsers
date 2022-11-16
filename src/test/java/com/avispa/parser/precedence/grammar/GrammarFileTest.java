@@ -16,7 +16,7 @@ class GrammarFileTest {
 
     @Test
     void givenCorrectGrammar_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar-correct.txt").read();
+        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-correct.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -28,7 +28,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithAlternatives_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar-alternative-correct.txt").read();
+        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -40,7 +40,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithWhitespaceAfterAlternative_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar-alternative-whitespaces.txt").read();
+        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -52,7 +52,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithIncorrectLine_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar-incorrect-line.txt").read();
+        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt").read();
 
         assertEquals("IncorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -64,13 +64,13 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithUndefinedTerminal_whenRead_thenThrowException() {
-        GrammarFile file = new GrammarFile("src/test/resources/grammar-undefined-terminal.txt");
+        GrammarFile file = new GrammarFile("src/test/resources/grammar/grammar-undefined-terminal.txt");
         assertThrows(IllegalStateException.class, file::read);
     }
 
     @Test
     void givenGrammarWithWrongRegex_whenRead_thenThrowException() {
-        GrammarFile file = new GrammarFile("src/test/resources/grammar-wrong-regex.txt");
+        GrammarFile file = new GrammarFile("src/test/resources/grammar/grammar-wrong-regex.txt");
         assertThrows(IllegalStateException.class, file::read);
     }
 

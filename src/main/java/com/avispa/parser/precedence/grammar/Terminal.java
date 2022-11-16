@@ -23,11 +23,12 @@ public class Terminal extends GenericToken {
         try {
             this.pattern = Pattern.compile(regex);
         } catch (PatternSyntaxException e) {
-            log.error("Provided pattern is not a valid regular expression: ", e.getMessage());
+            String message = String.format("Provided pattern is not a valid regular expression: %s", e.getMessage());
             if(log.isDebugEnabled()) {
-                log.debug("Original exception: ", e);
+                log.error(message);
+                log.error("Original exception: ", e);
             }
-            throw new IllegalStateException();
+            throw new IllegalStateException(message);
         }
     }
 

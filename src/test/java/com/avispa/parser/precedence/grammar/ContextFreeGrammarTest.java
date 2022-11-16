@@ -70,6 +70,20 @@ class ContextFreeGrammarTest {
     }
 
     @Test
+    void givenProductionsWithRecursion_whenCreateGrammar_thenStartSymbolDetected() throws IncorrectGrammarException {
+        // given
+        Set<Terminal> terminals = Set.of(a);
+
+        List<Production> productions = List.of(Production.of(A, List.of(A, a, B)), Production.of(A, List.of(B)), Production.of(B, List.of(a)));
+
+        // when
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+
+        // then
+        assertEquals(A, grammar.getStart());
+    }
+
+    @Test
     void givenProductionsWithUnknownRhsNonTerminal_whenCreateGrammar_thenThrowException() {
         // given
         Set<Terminal> terminals = Set.of(a, b);

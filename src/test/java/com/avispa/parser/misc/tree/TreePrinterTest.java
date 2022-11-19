@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class TreePrinterTest {
     private static final String NEW_LINE = System.lineSeparator();
+
     @Test
     void givenNothing_whenPrint_thenEmptyString() {
         assertEquals("", TreePrinter.print(null));

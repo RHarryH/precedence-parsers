@@ -12,6 +12,7 @@ import java.util.regex.PatternSyntaxException;
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 public class Terminal extends GenericToken {
+    @EqualsAndHashCode.Exclude
     private final Pattern pattern;
 
     public static Terminal of(String name, String regex) {

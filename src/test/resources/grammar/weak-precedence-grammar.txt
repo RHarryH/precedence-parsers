@@ -1,0 +1,9 @@
+grammar WeakPrecedenceGrammar;
+
+ADD: \+;
+MUL: \*;
+NUMBER: [0-9];
+
+expression: expression ADD term | term;
+term: term MUL factor | factor;
+factor: NUMBER;

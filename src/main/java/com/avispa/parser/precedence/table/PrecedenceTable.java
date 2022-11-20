@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,13 +140,6 @@ public class PrecedenceTable {
 
     @Override
     public String toString() {
-        String[] uniqueTokensValue = table.keySet().stream().map(key -> List.of(key.getLeft(), key.getRight()))
-                .flatMap(Collection::stream)
-                .distinct()
-                .sorted(tokenComparator())
-                .map(GenericToken::getValue)
-                .toArray(String[]::new);
-
         Map<Pair<String, String>, String> data = new HashMap<>();
         for(var entry : table.entrySet()) {
             var key = entry.getKey();
@@ -156,33 +147,6 @@ public class PrecedenceTable {
             data.put(Pair.of(key.getLeft().getValue(), key.getRight().getValue()), value.getSymbol());
         }
 
-        return new TablePrinter(uniqueTokensValue, data).print();
-    }
-
-    /**
-     * Comparator used only by toString method to order tokens using following rules:
-     * - non-terminals are always before terminals
-     * - boundary marker is always last
-     * - non-terminals and terminals (except boundary marker) are sorted by string value within their group
-     * @return
-     */
-    private Comparator<GenericToken> tokenComparator() {
-        return (a, b) -> {
-            // non-terminals are printed first
-            if (a instanceof Terminal && b instanceof NonTerminal) {
-                return 1;
-            } else if (a instanceof NonTerminal && b instanceof Terminal) {
-                return -1;
-            } else {
-                // move marker token always to the end
-                if (a.equals(BOUNDARY_MARKER) && !b.equals(BOUNDARY_MARKER)) {
-                    return 1;
-                } else if (!a.equals(BOUNDARY_MARKER) && b.equals(BOUNDARY_MARKER)) {
-                    return -1;
-                } else {
-                    return a.getValue().compareTo(b.getValue());
-                }
-            }
-        };
+        return new TablePrinter(data).print();
     }
 }

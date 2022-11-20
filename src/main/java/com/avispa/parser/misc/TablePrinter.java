@@ -4,12 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Comparator;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * Prints truth-table like table provided in form of map of non-integer indices and value. It requires providing
- * separate list of possible values called header as they are printed as horizontal and vertical header. If cell does not
+ * Prints truth-table like table provided in form of map of non-integer indices and value. If cell does not
  * have corresponding value in data then empty value is inserted. Example:
  * Header: X Y
  * Data:
@@ -32,20 +33,58 @@ public class TablePrinter {
     public static final String ROW_SEPARATOR = "─";
     public static final String EMPTY_VALUE = " ";
 
-    private final String[] header;
+    private final String[] horizontalHeader;
+    private final String[] verticalHeader;
     private final Map<Pair<String, String>, String> data;
 
     private final int columns;
     private final int columnWidth;
     private final String newLine;
 
-    public TablePrinter(String[] header, Map<Pair<String, String>, String> data) {
-        this.header = header;
+    /**
+     * Comparator used to order tokens using following rules:
+     * - non-terminals (written in lower case) are always before terminals (upper case)
+     * - boundary marker ($) is always last
+     * - non-terminals and terminals (except boundary marker) are sorted by string value within their group
+     * @return
+     */
+    private static Comparator<String> tokenComparator() {
+        return (a, b) -> {
+            if(Character.isUpperCase(a.charAt(0)) && Character.isLowerCase(b.charAt(0))) {
+                return 1;
+            } else if (Character.isLowerCase(a.charAt(0)) && Character.isUpperCase(b.charAt(0))) {
+                return -1;
+            } else {
+                final String marker = "$";
+                // move marker token always to the end
+                if (a.equals(marker) && !b.equals(marker)) {
+                    return 1;
+                } else if (!a.equals(marker) && b.equals(marker)) {
+                    return -1;
+                } else {
+                    return a.compareTo(b);
+                }
+            }
+        };
+    }
+
+    public TablePrinter(Map<Pair<String, String>, String> data) {
         this.data = data;
 
-        this.columns = header.length + 1;
-        this.columnWidth = getLongestHeaderValue(header) + 2;
+        this.verticalHeader = getHeader(data, Pair::getLeft);
+        this.horizontalHeader = getHeader(data, Pair::getRight);
+
+        this.columns = this.horizontalHeader.length + 1;
+        this.columnWidth = getLongestHeaderValue(this.horizontalHeader) + 2;
         this.newLine = System.lineSeparator();
+    }
+
+    private String[] getHeader(Map<Pair<String, String>, String> data, Function<Pair<String, String>, String> mapper) {
+        return data.keySet().stream().map(mapper)
+                .distinct()
+                .filter(StringUtils::isNotBlank)
+                .sorted(tokenComparator())
+                .toArray(String[]::new);
     }
 
     /**
@@ -63,22 +102,22 @@ public class TablePrinter {
     public String print() {
         StringBuilder sb = new StringBuilder();
 
-        if(header.length == 0) {
-            log.warn("Header is empty. Nothing will be printed");
+        if(horizontalHeader.length == 0 || verticalHeader.length == 0) {
+            log.warn("Horizontal or vertical header is empty. Nothing will be printed");
             return "";
         }
 
-        appendHeader(sb);
+        appendHorizontalHeader(sb);
         appendData(sb);
 
         return sb.toString();
     }
 
-    private void appendHeader(StringBuilder sb) {
+    private void appendHorizontalHeader(StringBuilder sb) {
         sb.append(getFirstSeparator()); // initial separator
 
         sb.append(getEmptyCell());
-        for (String row : header) {
+        for (String row : horizontalHeader) {
             sb.append(getCell(row));
         }
         sb.append(COLUMNS_SEPARATOR).append(newLine);
@@ -86,11 +125,11 @@ public class TablePrinter {
 
     private void appendData(StringBuilder sb) {
         sb.append(getSeparator());
-        for(int rowIndex = 0; rowIndex < header.length; rowIndex++) {
-            String row = header[rowIndex];
+        for(int rowIndex = 0; rowIndex < verticalHeader.length; rowIndex++) {
+            String row = verticalHeader[rowIndex];
 
             sb.append(getCell(row));
-            for (String column : header) {
+            for (String column : horizontalHeader) {
                 appendCell(sb, row, column);
             }
             sb.append(COLUMNS_SEPARATOR).append(newLine);
@@ -109,7 +148,7 @@ public class TablePrinter {
     }
 
     private void appendDataSeparator(StringBuilder sb, int rowIndex) {
-        if(rowIndex < header.length - 1){
+        if(rowIndex < verticalHeader.length - 1){
             sb.append(getSeparator());
         } else {
             sb.append(getLastSeparator());

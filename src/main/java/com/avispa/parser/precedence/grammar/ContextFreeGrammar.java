@@ -2,6 +2,7 @@ package com.avispa.parser.precedence.grammar;
 
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
  * @author Rafał Hiszpański
  */
 @Getter
-// TODO: when production contains unknown terminals throw exception
 public class ContextFreeGrammar implements IGrammar {
     private final String name;
 
@@ -26,10 +26,30 @@ public class ContextFreeGrammar implements IGrammar {
         this.terminals = terminals;
         this.productions = productions;
 
+        verifyTerminalsMatch(productions);
+
         this.nonTerminals = buildNonTerminalsList(productions);
 
         if(this.terminals.isEmpty() || this.productions.isEmpty()) {
             throw new IncorrectGrammarException("Terminals and productions must be a non-empty collections");
+        }
+    }
+
+    /**
+     * Verifies if terminals defined in productions matches list of terminals
+     * @param productions
+     * @throws IncorrectGrammarException
+     */
+    private void verifyTerminalsMatch(List<Production> productions) throws IncorrectGrammarException {
+        Set<Terminal> productionTerminals = productions.stream()
+                .map(Production::getRhs)
+                .flatMap(Collection::stream)
+                .filter(Terminal.class::isInstance)
+                .map(Terminal.class::cast)
+                .collect(Collectors.toSet());
+
+        if(!this.terminals.containsAll(productionTerminals)) {
+            throw new IncorrectGrammarException("There are undefined terminals found in productions. Terminals: " + this.terminals + ", found: " + productionTerminals);
         }
     }
 

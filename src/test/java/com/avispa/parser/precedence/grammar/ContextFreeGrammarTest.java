@@ -34,6 +34,17 @@ class ContextFreeGrammarTest {
     }
 
     @Test
+    void givenProductionWithUnknownTerminal_whenCreatingGrammar_thenThrowException() {
+        // given
+        Set<Terminal> terminals = Set.of(a);
+
+        List<Production> productions = List.of(Production.of(A, List.of(b)));
+
+        // when/then
+        assertThrows(IncorrectGrammarException.class, () -> new ContextFreeGrammar("Test", terminals, productions));
+    }
+
+    @Test
     void givenBasicGrammar_whenCreateGrammar_thenStartSymbolDetected() throws IncorrectGrammarException {
         // given
         Set<Terminal> terminals = Set.of(a, b);

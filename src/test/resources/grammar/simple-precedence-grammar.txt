@@ -1,0 +1,10 @@
+grammar SimplePrecedenceGrammar;
+
+ADD: \+;
+MUL: \*;
+NUMBER: [0-9];
+
+expression: expression ADD term | term_prime;
+term_prime: term;
+term: term MUL factor | factor;
+factor: NUMBER;

@@ -11,9 +11,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Rafał Hiszpański
@@ -33,6 +36,17 @@ public class PrecedenceTable {
 
     public Map<Pair<GenericToken, GenericToken>, Precedence> get() {
         return table;
+    }
+
+    /**
+     * Get all tokens available in the table
+     * @return
+     */
+    public Set<GenericToken> getTokens() {
+        return table.keySet().stream()
+                .map(pair -> List.of(pair.getLeft(), pair.getRight()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
     private Map<Pair<GenericToken, GenericToken>, Precedence> build(List<Production> productions, NonTerminal start) {

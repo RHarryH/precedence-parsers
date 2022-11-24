@@ -12,6 +12,7 @@ import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,15 +34,8 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
     public PrecedenceFunctions(PrecedenceTable table) throws PrecedenceFunctionsException {
         var graph = createGraph(table);
 
-        var cycleDetector = new CycleDetector<>(graph);
-        if(cycleDetector.detectCycles()) {
-            throw new PrecedenceFunctionsException("Cycle detected. Precedence functions cannot be constructed");
-        }
-
         var allDirectedPaths = new AllDirectedPaths<>(graph);
         var paths = allDirectedPaths.getAllPaths(graph.vertexSet(), graph.vertexSet(), true, null);
-
-        // TODO: fuse equals
 
         for(var vertex : graph.vertexSet()) {
             int longestPath = paths.stream()
@@ -57,12 +51,14 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
             }
         }
 
-        log.info("f: " + f);
-        log.info("g: " +  g);
+        log.info("f()={}", f);
+        log.info("g()={}", g);
     }
 
-    private Graph<Pair<Function, GenericToken>, DefaultEdge> createGraph(PrecedenceTable table) {
-        Graph<Pair<Function, GenericToken>, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+    private DirectedAcyclicGraph<Pair<Function, GenericToken>, DefaultEdge> createGraph(PrecedenceTable table) throws PrecedenceFunctionsException {
+        DirectedAcyclicGraph<Pair<Function, GenericToken>, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+
+        // TODO: fuse equals
 
         // add vertices
         table.getTokens().forEach(token -> {
@@ -71,16 +67,25 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
         });
 
         // add edges
-        table.get().forEach((key, value) -> {
-            if(Precedence.LESS_THAN.equals(value)) {
-                graph.addEdge(Pair.of(Function.G, key.getRight()), Pair.of(Function.F, key.getLeft()));
-            } else if(Precedence.GREATER_THAN.equals(value)) {
-                graph.addEdge(Pair.of(Function.F, key.getLeft()), Pair.of(Function.G, key.getRight()));
-            }
-        });
+        try {
+            table.get().forEach((key, value) -> {
+                if (Precedence.LESS_THAN.equals(value)) {
+                    graph.addEdge(Pair.of(Function.G, key.getRight()), Pair.of(Function.F, key.getLeft()));
+                } else if (Precedence.GREATER_THAN.equals(value)) {
+                    graph.addEdge(Pair.of(Function.F, key.getLeft()), Pair.of(Function.G, key.getRight()));
+                }
+            });
+        } catch (IllegalArgumentException e) {
+            throw new PrecedenceFunctionsException("Cycle detected. Precedence functions cannot be constructed", e);
+        }
 
         if(log.isDebugEnabled()) {
             log.debug("Created graph: {}", graph);
+
+            log.debug("Topological order");
+            for (Pair<Function, GenericToken> functionGenericTokenPair : graph) {
+                log.info("{}", functionGenericTokenPair);
+            }
         }
         return graph;
     }

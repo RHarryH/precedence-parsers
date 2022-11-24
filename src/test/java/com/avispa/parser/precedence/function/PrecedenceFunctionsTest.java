@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 /**
@@ -30,7 +32,7 @@ class PrecedenceFunctionsTest {
     private static final Terminal number = Terminal.of("number", "[0-9]");
 
     @Test
-    void test2() throws PrecedenceFunctionsException {
+    void givenOperatorPrecedenceTable_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws PrecedenceFunctionsException {
         // given
         PrecedenceTable precedenceTable = Mockito.mock(PrecedenceTable.class);
 
@@ -59,12 +61,46 @@ class PrecedenceFunctionsTest {
         // when
         IPrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
 
-        System.out.println("F: " + functions.getF() + ", G: " + functions.getG());
+        // then
+        assertEquals(4, functions.getFFor(number));
+        assertEquals(2, functions.getFFor(add));
+        assertEquals(4, functions.getFFor(mul));
+        assertEquals(0, functions.getFFor(marker));
+
+        assertEquals(5, functions.getGFor(number));
+        assertEquals(1, functions.getGFor(add));
+        assertEquals(3, functions.getGFor(mul));
+        assertEquals(0, functions.getGFor(marker));
     }
 
+    /**
+     * Provided mock precedence table should lead to the graph below:
+     *
+     * F_number ----> G_number
+     *    |              |
+     *    v              v
+     *  G_add <------- F_add
+     */
+    @Test
+    void givenTableWithCycle_whenPrecedenceFunctionsCreated_thenThrowException() {
+        // given
+        PrecedenceTable precedenceTable = Mockito.mock(PrecedenceTable.class);
+
+        Map<Pair<GenericToken, GenericToken>, Precedence> data = new HashMap<>();
+        data.put(Pair.of(number, number), Precedence.GREATER_THAN);
+        data.put(Pair.of(add, number), Precedence.LESS_THAN);
+        data.put(Pair.of(add, add), Precedence.GREATER_THAN);
+        data.put(Pair.of(number, add), Precedence.LESS_THAN);
+
+        when(precedenceTable.get()).thenReturn(data);
+        when(precedenceTable.getTokens()).thenReturn(Set.of(number, add));
+
+        // when/then
+        assertThrows(PrecedenceFunctionsException.class, () -> new PrecedenceFunctions(precedenceTable));
+    }
 
     @Test
-    void test() throws IncorrectGrammarException, PrecedenceFunctionsException {
+    void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException {
         // given
         ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt").read();
         PrecedenceTable precedenceTable = new PrecedenceTable(grammar);

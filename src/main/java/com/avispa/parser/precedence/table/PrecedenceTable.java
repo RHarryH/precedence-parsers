@@ -43,9 +43,7 @@ public class PrecedenceTable {
                 .flatMap(rhs -> ListUtil.sliding(rhs, 2))
                 .map(window -> Pair.of(window.get(0), window.get(1)))
                 .forEach(pair -> {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Sliding pair: {}", pair);
-                    }
+                    log.debug("Sliding pair: {}", pair);
                     addRelations(pair, result);
                 });
 
@@ -74,25 +72,22 @@ public class PrecedenceTable {
     }
 
     private void addLessThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
-        if(log.isDebugEnabled()) {
-            log.debug("Adding relations: {} ⋖ FIRST_ALL({})", currentPair.getLeft(), currentPair.getRight());
-        }
+        log.debug("Adding relations: {} ⋖ FIRST_ALL({})", currentPair.getLeft(), currentPair.getRight());
+
         this.sets.getFirstAllFor(currentPair.getRight()).forEach(right -> addRelation(Pair.of(currentPair.getLeft(), right), Precedence.LESS_THAN, result));
     }
 
     private void addGreaterThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
-        if(log.isDebugEnabled()) {
-            log.debug("Adding relations: LAST_ALL({}) ⋗ FIRST({})", currentPair.getLeft(), currentPair.getRight());
-        }
+        log.debug("Adding relations: LAST_ALL({}) ⋗ FIRST({})", currentPair.getLeft(), currentPair.getRight());
+
         this.sets.getLastAllFor(currentPair.getLeft())
                 .forEach(left -> this.sets.getFirstFor(currentPair.getRight())
                         .forEach(right -> addRelation(Pair.of(left, right), Precedence.GREATER_THAN, result)));
     }
 
     private void addRelation(Pair<GenericToken, GenericToken> pair, Precedence precedence, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
-        if (log.isDebugEnabled()) {
-            log.debug("Adding relation: {} {} {}", pair.getLeft(), precedence.getSymbol(), pair.getRight());
-        }
+        log.debug("Adding relation: {} {} {}", pair.getLeft(), precedence.getSymbol(), pair.getRight());
+
         if(result.containsKey(pair)) {
             Precedence currentPrecedence = result.get(pair);
             if(precedence.equals(currentPrecedence)) {
@@ -115,25 +110,20 @@ public class PrecedenceTable {
     }
 
     private void addLessThanRelationForStartAndMarker(NonTerminal start, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
-        if(log.isDebugEnabled()) {
-            log.debug("Adding relations: $ ⋖ FIRST_ALL({})", start);
-        }
+        log.debug("Adding relations: $ ⋖ FIRST_ALL({})", start);
+
         this.sets.getFirstAllFor(start).forEach(right -> {
-            if (log.isDebugEnabled()) {
-                log.debug("Adding relation: {} ⋖ {}", BOUNDARY_MARKER, right);
-            }
+            log.debug("Adding relation: {} ⋖ {}", BOUNDARY_MARKER, right);
             result.put(Pair.of(BOUNDARY_MARKER, right), Precedence.LESS_THAN);
         });
     }
 
     private void addGreaterThanRelationForMarkerAndStart(NonTerminal start, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
-        if(log.isDebugEnabled()) {
-            log.debug("Adding relations: LAST_ALL({}) ⋗ $", start);
-        }
+        log.debug("Adding relations: LAST_ALL({}) ⋗ $", start);
+
         this.sets.getLastAllFor(start).forEach(left -> {
-            if (log.isDebugEnabled()) {
-                log.debug("Adding relation: {} ⋗ {}", left, BOUNDARY_MARKER);
-            }
+            log.debug("Adding relation: {} ⋗ {}", left, BOUNDARY_MARKER);
+
             result.put(Pair.of(left, BOUNDARY_MARKER), Precedence.GREATER_THAN);
         });
     }

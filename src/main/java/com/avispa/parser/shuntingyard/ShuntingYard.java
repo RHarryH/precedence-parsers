@@ -32,9 +32,7 @@ public class ShuntingYard implements IParser{
 
 		Tokenizer tokenizer = new Tokenizer();
 		List<Token> tokens = tokenizer.tokenize(expression);
-		if(log.isDebugEnabled()) {
-			log.debug("Expression \"{}\" has been tokenized to: {}", expression, tokens);
-		}
+		log.debug("Expression \"{}\" has been tokenized to: {}", expression, tokens);
 
 		for(Token token : tokens) {
 			if (token instanceof Operand) {
@@ -67,9 +65,7 @@ public class ShuntingYard implements IParser{
 			output.add(token);
 		}
 
-		if(log.isDebugEnabled()) {
-			log.debug("Output: {}", output);
-		}
+		log.debug("Output: {}", output);
         
         return output;
     }

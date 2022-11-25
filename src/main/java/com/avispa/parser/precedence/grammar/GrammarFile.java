@@ -62,10 +62,7 @@ public class GrammarFile {
             stream.forEach(this::parseLine);
         } catch (IOException e) {
             String message = String.format("Can't read input grammar file: %s", fileName);
-            if(log.isDebugEnabled()) {
-                log.error(message);
-                log.error("Original exception: ", e);
-            }
+            log.error("Original exception: ", e);
             throw new IncorrectGrammarException(message);
         }
 
@@ -86,9 +83,7 @@ public class GrammarFile {
         Matcher matcher = grammar.matcher(line);
         if(matcher.matches()) {
             name = matcher.group(1).trim();
-            if(log.isDebugEnabled()) {
-                log.debug("Matched grammar name: {}", name);
-            }
+            log.debug("Matched grammar name: {}", name);
             return true;
         }
         return false;
@@ -107,8 +102,8 @@ public class GrammarFile {
             terminals.put(terminalName, Terminal.of(terminalName, terminalRegex));
 
             return true;
-        } else if(log.isDebugEnabled()) {
-            log.warn("Line '{}' does not match lexer rule.", line);
+        } else {
+            log.trace("Line '{}' does not match lexer rule.", line);
         }
 
         return false;
@@ -133,8 +128,8 @@ public class GrammarFile {
             }
 
             return true;
-        } else if(log.isDebugEnabled()) {
-            log.warn("Line '{}' does not match parser rule.", line);
+        } else {
+            log.trace("Line '{}' does not match parser rule.", line);
         }
 
         return false;

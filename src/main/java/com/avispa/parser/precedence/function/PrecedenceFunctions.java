@@ -35,10 +35,8 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
             }
         }
 
-        if(log.isDebugEnabled()) {
-            log.debug("f()={}", f);
-            log.debug("g()={}", g);
-        }
+        log.debug("f()={}", f);
+        log.debug("g()={}", g);
     }
 
     /**
@@ -103,9 +101,7 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
             }
         }
 
-        if(log.isDebugEnabled()) {
-            log.debug("Fused tokens map: {}", fusedTokens);
-        }
+        log.debug("Fused tokens map: {}", fusedTokens);
 
         return fusedTokens;
     }
@@ -138,9 +134,7 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
             }
         }
 
-        if(log.isDebugEnabled()) {
-            log.debug("Found following distances from {} node: {}", from, distances);
-        }
+        log.debug("Found following distances from {} node: {}", from, distances);
 
         return findLongestPath(distances);
     }

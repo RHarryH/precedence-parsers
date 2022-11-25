@@ -25,10 +25,7 @@ public class Terminal extends GenericToken {
             this.pattern = Pattern.compile(regex);
         } catch (PatternSyntaxException e) {
             String message = String.format("Provided pattern is not a valid regular expression: %s", e.getMessage());
-            if(log.isDebugEnabled()) {
-                log.error(message);
-                log.error("Original exception: ", e);
-            }
+            log.error("Original exception: ", e);
             throw new IllegalStateException(message);
         }
     }

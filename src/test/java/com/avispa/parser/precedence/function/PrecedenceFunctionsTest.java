@@ -4,6 +4,7 @@ import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
+import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.table.Precedence;
 import com.avispa.parser.precedence.table.PrecedenceTable;
@@ -15,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,10 +26,15 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 class PrecedenceFunctionsTest {
-    private static final Terminal add = Terminal.of("add", "\\+");
-    private static final Terminal mul = Terminal.of("mul", "\\*");
+    private static final NonTerminal term = NonTerminal.of("term");
+    private static final NonTerminal term_prime = NonTerminal.of("term_prime");
+    private static final NonTerminal expression = NonTerminal.of("expression");
+    private static final NonTerminal factor = NonTerminal.of("factor");
+
+    private static final Terminal add = Terminal.of("ADD", "\\+");
+    private static final Terminal mul = Terminal.of("MUL", "\\*");
     private static final Terminal marker = Terminal.of("$", "\\$");
-    private static final Terminal number = Terminal.of("number", "[0-9]");
+    private static final Terminal number = Terminal.of("NUMBER", "[0-9]");
 
     @Test
     void givenOperatorPrecedenceTable_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws PrecedenceFunctionsException {
@@ -56,7 +61,6 @@ class PrecedenceFunctionsTest {
         data.put(Pair.of(marker, mul), Precedence.LESS_THAN);
 
         when(precedenceTable.get()).thenReturn(data);
-        when(precedenceTable.getTokens()).thenReturn(Set.of(number, add, mul, marker));
 
         // when
         IPrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
@@ -93,7 +97,6 @@ class PrecedenceFunctionsTest {
         data.put(Pair.of(number, add), Precedence.LESS_THAN);
 
         when(precedenceTable.get()).thenReturn(data);
-        when(precedenceTable.getTokens()).thenReturn(Set.of(number, add));
 
         // when/then
         assertThrows(PrecedenceFunctionsException.class, () -> new PrecedenceFunctions(precedenceTable));
@@ -107,5 +110,24 @@ class PrecedenceFunctionsTest {
 
         // when
         PrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
+
+        // then
+        assertEquals(2, functions.getFFor(term));
+        assertEquals(2, functions.getFFor(term_prime));
+        assertEquals(0, functions.getFFor(expression));
+        assertEquals(2, functions.getFFor(factor));
+        assertEquals(0, functions.getFFor(add));
+        assertEquals(2, functions.getFFor(mul));
+        assertEquals(0, functions.getFFor(marker));
+        assertEquals(2, functions.getFFor(number));
+
+        assertEquals(1, functions.getGFor(term));
+        assertEquals(1, functions.getGFor(term_prime));
+        assertEquals(1, functions.getGFor(expression));
+        assertEquals(1, functions.getGFor(factor));
+        assertEquals(1, functions.getGFor(add));
+        assertEquals(1, functions.getGFor(mul));
+        assertEquals(0, functions.getGFor(marker));
+        assertEquals(3, functions.getGFor(number));
     }
 }

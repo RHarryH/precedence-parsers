@@ -3,15 +3,13 @@ package com.avispa.parser.precedence.function;
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.table.Precedence;
 import com.avispa.parser.precedence.table.PrecedenceTable;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,39 +18,6 @@ import java.util.Map;
 @Slf4j
 @Getter
 public class PrecedenceFunctions implements IPrecedenceFunctions {
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    private static class Node {
-        private enum Function {
-            F,
-            G
-        }
-
-        private Function function;
-        @Getter
-        private GenericToken token;
-
-        public static Node ofF(GenericToken token) {
-            return new Node(Function.F, token);
-        }
-
-        public static Node ofG(GenericToken token) {
-            return new Node(Function.G, token);
-        }
-
-        public boolean isFNode() {
-            return function == Function.F;
-        }
-
-        public boolean isGNode() {
-            return function == Function.G;
-        }
-
-        @Override
-        public String toString() {
-            return function + "_" + token;
-        }
-    }
 
     private final Map<GenericToken, Integer> f = new HashMap<>();
     private final Map<GenericToken, Integer> g = new HashMap<>();
@@ -64,40 +29,42 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
             Integer longestPath = getLongestPathFor(node, graph);
 
             if (node.isFNode()) {
-                f.put(node.getToken(), longestPath);
+                node.getTokens().forEach(token -> f.put(token, longestPath));
             } else {
-                g.put(node.getToken(), longestPath);
+                node.getTokens().forEach(token -> g.put(token, longestPath));
             }
         }
 
-        log.info("f()={}", f);
-        log.info("g()={}", g);
+        if(log.isDebugEnabled()) {
+            log.debug("f()={}", f);
+            log.debug("g()={}", g);
+        }
     }
 
     /**
-     * Creates graph from the precedence table according to the rules of its creation
-     * @param table
+     * Creates graph from the precedence table according to the rules of its creation.
+     * @param table precedence table
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private DirectedAcyclicGraph<Node, DefaultEdge> createGraph(PrecedenceTable table) throws PrecedenceFunctionsException {
-        DirectedAcyclicGraph<Node, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable table) throws PrecedenceFunctionsException {
+        DirectedAcyclicGraph<GraphNode, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 
-        // TODO: fuse equals
+        var fusedTokensMap = fuseTokens(table);
 
         // add vertices
-        table.getTokens().forEach(token -> {
-            graph.addVertex(Node.ofF(token));
-            graph.addVertex(Node.ofG(token));
+        fusedTokensMap.values().forEach(fusedTokens -> {
+            graph.addVertex(GraphNode.ofF(fusedTokens));
+            graph.addVertex(GraphNode.ofG(fusedTokens));
         });
 
         // add edges
         try {
             table.get().forEach((key, value) -> {
                 if (Precedence.LESS_THAN.equals(value)) {
-                    graph.addEdge(Node.ofG(key.getRight()), Node.ofF(key.getLeft()));
+                    graph.addEdge(GraphNode.ofG(fusedTokensMap.get(key.getRight())), GraphNode.ofF(fusedTokensMap.get(key.getLeft())));
                 } else if (Precedence.GREATER_THAN.equals(value)) {
-                    graph.addEdge(Node.ofF(key.getLeft()), Node.ofG(key.getRight()));
+                    graph.addEdge(GraphNode.ofF(fusedTokensMap.get(key.getLeft())), GraphNode.ofG(fusedTokensMap.get(key.getRight())));
                 }
             });
         } catch (IllegalArgumentException e) {
@@ -108,11 +75,39 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
             log.debug("Created graph: {}", graph);
 
             log.debug("Topological order");
-            for (Node node : graph) {
-                log.debug("{}", node);
+            for (GraphNode graphNode : graph) {
+                log.debug("{}", graphNode);
             }
         }
         return graph;
+    }
+
+    /**
+     * Builds map of fused tokens. When for two tokens the precedence is set to equal then they should
+     * be fused into single token represented by list of tokens.
+     * @param table precedence table
+     * @return
+     */
+    private Map<GenericToken, List<GenericToken>> fuseTokens(PrecedenceTable table) {
+        Map<GenericToken, List<GenericToken>> fusedTokens = new HashMap<>();
+
+        for(var entry : table.get().entrySet()) {
+            var pair = entry.getKey();
+            if(Precedence.EQUALS == entry.getValue()) { // fuse tokens if precedence is set to equal
+                List<GenericToken> fusedToken = List.of(pair.getLeft(), pair.getRight());
+                fusedTokens.put(pair.getLeft(), fusedToken);
+                fusedTokens.put(pair.getRight(), fusedToken);
+            } else {
+                fusedTokens.putIfAbsent(pair.getLeft(), List.of(pair.getLeft()));
+                fusedTokens.putIfAbsent(pair.getRight(), List.of(pair.getRight()));
+            }
+        }
+
+        if(log.isDebugEnabled()) {
+            log.debug("Fused tokens map: {}", fusedTokens);
+        }
+
+        return fusedTokens;
     }
 
     /**
@@ -126,15 +121,15 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private Integer getLongestPathFor(Node from, DirectedAcyclicGraph<Node, DefaultEdge> graph) throws PrecedenceFunctionsException {
-        Map<Node, Integer> distances = new HashMap<>();
+    private Integer getLongestPathFor(GraphNode from, DirectedAcyclicGraph<GraphNode, DefaultEdge> graph) throws PrecedenceFunctionsException {
+        Map<GraphNode, Integer> distances = new HashMap<>();
         distances.put(from, 0); // distance to self is always zero
 
         for (var currentNode : graph) { // nodes are in topological order
             if (distances.containsKey(currentNode)) {
                 var edges = graph.outgoingEdgesOf(currentNode);
-                for (DefaultEdge edge : edges) { // for each neighbor
-                    Node adjacent = graph.getEdgeTarget(edge);
+                for (DefaultEdge edge : edges) { // for each adjacent node
+                    GraphNode adjacent = graph.getEdgeTarget(edge);
 
                     if (!distances.containsKey(adjacent) || distances.get(adjacent) < distances.get(currentNode) + 1) {
                         distances.put(adjacent, distances.get(currentNode) + 1);
@@ -156,7 +151,7 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private Integer findLongestPath(Map<Node, Integer> distances) throws PrecedenceFunctionsException {
+    private Integer findLongestPath(Map<GraphNode, Integer> distances) throws PrecedenceFunctionsException {
         return distances.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())

@@ -15,12 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Rafał Hiszpański
  */
-class PrecedenceTableTest {
+class SimplePrecedenceTableTest {
 
     private static final NonTerminal A = NonTerminal.of("A");
     private static final NonTerminal B = NonTerminal.of("B");
@@ -40,7 +41,7 @@ class PrecedenceTableTest {
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
 
         // when
-        PrecedenceTable precedenceTable = new PrecedenceTable(grammar);
+        SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // then
         Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
@@ -72,16 +73,16 @@ class PrecedenceTableTest {
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
 
         // when/then
-        assertThrows(UnresolvablePrecedenceConflictException.class, () -> new PrecedenceTable(grammar));
+        assertThrows(UnresolvablePrecedenceConflictException.class, () -> new SimplePrecedenceTable(grammar));
     }
 
     @Test
     void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-operator-precedence-grammar.txt").read();
 
         // when
-        PrecedenceTable precedenceTable = new PrecedenceTable(grammar);
+        SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // then
         NonTerminal expression = NonTerminal.of("expression");

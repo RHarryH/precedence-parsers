@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
+import static com.avispa.parser.precedence.TokenUtil.A;
+import static com.avispa.parser.precedence.TokenUtil.B;
+import static com.avispa.parser.precedence.TokenUtil.a;
+import static com.avispa.parser.precedence.TokenUtil.b;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -12,12 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Rafał Hiszpański
  */
 class ContextFreeGrammarTest {
-
-    private static final NonTerminal A = NonTerminal.of("A");
-    private static final NonTerminal B = NonTerminal.of("B");
-
-    private static final Terminal a = Terminal.of("a", "a");
-    private static final Terminal b = Terminal.of("b", "b");
 
     @Test
     void givenEmptyTerminalsSet_whenCreatingGrammar_thenThrowException() {

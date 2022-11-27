@@ -4,10 +4,8 @@ import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
-import com.avispa.parser.precedence.grammar.NonTerminal;
-import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.table.Precedence;
-import com.avispa.parser.precedence.table.PrecedenceTable;
+import com.avispa.parser.precedence.table.SimplePrecedenceTable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +15,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.avispa.parser.precedence.TokenUtil.add;
+import static com.avispa.parser.precedence.TokenUtil.expression;
+import static com.avispa.parser.precedence.TokenUtil.factor;
+import static com.avispa.parser.precedence.TokenUtil.marker;
+import static com.avispa.parser.precedence.TokenUtil.mul;
+import static com.avispa.parser.precedence.TokenUtil.number;
+import static com.avispa.parser.precedence.TokenUtil.term;
+import static com.avispa.parser.precedence.TokenUtil.term_prime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -26,20 +32,11 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 class PrecedenceFunctionsTest {
-    private static final NonTerminal term = NonTerminal.of("term");
-    private static final NonTerminal term_prime = NonTerminal.of("term_prime");
-    private static final NonTerminal expression = NonTerminal.of("expression");
-    private static final NonTerminal factor = NonTerminal.of("factor");
-
-    private static final Terminal add = Terminal.of("ADD", "\\+");
-    private static final Terminal mul = Terminal.of("MUL", "\\*");
-    private static final Terminal marker = Terminal.of("$", "\\$");
-    private static final Terminal number = Terminal.of("NUMBER", "[0-9]");
 
     @Test
     void givenOperatorPrecedenceTable_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws PrecedenceFunctionsException {
         // given
-        PrecedenceTable precedenceTable = Mockito.mock(PrecedenceTable.class);
+        SimplePrecedenceTable precedenceTable = Mockito.mock(SimplePrecedenceTable.class);
 
         Map<Pair<GenericToken, GenericToken>, Precedence> data = new HashMap<>();
         data.put(Pair.of(number, add), Precedence.GREATER_THAN);
@@ -88,7 +85,7 @@ class PrecedenceFunctionsTest {
     @Test
     void givenTableWithCycle_whenPrecedenceFunctionsCreated_thenThrowException() {
         // given
-        PrecedenceTable precedenceTable = Mockito.mock(PrecedenceTable.class);
+        SimplePrecedenceTable precedenceTable = Mockito.mock(SimplePrecedenceTable.class);
 
         Map<Pair<GenericToken, GenericToken>, Precedence> data = new HashMap<>();
         data.put(Pair.of(number, number), Precedence.GREATER_THAN);
@@ -105,8 +102,8 @@ class PrecedenceFunctionsTest {
     @Test
     void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt").read();
-        PrecedenceTable precedenceTable = new PrecedenceTable(grammar);
+        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/simple-operator-precedence-grammar.txt").read();
+        SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // when
         PrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);

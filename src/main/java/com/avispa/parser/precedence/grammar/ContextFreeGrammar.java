@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * @author Rafał Hiszpański
  */
 @Getter
-public class ContextFreeGrammar implements IGrammar {
+public final class ContextFreeGrammar implements IGrammar {
     private final String name;
 
     private final Set<Terminal> terminals;

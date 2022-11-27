@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
-public class Production {
+public final class Production {
     private NonTerminal lhs;
     private List<GenericToken> rhs;
 

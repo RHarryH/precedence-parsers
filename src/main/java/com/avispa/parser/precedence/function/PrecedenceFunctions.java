@@ -2,7 +2,7 @@ package com.avispa.parser.precedence.function;
 
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.table.Precedence;
-import com.avispa.parser.precedence.table.PrecedenceTable;
+import com.avispa.parser.precedence.table.SimplePrecedenceTable;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jgrapht.graph.DefaultEdge;
@@ -17,12 +17,11 @@ import java.util.Map;
  */
 @Slf4j
 @Getter
-public class PrecedenceFunctions implements IPrecedenceFunctions {
-
+public final class PrecedenceFunctions implements IPrecedenceFunctions {
     private final Map<GenericToken, Integer> f = new HashMap<>();
     private final Map<GenericToken, Integer> g = new HashMap<>();
 
-    public PrecedenceFunctions(PrecedenceTable table) throws PrecedenceFunctionsException {
+    public PrecedenceFunctions(SimplePrecedenceTable table) throws PrecedenceFunctionsException {
         var graph = createGraph(table);
 
         for (var node : graph.vertexSet()) { // for each node
@@ -45,7 +44,7 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable table) throws PrecedenceFunctionsException {
+    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(SimplePrecedenceTable table) throws PrecedenceFunctionsException {
         DirectedAcyclicGraph<GraphNode, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 
         var fusedTokensMap = fuseTokens(table);
@@ -86,7 +85,7 @@ public class PrecedenceFunctions implements IPrecedenceFunctions {
      * @param table precedence table
      * @return
      */
-    private Map<GenericToken, List<GenericToken>> fuseTokens(PrecedenceTable table) {
+    private Map<GenericToken, List<GenericToken>> fuseTokens(SimplePrecedenceTable table) {
         Map<GenericToken, List<GenericToken>> fusedTokens = new HashMap<>();
 
         for(var entry : table.get().entrySet()) {

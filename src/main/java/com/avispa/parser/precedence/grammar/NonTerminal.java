@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
  * @author Rafał Hiszpański
  */
 @EqualsAndHashCode(callSuper = true)
-public class NonTerminal extends GenericToken {
+public final class NonTerminal extends GenericToken {
 
     public static NonTerminal of(String name) {
         return new NonTerminal(name);

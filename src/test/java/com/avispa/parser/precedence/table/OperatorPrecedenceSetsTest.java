@@ -3,14 +3,22 @@ package com.avispa.parser.precedence.table;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
+import com.avispa.parser.precedence.grammar.Production;
+import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.table.set.FirstOpSets;
 import com.avispa.parser.precedence.table.set.LastOpSets;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Set;
 
+import static com.avispa.parser.precedence.TokenUtil.A;
+import static com.avispa.parser.precedence.TokenUtil.B;
+import static com.avispa.parser.precedence.TokenUtil.C;
+import static com.avispa.parser.precedence.TokenUtil.D;
+import static com.avispa.parser.precedence.TokenUtil.a;
 import static com.avispa.parser.precedence.TokenUtil.add;
+import static com.avispa.parser.precedence.TokenUtil.b;
 import static com.avispa.parser.precedence.TokenUtil.expression;
 import static com.avispa.parser.precedence.TokenUtil.factor;
 import static com.avispa.parser.precedence.TokenUtil.lpar;
@@ -25,8 +33,71 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Rafał Hiszpański
  */
-@Slf4j
 class OperatorPrecedenceSetsTest {
+
+    @Test
+    void givenSingleProduction_whenSetsCreated_thenAreCorrect() throws IncorrectGrammarException {
+        // given
+        Set<Terminal> terminals = Set.of(a);
+
+        List<Production> productions = List.of(Production.of(A, List.of(a)));
+
+        // when
+        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var firstOp = new FirstOpSets(grammar);
+        var lastOp = new LastOpSets(grammar);
+
+        // then
+        assertEquals(Set.of(a), firstOp.getFor(A));
+        assertEquals(Set.of(a), lastOp.getFor(A));
+    }
+
+    @Test
+    void givenProductionWithNonTerminalOnRhs_whenSetsCreated_thenAreCorrect() throws IncorrectGrammarException {
+        // given
+        Set<Terminal> terminals = Set.of(a);
+
+        List<Production> productions = List.of(Production.of(A, List.of(B, a)), Production.of(B, List.of(a)));
+
+        // when
+        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var firstOp = new FirstOpSets(grammar);
+        var lastOp = new LastOpSets(grammar);
+
+        // then
+        assertEquals(Set.of(a), firstOp.getFor(A));
+        assertEquals(Set.of(a), firstOp.getFor(B));
+        assertEquals(Set.of(a), lastOp.getFor(A));
+        assertEquals(Set.of(a), lastOp.getFor(B));
+    }
+
+    @Test
+    void givenProductionsWithMultipleNonTerminals_whenSetsCreated_thenAreCorrect() throws IncorrectGrammarException {
+        // given
+        Set<Terminal> terminals = Set.of(a, b);
+
+        List<Production> productions = List.of(
+                Production.of(A, List.of(B, a, C, D)),
+                Production.of(B, List.of(a)),
+                Production.of(C, List.of(b)),
+                Production.of(D, List.of(a, b)));
+
+        // when
+        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var firstOp = new FirstOpSets(grammar);
+        var lastOp = new LastOpSets(grammar);
+
+        // then
+        assertEquals(Set.of(a), firstOp.getFor(A));
+        assertEquals(Set.of(a), firstOp.getFor(B));
+        assertEquals(Set.of(b), firstOp.getFor(C));
+        assertEquals(Set.of(a), firstOp.getFor(D));
+
+        assertEquals(Set.of(a, b), lastOp.getFor(A));
+        assertEquals(Set.of(a), lastOp.getFor(B));
+        assertEquals(Set.of(b), lastOp.getFor(C));
+        assertEquals(Set.of(b), lastOp.getFor(D));
+    }
 
     @Test
     void givenOperatorPrecedenceGrammar_whenCreateSets_thenSetsAreCorrect() throws IncorrectGrammarException {
@@ -34,22 +105,19 @@ class OperatorPrecedenceSetsTest {
         ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").read();
 
         // when
-        FirstOpSets firstOpSets = new FirstOpSets(grammar);
-        LastOpSets lastOpSets = new LastOpSets(grammar);
-
-        log.debug("{}", firstOpSets);
-        log.debug("{}", lastOpSets);
+        var firstOp = new FirstOpSets(grammar);
+        var lastOp = new LastOpSets(grammar);
 
         // then
-        assertEquals(Set.of(marker), firstOpSets.getFor(start));
-        assertEquals(Set.of(lpar, add, mul, number), firstOpSets.getFor(expression));
-        assertEquals(Set.of(lpar, mul, number), firstOpSets.getFor(term));
-        assertEquals(Set.of(lpar, number), firstOpSets.getFor(factor));
+        assertEquals(Set.of(marker), firstOp.getFor(start));
+        assertEquals(Set.of(lpar, add, mul, number), firstOp.getFor(expression));
+        assertEquals(Set.of(lpar, mul, number), firstOp.getFor(term));
+        assertEquals(Set.of(lpar, number), firstOp.getFor(factor));
 
-        assertEquals(Set.of(marker), lastOpSets.getFor(start));
-        assertEquals(Set.of(rpar, add, mul, number), lastOpSets.getFor(expression));
-        assertEquals(Set.of(rpar, mul, number), lastOpSets.getFor(term));
-        assertEquals(Set.of(rpar, number), lastOpSets.getFor(factor));
+        assertEquals(Set.of(marker), lastOp.getFor(start));
+        assertEquals(Set.of(rpar, add, mul, number), lastOp.getFor(expression));
+        assertEquals(Set.of(rpar, mul, number), lastOp.getFor(term));
+        assertEquals(Set.of(rpar, number), lastOp.getFor(factor));
     }
 
 }

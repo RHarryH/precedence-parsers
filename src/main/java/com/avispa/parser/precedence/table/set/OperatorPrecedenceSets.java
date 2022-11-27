@@ -73,10 +73,10 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
         Terminal terminal = findTerminal(rhsTokens);
         if(null != terminal) {
             downstreamTerminals.add(terminal); // add found terminal to propagate it upstream
-        }
 
-        log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
-        update(lhs, downstreamTerminals);
+            log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
+            update(lhs, downstreamTerminals);
+        }
 
         return downstreamTerminals;
     }

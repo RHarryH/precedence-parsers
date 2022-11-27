@@ -33,10 +33,10 @@ class SimplePrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(a)));
 
         // when
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
-        FirstAllSets firstAll = new FirstAllSets(grammar);
-        LastAllSets lastAll = new LastAllSets(grammar);
-        FirstSets first = new FirstSets(firstAll, grammar.getTerminals());
+        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var firstAll = new FirstAllSets(grammar);
+        var lastAll = new LastAllSets(grammar);
+        var first = new FirstSets(firstAll, grammar.getTerminals());
 
         // then
         assertEquals(Set.of(), firstAll.getFor(a));
@@ -55,10 +55,10 @@ class SimplePrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a)), Production.of(B, List.of(a)));
 
         // when
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
-        FirstAllSets firstAll = new FirstAllSets(grammar);
-        LastAllSets lastAll = new LastAllSets(grammar);
-        FirstSets first = new FirstSets(firstAll, grammar.getTerminals());
+        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var firstAll = new FirstAllSets(grammar);
+        var lastAll = new LastAllSets(grammar);
+        var first = new FirstSets(firstAll, grammar.getTerminals());
 
         // then
         assertEquals(Set.of(), firstAll.getFor(a));
@@ -84,10 +84,10 @@ class SimplePrecedenceSetsTest {
                 Production.of(D, List.of(a, b)));
 
         // when
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
-        FirstAllSets firstAll = new FirstAllSets(grammar);
-        LastAllSets lastAll = new LastAllSets(grammar);
-        FirstSets first = new FirstSets(firstAll, grammar.getTerminals());
+        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var firstAll = new FirstAllSets(grammar);
+        var lastAll = new LastAllSets(grammar);
+        var first = new FirstSets(firstAll, grammar.getTerminals());
 
         // then
         assertEquals(Set.of(), firstAll.getFor(a));

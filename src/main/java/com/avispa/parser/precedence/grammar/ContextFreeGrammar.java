@@ -69,7 +69,7 @@ public final class ContextFreeGrammar implements IGrammar {
         Set<NonTerminal> rhsNonTerminals = new HashSet<>();
         for(Production production : productions) {
             for(GenericToken token : production.getRhs()) {
-                if (token instanceof NonTerminal) {
+                if (NonTerminal.isOf(token)) {
                     if(!lhsNonTerminals.contains(token)) {
                         throw new IncorrectGrammarException("Token " + token + " is not present on the left-hand side of any production");
                     }

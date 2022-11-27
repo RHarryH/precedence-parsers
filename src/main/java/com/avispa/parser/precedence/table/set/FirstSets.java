@@ -15,7 +15,7 @@ import java.util.Set;
 public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
     public FirstSets(FirstAllSets firstAll, Set<Terminal> terminals) {
         super("FIRST");
-        log.debug("Constructing {} set.", setsName);
+        log.debug("Constructing {} set.", name);
         initialize(terminals);
         construct(firstAll);
         log.debug("{}", this);
@@ -38,9 +38,9 @@ public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
         var firstAllMap = firstAll.get();
         for(var firstAllForToken : firstAllMap.entrySet()) {
             GenericToken lhs = firstAllForToken.getKey();
-            if(lhs instanceof NonTerminal) {
+            if(NonTerminal.isOf(lhs)) {
                 for(GenericToken token : firstAllForToken.getValue()) {
-                    if(token instanceof Terminal) {
+                    if(Terminal.isOf(token)) {
                         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
                                 .add((Terminal) token);
                     }

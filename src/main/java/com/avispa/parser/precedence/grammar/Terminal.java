@@ -19,6 +19,10 @@ public final class Terminal extends GenericToken {
         return new Terminal(name, regex);
     }
 
+    public static boolean isOf(GenericToken token) {
+        return token instanceof Terminal;
+    }
+
     private Terminal(String name, String regex) {
         super(name);
         try {

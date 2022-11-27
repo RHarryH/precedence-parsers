@@ -4,7 +4,6 @@ import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
-import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
@@ -20,19 +19,8 @@ public abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, 
     SimplePrecedenceSets(ContextFreeGrammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
-        initialize(grammar.getTerminals());
         construct(grammar);
         log.debug("{}", this);
-    }
-
-    /**
-     * Add empty list for terminals for simple precedence sets (FIRST_ALL/LAST_ALL)
-     * @param terminals
-     */
-    private void initialize(Set<Terminal> terminals) {
-        for(Terminal terminal : terminals) {
-            this.sets.put(terminal, Set.of());
-        }
     }
 
     /**
@@ -67,18 +55,18 @@ public abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, 
         visited.add(currentLhs); // do not visit already visiting token to avoid endless loop
 
         for (Production production : currentRhsProductions) { // for all alternatives
-            log.debug("Checking {} production for {} set.", production, setsName);
+            log.debug("Checking {} production for {} set.", production, name);
             List<GenericToken> rhsTokens = production.getRhs();
 
-            GenericToken lastToken = findToken(rhsTokens);
-            log.debug("Last token for {} production is {}. Adding to {} set.", production, lastToken, setsName);
+            GenericToken token = findToken(rhsTokens);
+            log.debug("First/last token for {} production is {}. Adding to {} set.", production, token, name);
 
-            update(topLhs, lastToken);
-            if(lastToken instanceof NonTerminal && !visited.contains(lastToken)) {
-                log.debug("Token {} is a non-terminal and wasn't visited before. Check it recursively for it's first token.", lastToken);
-                constructFor(topLhs, (NonTerminal) lastToken, productionsByLhs.get(lastToken), productionsByLhs, visited);
+            update(topLhs, token);
+            if(NonTerminal.isOf(token) && !visited.contains(token)) {
+                log.debug("Token {} is a non-terminal and wasn't visited before. Check it recursively for it's first token.", token);
+                constructFor(topLhs, (NonTerminal) token, productionsByLhs.get(token), productionsByLhs, visited);
             } else {
-                log.debug("Token {} is a terminal or was visited before. Skipping.", lastToken);
+                log.debug("Token {} is a terminal or was visited before. Skipping.", token);
             }
         }
     }

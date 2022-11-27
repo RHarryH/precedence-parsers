@@ -3,6 +3,7 @@ package com.avispa.parser.precedence.table.set;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -17,12 +18,13 @@ import java.util.stream.Collectors;
  * @author Rafał Hiszpański
  */
 @Slf4j
-abstract class PrecedenceSets<K, V> {
+public abstract class PrecedenceSets<K, V> {
     protected final Map<K, Set<V>> sets = new HashMap<>();
-    protected final String setsName;
+    @Getter
+    protected final String name;
 
-    PrecedenceSets(String setsName) {
-        this.setsName = setsName;
+    PrecedenceSets(String name) {
+        this.name = name;
     }
 
     protected final Map<NonTerminal, List<Production>> groupProductionsByLhs(ContextFreeGrammar grammar) {
@@ -42,7 +44,7 @@ abstract class PrecedenceSets<K, V> {
     }
 
     public final Set<V> getFor(K token) {
-        return this.sets.get(token);
+        return this.sets.getOrDefault(token, Set.of());
     }
 
     public final Map<K, Set<V>> get() {
@@ -54,7 +56,7 @@ abstract class PrecedenceSets<K, V> {
         final StringBuilder sb = new StringBuilder();
         final String newLine = System.lineSeparator();
 
-        this.sets.forEach((key, value) -> sb.append(String.format("%s(%s)=%s", setsName, key, value)).append(newLine));
+        this.sets.forEach((key, value) -> sb.append(String.format("%s(%s)=%s", name, key, value)).append(newLine));
 
         return sb.toString();
     }

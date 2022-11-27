@@ -55,7 +55,7 @@ public class TablePrinter {
             } else if (Character.isLowerCase(a.charAt(0)) && Character.isUpperCase(b.charAt(0))) {
                 return -1;
             } else {
-                final String marker = "$";
+                final String marker = "MARKER";
                 // move marker token always to the end
                 if (a.equals(marker) && !b.equals(marker)) {
                     return 1;

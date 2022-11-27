@@ -1,12 +1,9 @@
-package com.avispa.parser.precedence.table;
+package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
-import com.avispa.parser.precedence.table.set.FirstAllSets;
-import com.avispa.parser.precedence.table.set.FirstSets;
-import com.avispa.parser.precedence.table.set.LastAllSets;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

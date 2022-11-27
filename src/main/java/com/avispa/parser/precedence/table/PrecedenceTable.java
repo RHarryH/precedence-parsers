@@ -5,6 +5,7 @@ import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
@@ -14,16 +15,47 @@ import java.util.Map;
 /**
  * @author Rafał Hiszpański
  */
-abstract class PrecedenceTable {
+@Slf4j
+abstract class PrecedenceTable<T extends GenericToken> {
     protected static final Terminal BOUNDARY_MARKER = Terminal.of("MARKER", "\\$");
 
-    protected Map<Pair<GenericToken, GenericToken>, Precedence> table;
+    protected Map<Pair<T, T>, Precedence> table;
 
-    public Map<Pair<GenericToken, GenericToken>, Precedence> get() {
+    public Map<Pair<T, T>, Precedence> get() {
         return table;
     }
 
-    protected abstract Map<Pair<GenericToken, GenericToken>, Precedence> build(List<Production> productions, NonTerminal start);
+    protected abstract Map<Pair<T, T>, Precedence> build(List<Production> productions, NonTerminal start);
+
+    protected abstract void addEqualsRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<T, T>, Precedence> result);
+
+    protected abstract void addLessThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<T, T>, Precedence> result);
+
+    protected abstract void addGreaterThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<T, T>, Precedence> result);
+
+    protected final void addRelation(Pair<T, T> pair, Precedence precedence, Map<Pair<T, T>, Precedence> result) {
+        log.debug("Adding relation: {} {} {}", pair.getLeft(), precedence.getSymbol(), pair.getRight());
+
+        if(result.containsKey(pair)) {
+            Precedence currentPrecedence = result.get(pair);
+            if(precedence.equals(currentPrecedence)) {
+                log.warn("Trying to overwrite existing precedence with the same value. Skipping");
+                return;
+            }
+
+            if((precedence.equals(Precedence.EQUALS) && currentPrecedence.equals(Precedence.LESS_THAN)) ||
+                    (precedence.equals(Precedence.LESS_THAN) && currentPrecedence.equals(Precedence.EQUALS))) {
+                log.warn("Weak-precedence grammar detected. There is already {} symbol, while trying to insert {} symbol. Merging precedence symbol to {}", currentPrecedence, precedence, Precedence.LESS_THAN_OR_EQUALS);
+                result.put(pair, Precedence.LESS_THAN_OR_EQUALS);
+            } else {
+                String message = String.format("Conflict detected. Tried to insert %s precedence while there is already %s precedence for %s tokens", precedence, currentPrecedence, pair);
+                log.error(message);
+                throw new PrecedenceTableException(message);
+            }
+        } else {
+            result.put(pair, precedence);
+        }
+    }
 
     @Override
     public String toString() {

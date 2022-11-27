@@ -12,6 +12,10 @@ public final class NonTerminal extends GenericToken {
         return new NonTerminal(name);
     }
 
+    public static boolean isOf(GenericToken token) {
+        return token instanceof NonTerminal;
+    }
+
     private NonTerminal(String name) {
         super(name);
     }

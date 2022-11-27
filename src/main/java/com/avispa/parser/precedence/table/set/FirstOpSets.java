@@ -25,12 +25,22 @@ public final class FirstOpSets extends OperatorPrecedenceSets {
     protected Terminal findTerminal(List<GenericToken> rhsTokens) {
         log.debug("Looking for first terminal in {} right-hand side tokens.", rhsTokens);
         for (GenericToken token : rhsTokens) {
-            if (token instanceof Terminal) {
+            if (Terminal.isOf(token)) {
                 log.debug("'{}' found.", token);
                 return (Terminal) token;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Finds first token for right-hand side production tokens
+     * @param rhsTokens
+     * @return
+     */
+    @Override
+    protected GenericToken findToken(List<GenericToken> rhsTokens) {
+        return rhsTokens.get(0);
     }
 }

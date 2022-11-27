@@ -3,11 +3,10 @@ grammar PrecedenceGrammar;
 ADD: \+;
 MUL: \*;
 NUMBER: [0-9];
-MARKER: \$;
 LEFT_PARENTHESIS: \(;
 RIGHT_PARENTHESIS: \);
 
-start: MARKER expression MARKER;
+start: expression;
 expression: expression ADD term | term;
 term: term MUL factor | factor;
 factor: NUMBER | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;

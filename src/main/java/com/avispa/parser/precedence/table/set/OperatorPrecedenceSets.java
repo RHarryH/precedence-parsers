@@ -7,6 +7,8 @@ import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,8 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
                 groupProductionsByLhs(grammar);
 
         for(NonTerminal nonTerminal : grammar.getNonTerminals()) {
-            constructFor(nonTerminal, productionsByLhs);
+            Deque<NonTerminal> deque = new ArrayDeque<>();
+            constructFor(nonTerminal, productionsByLhs, deque);
         }
     }
 
@@ -46,40 +49,48 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
      * @param lhs current lhs non-terminal
      * @param productionsByLhs list of productions grouped by lhs non-terminal
      */
-    private Set<Terminal> constructFor(NonTerminal lhs, Map<NonTerminal, List<Production>> productionsByLhs) {
+    private Set<Terminal> constructFor(NonTerminal lhs, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> deque) {
         log.debug("Started processing of '{}' non-terminal.", lhs);
 
         Set<Terminal> set = new HashSet<>();
         for (Production production : productionsByLhs.get(lhs)) { // for all alternatives
-            set.addAll(downstream(lhs, production.getRhs(), productionsByLhs));
+            set.addAll(downstream(lhs, production.getRhs(), productionsByLhs, deque));
         }
         return set;
     }
 
-    protected final Set<Terminal> downstream(NonTerminal lhs, List<GenericToken> rhsTokens, Map<NonTerminal, List<Production>> productionsByLhs) {
-        GenericToken token = rhsTokens.get(rhsTokens.size() - 1);
+    protected final Set<Terminal> downstream(NonTerminal lhs, List<GenericToken> rhsTokens, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> deque) {
+        GenericToken token = findToken(rhsTokens);
 
         Set<Terminal> downstreamTerminals = new HashSet<>();
-        if(token instanceof NonTerminal) {
+        if(NonTerminal.isOf(token)) {
+            NonTerminal nonTerminal = (NonTerminal) token;
+
             if(this.sets.containsKey(token)) {
                 log.debug("Set for '{}' already exists. It will be reused.", token);
                 downstreamTerminals = new HashSet<>(this.sets.get(token)); // make a copy, otherwise set for last token non-terminal will be overwritten
-            } else if(lhs != token) {
-                log.debug("Set for '{}' does not exists. It will be created by recursive construction.", token);
-                downstreamTerminals = constructFor((NonTerminal) token, productionsByLhs);
+            } else if(!lhs.equals(token) && !deque.contains(nonTerminal)) {
+                log.debug("Set for '{}' does not exists. It will be created by recursive construction.", nonTerminal);
+                deque.push(nonTerminal);
+                downstreamTerminals = constructFor(nonTerminal, productionsByLhs, deque);
+                deque.pop();
+            } else {
+                log.debug("Set for '{}' does not exist.", token);
             }
         }
 
         Terminal terminal = findTerminal(rhsTokens);
         if(null != terminal) {
             downstreamTerminals.add(terminal); // add found terminal to propagate it upstream
-
-            log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
-            update(lhs, downstreamTerminals);
         }
+
+        log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
+        update(lhs, downstreamTerminals);
 
         return downstreamTerminals;
     }
+
+    protected abstract GenericToken findToken(List<GenericToken> rhsTokens);
 
     protected abstract Terminal findTerminal(List<GenericToken> rhsTokens);
 }

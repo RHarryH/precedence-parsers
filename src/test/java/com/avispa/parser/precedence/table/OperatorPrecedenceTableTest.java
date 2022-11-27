@@ -19,20 +19,19 @@ import static com.avispa.parser.precedence.TokenUtil.B;
 import static com.avispa.parser.precedence.TokenUtil.a;
 import static com.avispa.parser.precedence.TokenUtil.add;
 import static com.avispa.parser.precedence.TokenUtil.b;
-import static com.avispa.parser.precedence.TokenUtil.expression;
-import static com.avispa.parser.precedence.TokenUtil.factor;
+import static com.avispa.parser.precedence.TokenUtil.lpar;
 import static com.avispa.parser.precedence.TokenUtil.marker;
 import static com.avispa.parser.precedence.TokenUtil.mul;
 import static com.avispa.parser.precedence.TokenUtil.number;
+import static com.avispa.parser.precedence.TokenUtil.rpar;
 import static com.avispa.parser.precedence.TokenUtil.start;
-import static com.avispa.parser.precedence.TokenUtil.term;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Rafał Hiszpański
  */
-class SimplePrecedenceTableTest {
+class OperatorPrecedenceTableTest {
 
     @Test
     void givenSimpleGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
@@ -44,19 +43,65 @@ class SimplePrecedenceTableTest {
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
 
         // when
-        SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
+        var precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
         Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
-        expected.put(Pair.of(B, a), Precedence.EQUALS);
-
         expected.put(Pair.of(a, a), Precedence.EQUALS);
         expected.put(Pair.of(a, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(b, a), Precedence.GREATER_THAN);
 
-        expected.put(Pair.of(marker, B), Precedence.LESS_THAN);
+        expected.put(Pair.of(marker, a), Precedence.LESS_THAN);
         expected.put(Pair.of(marker, b), Precedence.LESS_THAN);
+
+        assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
+    }
+
+    @Test
+    void givenOperatorPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
+        // given
+        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").read();
+
+        // when
+        var precedenceTable = new OperatorPrecedenceTable(grammar);
+
+        // then
+        Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
+        expected.put(Pair.of(add, add), Precedence.GREATER_THAN);
+        expected.put(Pair.of(add, lpar), Precedence.LESS_THAN);
+        expected.put(Pair.of(add, mul), Precedence.LESS_THAN);
+        expected.put(Pair.of(add, number), Precedence.LESS_THAN);
+        expected.put(Pair.of(add, rpar), Precedence.GREATER_THAN);
+        expected.put(Pair.of(add, marker), Precedence.GREATER_THAN);
+
+        expected.put(Pair.of(lpar, add), Precedence.LESS_THAN);
+        expected.put(Pair.of(lpar, lpar), Precedence.LESS_THAN);
+        expected.put(Pair.of(lpar, mul), Precedence.LESS_THAN);
+        expected.put(Pair.of(lpar, number), Precedence.LESS_THAN);
+        expected.put(Pair.of(lpar, rpar), Precedence.EQUALS);
+
+        expected.put(Pair.of(mul, add), Precedence.GREATER_THAN);
+        expected.put(Pair.of(mul, lpar), Precedence.LESS_THAN);
+        expected.put(Pair.of(mul, mul), Precedence.GREATER_THAN);
+        expected.put(Pair.of(mul, number), Precedence.LESS_THAN);
+        expected.put(Pair.of(mul, rpar), Precedence.GREATER_THAN);
+        expected.put(Pair.of(mul, marker), Precedence.GREATER_THAN);
+
+        expected.put(Pair.of(number, add), Precedence.GREATER_THAN);
+        expected.put(Pair.of(number, mul), Precedence.GREATER_THAN);
+        expected.put(Pair.of(number, rpar), Precedence.GREATER_THAN);
+        expected.put(Pair.of(number, marker), Precedence.GREATER_THAN);
+
+        expected.put(Pair.of(rpar, add), Precedence.GREATER_THAN);
+        expected.put(Pair.of(rpar, mul), Precedence.GREATER_THAN);
+        expected.put(Pair.of(rpar, rpar), Precedence.GREATER_THAN);
+        expected.put(Pair.of(rpar, marker), Precedence.GREATER_THAN);
+
+        expected.put(Pair.of(marker, add), Precedence.LESS_THAN);
+        expected.put(Pair.of(marker, lpar), Precedence.LESS_THAN);
+        expected.put(Pair.of(marker, mul), Precedence.LESS_THAN);
+        expected.put(Pair.of(marker, number), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
     }
@@ -81,7 +126,7 @@ class SimplePrecedenceTableTest {
     @Test
     void givenGrammarWithConflict_whenPrecedenceTable_thenThrowException() throws IncorrectGrammarException {
         // given
-        Set<Terminal> terminals = Set.of(a);
+        Set<Terminal> terminals = Set.of(a, b);
 
         /* S -> A
          * A -> AaB | a
@@ -92,7 +137,7 @@ class SimplePrecedenceTableTest {
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
 
         // when/then
-        assertThrows(PrecedenceTableException.class, () -> new SimplePrecedenceTable(grammar));
+        assertThrows(PrecedenceTableException.class, () -> new OperatorPrecedenceTable(grammar));
     }
 
     @Test
@@ -101,34 +146,26 @@ class SimplePrecedenceTableTest {
         ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt").read();
 
         // when
-        SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
+        var precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
         Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
-        expected.put(Pair.of(expression, add), Precedence.EQUALS);
-
-        expected.put(Pair.of(term, add), Precedence.GREATER_THAN);
-        expected.put(Pair.of(term, mul), Precedence.EQUALS);
-        expected.put(Pair.of(term, marker), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(factor, add), Precedence.GREATER_THAN);
-        expected.put(Pair.of(factor, mul), Precedence.GREATER_THAN);
-        expected.put(Pair.of(factor, marker), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(add, term), Precedence.LESS_THAN_OR_EQUALS);
-        expected.put(Pair.of(add, factor), Precedence.LESS_THAN);
+        expected.put(Pair.of(add, add), Precedence.GREATER_THAN);
+        expected.put(Pair.of(add, mul), Precedence.LESS_THAN);
         expected.put(Pair.of(add, number), Precedence.LESS_THAN);
+        expected.put(Pair.of(add, marker), Precedence.GREATER_THAN);
 
-        expected.put(Pair.of(mul, factor), Precedence.EQUALS);
+        expected.put(Pair.of(mul, add), Precedence.GREATER_THAN);
+        expected.put(Pair.of(mul, mul), Precedence.GREATER_THAN);
         expected.put(Pair.of(mul, number), Precedence.LESS_THAN);
+        expected.put(Pair.of(mul, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(number, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(number, mul), Precedence.GREATER_THAN);
         expected.put(Pair.of(number, marker), Precedence.GREATER_THAN);
 
-        expected.put(Pair.of(marker, expression), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, term), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, factor), Precedence.LESS_THAN);
+        expected.put(Pair.of(marker, add), Precedence.LESS_THAN);
+        expected.put(Pair.of(marker, mul), Precedence.LESS_THAN);
         expected.put(Pair.of(marker, number), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());

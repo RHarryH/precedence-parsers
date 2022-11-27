@@ -27,12 +27,22 @@ public final class LastOpSets extends OperatorPrecedenceSets {
         var it = rhsTokens.listIterator(rhsTokens.size());
         while(it.hasPrevious()) {
             GenericToken token = it.previous();
-            if (token instanceof Terminal) {
+            if (Terminal.isOf(token)) {
                 log.debug("'{}' found.", token);
                 return (Terminal) token;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Finds first token for right-hand side production tokens
+     * @param rhsTokens
+     * @return
+     */
+    @Override
+    protected GenericToken findToken(List<GenericToken> rhsTokens) {
+        return rhsTokens.get(rhsTokens.size() - 1);
     }
 }

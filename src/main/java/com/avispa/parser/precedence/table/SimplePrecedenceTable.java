@@ -5,7 +5,9 @@ import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
-import com.avispa.parser.precedence.table.set.SimplePrecedenceSets;
+import com.avispa.parser.precedence.table.set.FirstAllSets;
+import com.avispa.parser.precedence.table.set.FirstSets;
+import com.avispa.parser.precedence.table.set.LastAllSets;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,12 +20,17 @@ import java.util.Map;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public final class SimplePrecedenceTable extends PrecedenceTable{
-    @Getter
-    private final SimplePrecedenceSets sets;
+@Getter
+public class SimplePrecedenceTable extends PrecedenceTable {
+    private final FirstAllSets firstAll;
+    private final LastAllSets lastAll;
+    private final FirstSets first;
 
     public SimplePrecedenceTable(ContextFreeGrammar cfg) {
-        this.sets = new SimplePrecedenceSets(cfg);
+        this.firstAll = new FirstAllSets(cfg);
+        this.lastAll = new LastAllSets(cfg);
+        this.first = new FirstSets(firstAll, cfg.getTerminals());
+
         this.table = build(cfg.getProductions(), cfg.getStart());
     }
 
@@ -67,14 +74,14 @@ public final class SimplePrecedenceTable extends PrecedenceTable{
     private void addLessThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
         log.debug("Adding relations: {} ⋖ FIRST_ALL({})", currentPair.getLeft(), currentPair.getRight());
 
-        this.sets.getFirstAllFor(currentPair.getRight()).forEach(right -> addRelation(Pair.of(currentPair.getLeft(), right), Precedence.LESS_THAN, result));
+        this.firstAll.getFor(currentPair.getRight()).forEach(right -> addRelation(Pair.of(currentPair.getLeft(), right), Precedence.LESS_THAN, result));
     }
 
     private void addGreaterThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
         log.debug("Adding relations: LAST_ALL({}) ⋗ FIRST({})", currentPair.getLeft(), currentPair.getRight());
 
-        this.sets.getLastAllFor(currentPair.getLeft())
-                .forEach(left -> this.sets.getFirstFor(currentPair.getRight())
+        this.lastAll.getFor(currentPair.getLeft())
+                .forEach(left -> this.first.getFor(currentPair.getRight())
                         .forEach(right -> addRelation(Pair.of(left, right), Precedence.GREATER_THAN, result)));
     }
 
@@ -105,7 +112,7 @@ public final class SimplePrecedenceTable extends PrecedenceTable{
     private void addLessThanRelationForStartAndMarker(NonTerminal start, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
         log.debug("Adding relations: $ ⋖ FIRST_ALL({})", start);
 
-        this.sets.getFirstAllFor(start).forEach(right -> {
+        this.firstAll.getFor(start).forEach(right -> {
             log.debug("Adding relation: {} ⋖ {}", BOUNDARY_MARKER, right);
             result.put(Pair.of(BOUNDARY_MARKER, right), Precedence.LESS_THAN);
         });
@@ -114,7 +121,7 @@ public final class SimplePrecedenceTable extends PrecedenceTable{
     private void addGreaterThanRelationForMarkerAndStart(NonTerminal start, Map<Pair<GenericToken, GenericToken>, Precedence> result) {
         log.debug("Adding relations: LAST_ALL({}) ⋗ $", start);
 
-        this.sets.getLastAllFor(start).forEach(left -> {
+        this.lastAll.getFor(start).forEach(left -> {
             log.debug("Adding relation: {} ⋗ {}", left, BOUNDARY_MARKER);
 
             result.put(Pair.of(left, BOUNDARY_MARKER), Precedence.GREATER_THAN);

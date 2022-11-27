@@ -4,7 +4,9 @@ import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
-import com.avispa.parser.precedence.table.set.SimplePrecedenceSets;
+import com.avispa.parser.precedence.table.set.FirstAllSets;
+import com.avispa.parser.precedence.table.set.FirstSets;
+import com.avispa.parser.precedence.table.set.LastAllSets;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -32,15 +34,17 @@ class SimplePrecedenceSetsTest {
 
         // when
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
-        SimplePrecedenceSets sets = new SimplePrecedenceSets(grammar);
+        FirstAllSets firstAll = new FirstAllSets(grammar);
+        LastAllSets lastAll = new LastAllSets(grammar);
+        FirstSets first = new FirstSets(firstAll, grammar.getTerminals());
 
         // then
-        assertEquals(Set.of(), sets.getFirstAllFor(a));
-        assertEquals(Set.of(a), sets.getFirstAllFor(A));
-        assertEquals(Set.of(), sets.getLastAllFor(a));
-        assertEquals(Set.of(a), sets.getLastAllFor(A));
-        assertEquals(Set.of(a), sets.getFirstFor(A));
-        assertEquals(Set.of(a), sets.getFirstFor(a));
+        assertEquals(Set.of(), firstAll.getFor(a));
+        assertEquals(Set.of(a), firstAll.getFor(A));
+        assertEquals(Set.of(), lastAll.getFor(a));
+        assertEquals(Set.of(a), lastAll.getFor(A));
+        assertEquals(Set.of(a), first.getFor(A));
+        assertEquals(Set.of(a), first.getFor(a));
     }
 
     @Test
@@ -52,18 +56,20 @@ class SimplePrecedenceSetsTest {
 
         // when
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
-        SimplePrecedenceSets sets = new SimplePrecedenceSets(grammar);
+        FirstAllSets firstAll = new FirstAllSets(grammar);
+        LastAllSets lastAll = new LastAllSets(grammar);
+        FirstSets first = new FirstSets(firstAll, grammar.getTerminals());
 
         // then
-        assertEquals(Set.of(), sets.getFirstAllFor(a));
-        assertEquals(Set.of(a, B), sets.getFirstAllFor(A));
-        assertEquals(Set.of(a), sets.getFirstAllFor(B));
-        assertEquals(Set.of(), sets.getLastAllFor(a));
-        assertEquals(Set.of(a), sets.getLastAllFor(A));
-        assertEquals(Set.of(a), sets.getLastAllFor(B));
-        assertEquals(Set.of(a), sets.getFirstFor(a));
-        assertEquals(Set.of(a), sets.getFirstFor(A));
-        assertEquals(Set.of(a), sets.getFirstFor(B));
+        assertEquals(Set.of(), firstAll.getFor(a));
+        assertEquals(Set.of(a, B), firstAll.getFor(A));
+        assertEquals(Set.of(a), firstAll.getFor(B));
+        assertEquals(Set.of(), lastAll.getFor(a));
+        assertEquals(Set.of(a), lastAll.getFor(A));
+        assertEquals(Set.of(a), lastAll.getFor(B));
+        assertEquals(Set.of(a), first.getFor(a));
+        assertEquals(Set.of(a), first.getFor(A));
+        assertEquals(Set.of(a), first.getFor(B));
     }
 
     @Test
@@ -79,28 +85,30 @@ class SimplePrecedenceSetsTest {
 
         // when
         ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
-        SimplePrecedenceSets sets = new SimplePrecedenceSets(grammar);
+        FirstAllSets firstAll = new FirstAllSets(grammar);
+        LastAllSets lastAll = new LastAllSets(grammar);
+        FirstSets first = new FirstSets(firstAll, grammar.getTerminals());
 
         // then
-        assertEquals(Set.of(), sets.getFirstAllFor(a));
-        assertEquals(Set.of(), sets.getFirstAllFor(b));
-        assertEquals(Set.of(a, B), sets.getFirstAllFor(A));
-        assertEquals(Set.of(a), sets.getFirstAllFor(B));
-        assertEquals(Set.of(b), sets.getFirstAllFor(C));
-        assertEquals(Set.of(a), sets.getFirstAllFor(D));
+        assertEquals(Set.of(), firstAll.getFor(a));
+        assertEquals(Set.of(), firstAll.getFor(b));
+        assertEquals(Set.of(a, B), firstAll.getFor(A));
+        assertEquals(Set.of(a), firstAll.getFor(B));
+        assertEquals(Set.of(b), firstAll.getFor(C));
+        assertEquals(Set.of(a), firstAll.getFor(D));
 
-        assertEquals(Set.of(), sets.getLastAllFor(a));
-        assertEquals(Set.of(), sets.getLastAllFor(b));
-        assertEquals(Set.of(b, D), sets.getLastAllFor(A));
-        assertEquals(Set.of(a), sets.getLastAllFor(B));
-        assertEquals(Set.of(b), sets.getLastAllFor(C));
-        assertEquals(Set.of(b), sets.getLastAllFor(D));
+        assertEquals(Set.of(), lastAll.getFor(a));
+        assertEquals(Set.of(), lastAll.getFor(b));
+        assertEquals(Set.of(b, D), lastAll.getFor(A));
+        assertEquals(Set.of(a), lastAll.getFor(B));
+        assertEquals(Set.of(b), lastAll.getFor(C));
+        assertEquals(Set.of(b), lastAll.getFor(D));
 
-        assertEquals(Set.of(a), sets.getFirstFor(a));
-        assertEquals(Set.of(b), sets.getFirstFor(b));
-        assertEquals(Set.of(a), sets.getFirstFor(A));
-        assertEquals(Set.of(a), sets.getFirstFor(B));
-        assertEquals(Set.of(b), sets.getFirstFor(C));
-        assertEquals(Set.of(a), sets.getFirstFor(D));
+        assertEquals(Set.of(a), first.getFor(a));
+        assertEquals(Set.of(b), first.getFor(b));
+        assertEquals(Set.of(a), first.getFor(A));
+        assertEquals(Set.of(a), first.getFor(B));
+        assertEquals(Set.of(b), first.getFor(C));
+        assertEquals(Set.of(a), first.getFor(D));
     }
 }

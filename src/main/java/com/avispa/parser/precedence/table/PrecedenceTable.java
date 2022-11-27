@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Rafał Hiszpański
  */
 abstract class PrecedenceTable {
-    protected static final Terminal BOUNDARY_MARKER = Terminal.of("$", "\\$");
+    protected static final Terminal BOUNDARY_MARKER = Terminal.of("MARKER", "\\$");
 
     protected Map<Pair<GenericToken, GenericToken>, Precedence> table;
 

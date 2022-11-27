@@ -5,6 +5,7 @@ import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.table.set.FirstOpSets;
 import com.avispa.parser.precedence.table.set.LastOpSets;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Rafał Hiszpański
  */
+@Slf4j
 class OperatorPrecedenceSetsTest {
 
     @Test
@@ -34,6 +36,9 @@ class OperatorPrecedenceSetsTest {
         // when
         FirstOpSets firstOpSets = new FirstOpSets(grammar);
         LastOpSets lastOpSets = new LastOpSets(grammar);
+
+        log.debug("{}", firstOpSets);
+        log.debug("{}", lastOpSets);
 
         // then
         assertEquals(Set.of(marker), firstOpSets.getFor(start));

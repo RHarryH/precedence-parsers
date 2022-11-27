@@ -28,7 +28,7 @@ public final class LastOpSets extends OperatorPrecedenceSets {
         while(it.hasPrevious()) {
             GenericToken token = it.previous();
             if (token instanceof Terminal) {
-                log.debug("{} found.", token);
+                log.debug("'{}' found.", token);
                 return (Terminal) token;
             }
         }

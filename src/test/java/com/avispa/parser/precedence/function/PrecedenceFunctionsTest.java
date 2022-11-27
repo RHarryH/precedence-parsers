@@ -102,7 +102,7 @@ class PrecedenceFunctionsTest {
     @Test
     void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/simple-operator-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt").read();
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // when

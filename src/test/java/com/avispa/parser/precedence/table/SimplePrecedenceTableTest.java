@@ -15,6 +15,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.avispa.parser.precedence.TokenUtil.A;
+import static com.avispa.parser.precedence.TokenUtil.B;
+import static com.avispa.parser.precedence.TokenUtil.a;
+import static com.avispa.parser.precedence.TokenUtil.add;
+import static com.avispa.parser.precedence.TokenUtil.b;
+import static com.avispa.parser.precedence.TokenUtil.expression;
+import static com.avispa.parser.precedence.TokenUtil.factor;
+import static com.avispa.parser.precedence.TokenUtil.marker;
+import static com.avispa.parser.precedence.TokenUtil.mul;
+import static com.avispa.parser.precedence.TokenUtil.number;
+import static com.avispa.parser.precedence.TokenUtil.term;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,14 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Rafał Hiszpański
  */
 class SimplePrecedenceTableTest {
-
-    private static final NonTerminal A = NonTerminal.of("A");
-    private static final NonTerminal B = NonTerminal.of("B");
-
-    private static final Terminal a = Terminal.of("a", "a");
-    private static final Terminal b = Terminal.of("b", "b");
-
-    private static final Terminal marker = Terminal.of("$", "\\$");
 
     @Test
     void givenSimpleGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
@@ -51,7 +54,6 @@ class SimplePrecedenceTableTest {
         expected.put(Pair.of(a, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(b, a), Precedence.GREATER_THAN);
-        expected.put(Pair.of(b, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(marker, B), Precedence.LESS_THAN);
         expected.put(Pair.of(marker, b), Precedence.LESS_THAN);
@@ -79,20 +81,12 @@ class SimplePrecedenceTableTest {
     @Test
     void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-operator-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt").read();
 
         // when
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // then
-        NonTerminal expression = NonTerminal.of("expression");
-        NonTerminal term = NonTerminal.of("term");
-        NonTerminal factor = NonTerminal.of("factor");
-
-        Terminal add = Terminal.of("ADD", "\\+");
-        Terminal mul = Terminal.of("MUL", "\\*");
-        Terminal number = Terminal.of("NUMBER", "[0-9]");
-
         Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(expression, add), Precedence.EQUALS);
 

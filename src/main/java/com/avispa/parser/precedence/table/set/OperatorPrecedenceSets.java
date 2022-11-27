@@ -7,7 +7,6 @@ import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +16,9 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class OperatorPrecedenceSets extends PrecedenceSets {
-    protected final Map<NonTerminal, Set<Terminal>> sets = new HashMap<>();
-
-    private final String setsName;
-
+public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Terminal> {
     OperatorPrecedenceSets(ContextFreeGrammar grammar, String setsName) {
-        this.setsName = setsName;
+        super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
         construct(grammar);
         log.debug("{}", this);
@@ -81,29 +76,10 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets {
         }
 
         log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
-        updateLastOp(lhs, downstreamTerminals);
+        update(lhs, downstreamTerminals);
 
         return downstreamTerminals;
     }
 
     protected abstract Terminal findTerminal(List<GenericToken> rhsTokens);
-
-    private void updateLastOp(NonTerminal lhs, Set<Terminal> terminals) {
-        this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
-                .addAll(terminals);
-    }
-
-    public Set<Terminal> getFor(NonTerminal token) {
-        return sets.get(token);
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        final String newLine = System.lineSeparator();
-
-        sets.forEach((key, value) -> sb.append(String.format("%s(%s)=%s", setsName, key, value)).append(newLine));
-
-        return sb.toString();
-    }
 }

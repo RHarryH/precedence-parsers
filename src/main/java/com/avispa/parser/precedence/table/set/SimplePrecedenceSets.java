@@ -15,7 +15,8 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, GenericToken> {
+abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, GenericToken> {
+
     SimplePrecedenceSets(ContextFreeGrammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
@@ -70,6 +71,4 @@ public abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, 
             }
         }
     }
-
-    protected abstract GenericToken findToken(List<GenericToken> rhsTokens);
 }

@@ -25,7 +25,7 @@ abstract class PrecedenceTable<T extends GenericToken> {
         return table;
     }
 
-    protected abstract Map<Pair<T, T>, Precedence> build(List<Production> productions, NonTerminal start);
+    protected abstract Map<Pair<T, T>, Precedence> construct(List<Production> productions, NonTerminal start);
 
     protected abstract void addEqualsRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<T, T>, Precedence> result);
 

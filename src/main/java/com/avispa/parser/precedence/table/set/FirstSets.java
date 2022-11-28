@@ -5,7 +5,7 @@ import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,7 +22,7 @@ public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
     }
 
     /**
-     * Add self to the FIRST set
+     * For each terminal add self to the FIRST set
      * @param terminals
      */
     private void initialize(Set<Terminal> terminals) {
@@ -32,20 +32,25 @@ public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
     }
 
     /**
-     * Updates FIRST set by adding  entries for non-terminals. FIRST for non-terminal is a FIRST_ALL with terminals only.
+     * Updates FIRST set by adding entries for non-terminals. FIRST for non-terminal is a FIRST_ALL for that non-terminal
+     * with terminals only.
      */
     private void construct(FirstAllSets firstAll) {
         var firstAllMap = firstAll.get();
         for(var firstAllForToken : firstAllMap.entrySet()) {
-            GenericToken lhs = firstAllForToken.getKey();
-            if(NonTerminal.isOf(lhs)) {
+            GenericToken setToken = firstAllForToken.getKey();
+            if(NonTerminal.isOf(setToken)) {
                 for(GenericToken token : firstAllForToken.getValue()) {
                     if(Terminal.isOf(token)) {
-                        this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
-                                .add((Terminal) token);
+                        update(setToken, (Terminal) token);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    protected GenericToken findToken(List<GenericToken> rhsTokens) {
+        throw new UnsupportedOperationException("This method is not required as FIRST is derived from FIRST_ALL");
     }
 }

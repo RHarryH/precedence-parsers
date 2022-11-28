@@ -31,11 +31,11 @@ public class SimplePrecedenceTable extends PrecedenceTable<GenericToken> {
         this.lastAll = new LastAllSets(cfg);
         this.first = new FirstSets(firstAll, cfg.getTerminals());
 
-        this.table = build(cfg.getProductions(), cfg.getStart());
+        this.table = construct(cfg.getProductions(), cfg.getStart());
     }
 
     @Override
-    protected final Map<Pair<GenericToken, GenericToken>, Precedence> build(List<Production> productions, NonTerminal start) {
+    protected final Map<Pair<GenericToken, GenericToken>, Precedence> construct(List<Production> productions, NonTerminal start) {
         Map<Pair<GenericToken, GenericToken>, Precedence> result = new HashMap<>();
 
         productions.stream()

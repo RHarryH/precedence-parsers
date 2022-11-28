@@ -17,7 +17,7 @@ public class LastAllSets extends SimplePrecedenceSets {
     }
 
     /**
-     * Find last token
+     * Finds last token
      * @param rhsTokens
      * @return
      */

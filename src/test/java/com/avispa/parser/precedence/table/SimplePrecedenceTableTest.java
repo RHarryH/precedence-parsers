@@ -81,7 +81,7 @@ class SimplePrecedenceTableTest {
     @Test
     void givenGrammarWithConflict_whenPrecedenceTable_thenThrowException() throws IncorrectGrammarException {
         // given
-        Set<Terminal> terminals = Set.of(a);
+        Set<Terminal> terminals = Set.of(a, b);
 
         /* S -> A
          * A -> AaB | a

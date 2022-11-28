@@ -30,11 +30,11 @@ public class OperatorPrecedenceTable extends PrecedenceTable<Terminal> {
         this.firstOp = new FirstOpSets(cfg);
         this.lastOp = new LastOpSets(cfg);
 
-        this.table = build(cfg.getProductions(), cfg.getStart());
+        this.table = construct(cfg.getProductions(), cfg.getStart());
     }
 
     @Override
-    protected final Map<Pair<Terminal, Terminal>, Precedence> build(List<Production> productions, NonTerminal start) {
+    protected final Map<Pair<Terminal, Terminal>, Precedence> construct(List<Production> productions, NonTerminal start) {
         Map<Pair<Terminal, Terminal>, Precedence> result = new HashMap<>();
 
         productions.stream()

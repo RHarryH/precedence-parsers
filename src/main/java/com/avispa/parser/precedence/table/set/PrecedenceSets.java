@@ -1,6 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import lombok.Getter;
@@ -27,26 +28,65 @@ public abstract class PrecedenceSets<K, V> {
         this.name = name;
     }
 
+    /**
+     * Groups productions by left-hand side. This groups all alternatives into single entry.
+     *
+     * Input:
+     * E -> A | a;
+     * E -> Ac;
+     * A -> bc;
+     * Output:
+     * key=E, value=[A, a, Ac]
+     * key=A, value=[bc]
+     * @param grammar
+     * @return
+     */
     protected final Map<NonTerminal, List<Production>> groupProductionsByLhs(ContextFreeGrammar grammar) {
         return grammar.getProductions()
                 .stream()
                 .collect(Collectors.groupingBy(Production::getLhs));
     }
 
+    /**
+     * Finds first or last token (of any type) from right-hand side tokens
+     * @param rhsTokens
+     * @return
+     */
+    protected abstract GenericToken findToken(List<GenericToken> rhsTokens);
+
+    /**
+     * Update set by adding token. If this is the first value, create empty set first.
+     * @param lhs
+     * @param token
+     */
     protected final void update(K lhs, V token) {
         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
                 .add(token);
     }
 
+    /**
+     * Update set by adding tokens. If these are the first values, create empty set first.
+     * @param lhs
+     * @param tokens
+     */
     protected final void update(K lhs, Set<V> tokens) {
         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
                 .addAll(tokens);
     }
 
+    /**
+     * Get set for provided token. If set does not exit, empty set is returned.
+     * @param token
+     * @return
+     */
     public final Set<V> getFor(K token) {
-        return this.sets.getOrDefault(token, Set.of());
+        return Collections.unmodifiableSet(this.sets.getOrDefault(token, Set.of()));
     }
 
+    /**
+     * Get all generated sets
+     * @return
+     */
     public final Map<K, Set<V>> get() {
         return Collections.unmodifiableMap(this.sets);
     }

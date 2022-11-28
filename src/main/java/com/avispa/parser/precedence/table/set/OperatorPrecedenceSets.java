@@ -18,7 +18,7 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Terminal> {
+abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Terminal> {
     OperatorPrecedenceSets(ContextFreeGrammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
@@ -27,7 +27,8 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
     }
 
     /**
-     * Iterate through all productions to find sets elements
+     * Iterate through all productions to find sets elements.
+     *
      * @param grammar context free grammar for which sets should be built
      */
     private void construct(ContextFreeGrammar grammar) {
@@ -36,30 +37,40 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
                 groupProductionsByLhs(grammar);
 
         for(NonTerminal nonTerminal : grammar.getNonTerminals()) {
-            Deque<NonTerminal> deque = new ArrayDeque<>();
-            constructFor(nonTerminal, productionsByLhs, deque);
+            constructFor(nonTerminal, productionsByLhs, new ArrayDeque<>());
         }
     }
 
     /**
-     * Recursively iterate through productions. First and last terminals on the right are added to FIRST_OP and LAST_OP
-     * sets. If token is a non-terminal it is recursively checked for it's first and last tokens until end of possible derivation
-     * is reached. The algorithm does not do recursive check if non-terminal was already visited.
+     * Iterate through productions of provided left-hand side non-terminal to find its operator precedence set.
      *
      * @param lhs current lhs non-terminal
      * @param productionsByLhs list of productions grouped by lhs non-terminal
      */
-    private Set<Terminal> constructFor(NonTerminal lhs, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> deque) {
+    private Set<Terminal> constructFor(NonTerminal lhs, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
         log.debug("Started processing of '{}' non-terminal.", lhs);
 
         Set<Terminal> set = new HashSet<>();
         for (Production production : productionsByLhs.get(lhs)) { // for all alternatives
-            set.addAll(downstream(lhs, production.getRhs(), productionsByLhs, deque));
+            set.addAll(constructDownstream(lhs, production.getRhs(), productionsByLhs, recursionChain));
         }
         return set;
     }
 
-    protected final Set<Terminal> downstream(NonTerminal lhs, List<GenericToken> rhsTokens, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> deque) {
+    /**
+     * Method constructs set of terminals, which applies to FIRST_OP or LAST_OP sets defined for left-hand side non-terminal.
+     * First it gets first/last token of production and it i
+     * First/last terminals on the right are added to FIRST_OP and LAST_OP sets respectively. If token is a non-terminal
+     * it is recursively checked for it's first/last tokens until end of possible derivation
+     * is reached. The algorithm does not do recursive check if non-terminal was already visited to prevent infinite loop.
+     *
+     * @param lhs
+     * @param rhsTokens
+     * @param productionsByLhs
+     * @param recursionChain
+     * @return
+     */
+    private Set<Terminal> constructDownstream(NonTerminal lhs, List<GenericToken> rhsTokens, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
         GenericToken token = findToken(rhsTokens);
 
         Set<Terminal> downstreamTerminals = new HashSet<>();
@@ -69,19 +80,22 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
             if(this.sets.containsKey(token)) {
                 log.debug("Set for '{}' already exists. It will be reused.", token);
                 downstreamTerminals = new HashSet<>(this.sets.get(token)); // make a copy, otherwise set for last token non-terminal will be overwritten
-            } else if(!lhs.equals(token) && !deque.contains(nonTerminal)) {
-                log.debug("Set for '{}' does not exists. It will be created by recursive construction.", nonTerminal);
-                deque.push(nonTerminal);
-                downstreamTerminals = constructFor(nonTerminal, productionsByLhs, deque);
-                deque.pop();
+            } else if(recursionChain.contains(nonTerminal)) {
+                log.debug("Set for '{}' does not exist and is already under construction.", nonTerminal);
             } else {
-                log.debug("Set for '{}' does not exist.", token);
-            }
-        }
+                log.debug("Set for '{}' does not exists. It will be created by recursive construction.", nonTerminal);
 
-        Terminal terminal = findTerminal(rhsTokens);
-        if(null != terminal) {
-            downstreamTerminals.add(terminal); // add found terminal to propagate it upstream
+                recursionChain.push(nonTerminal);
+                downstreamTerminals = constructFor(nonTerminal, productionsByLhs, recursionChain);
+                recursionChain.pop();
+            }
+
+            Terminal terminal = findTerminal(rhsTokens); // find first terminal
+            if(null != terminal) {
+                downstreamTerminals.add(terminal); // add found terminal to propagate it upstream
+            }
+        } else {
+            downstreamTerminals.add((Terminal) token);
         }
 
         log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
@@ -90,7 +104,10 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
         return downstreamTerminals;
     }
 
-    protected abstract GenericToken findToken(List<GenericToken> rhsTokens);
-
+    /**
+     * Find first or last terminal from right-hand side tokens
+     * @param rhsTokens
+     * @return
+     */
     protected abstract Terminal findTerminal(List<GenericToken> rhsTokens);
 }

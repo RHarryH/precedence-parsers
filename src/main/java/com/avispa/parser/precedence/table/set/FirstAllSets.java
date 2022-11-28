@@ -17,7 +17,7 @@ public final class FirstAllSets extends SimplePrecedenceSets {
     }
 
     /**
-     * Find first token
+     * Finds first token
      * @param rhsTokens
      * @return
      */

@@ -4,6 +4,7 @@ import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
+import com.avispa.parser.precedence.table.OperatorPrecedenceTable;
 import com.avispa.parser.precedence.table.Precedence;
 import com.avispa.parser.precedence.table.SimplePrecedenceTable;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,9 +19,11 @@ import java.util.Map;
 import static com.avispa.parser.precedence.TokenUtil.add;
 import static com.avispa.parser.precedence.TokenUtil.expression;
 import static com.avispa.parser.precedence.TokenUtil.factor;
+import static com.avispa.parser.precedence.TokenUtil.lpar;
 import static com.avispa.parser.precedence.TokenUtil.marker;
 import static com.avispa.parser.precedence.TokenUtil.mul;
 import static com.avispa.parser.precedence.TokenUtil.number;
+import static com.avispa.parser.precedence.TokenUtil.rpar;
 import static com.avispa.parser.precedence.TokenUtil.term;
 import static com.avispa.parser.precedence.TokenUtil.term_prime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,22 +112,47 @@ class PrecedenceFunctionsTest {
         PrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
 
         // then
-        assertEquals(2, functions.getFFor(term));
-        assertEquals(2, functions.getFFor(term_prime));
         assertEquals(0, functions.getFFor(expression));
+        assertEquals(1, functions.getFFor(term));
+        assertEquals(1, functions.getFFor(term_prime));
         assertEquals(2, functions.getFFor(factor));
-        assertEquals(0, functions.getFFor(add));
+        assertEquals(1, functions.getFFor(add));
         assertEquals(2, functions.getFFor(mul));
-        assertEquals(0, functions.getFFor(marker));
         assertEquals(2, functions.getFFor(number));
+        assertEquals(0, functions.getFFor(marker));
 
-        assertEquals(1, functions.getGFor(term));
-        assertEquals(1, functions.getGFor(term_prime));
         assertEquals(1, functions.getGFor(expression));
-        assertEquals(1, functions.getGFor(factor));
-        assertEquals(1, functions.getGFor(add));
+        assertEquals(2, functions.getGFor(term));
+        assertEquals(1, functions.getGFor(term_prime));
+        assertEquals(2, functions.getGFor(factor));
+        assertEquals(0, functions.getGFor(add));
         assertEquals(1, functions.getGFor(mul));
-        assertEquals(0, functions.getGFor(marker));
         assertEquals(3, functions.getGFor(number));
+        assertEquals(0, functions.getGFor(marker));
+    }
+
+    @Test
+    void givenOperatorPrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException {
+        // given
+        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").read();
+        OperatorPrecedenceTable precedenceTable = new OperatorPrecedenceTable(grammar);
+
+        // when
+        PrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
+
+        // then
+        assertEquals(2, functions.getFFor(add));
+        assertEquals(4, functions.getFFor(mul));
+        assertEquals(0, functions.getFFor(lpar));
+        assertEquals(4, functions.getFFor(rpar));
+        assertEquals(4, functions.getFFor(number));
+        assertEquals(0, functions.getFFor(marker));
+
+        assertEquals(1, functions.getGFor(add));
+        assertEquals(3, functions.getGFor(mul));
+        assertEquals(5, functions.getGFor(lpar));
+        assertEquals(0, functions.getGFor(rpar));
+        assertEquals(5, functions.getGFor(number));
+        assertEquals(0, functions.getGFor(marker));
     }
 }

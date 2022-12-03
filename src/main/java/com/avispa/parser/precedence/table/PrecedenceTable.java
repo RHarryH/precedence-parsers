@@ -16,7 +16,7 @@ import java.util.Map;
  * @author Rafał Hiszpański
  */
 @Slf4j
-abstract class PrecedenceTable<T extends GenericToken> {
+public abstract class PrecedenceTable<T extends GenericToken> {
     protected static final Terminal BOUNDARY_MARKER = Terminal.of("MARKER", "\\$");
 
     protected Map<Pair<T, T>, Precedence> table;

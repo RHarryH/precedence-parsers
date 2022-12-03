@@ -2,15 +2,16 @@ package com.avispa.parser.precedence.function;
 
 import com.avispa.parser.precedence.grammar.GenericToken;
 import com.avispa.parser.precedence.table.Precedence;
-import com.avispa.parser.precedence.table.SimplePrecedenceTable;
+import com.avispa.parser.precedence.table.PrecedenceTable;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rafał Hiszpański
@@ -21,17 +22,14 @@ public final class PrecedenceFunctions implements IPrecedenceFunctions {
     private final Map<GenericToken, Integer> f = new HashMap<>();
     private final Map<GenericToken, Integer> g = new HashMap<>();
 
-    public PrecedenceFunctions(SimplePrecedenceTable table) throws PrecedenceFunctionsException {
+    public PrecedenceFunctions(PrecedenceTable<? extends GenericToken> table) throws PrecedenceFunctionsException {
         var graph = createGraph(table);
 
         for (var node : graph.vertexSet()) { // for each node
             Integer longestPath = getLongestPathFor(node, graph);
 
-            if (node.isFNode()) {
-                node.getTokens().forEach(token -> f.put(token, longestPath));
-            } else {
-                node.getTokens().forEach(token -> g.put(token, longestPath));
-            }
+            node.getFSet().forEach(symbol -> f.put(symbol, longestPath));
+            node.getGSet().forEach(symbol -> g.put(symbol, longestPath));
         }
 
         log.debug("f()={}", f);
@@ -44,24 +42,27 @@ public final class PrecedenceFunctions implements IPrecedenceFunctions {
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(SimplePrecedenceTable table) throws PrecedenceFunctionsException {
+    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable<? extends GenericToken> table) throws PrecedenceFunctionsException {
         DirectedAcyclicGraph<GraphNode, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 
-        var fusedTokensMap = fuseTokens(table);
+        var nodes = generateNodes(table);
 
         // add vertices
-        fusedTokensMap.values().forEach(fusedTokens -> {
-            graph.addVertex(GraphNode.ofF(fusedTokens));
-            graph.addVertex(GraphNode.ofG(fusedTokens));
-        });
+        nodes.forEach(graph::addVertex);
 
         // add edges
         try {
             table.get().forEach((key, value) -> {
+                var leftNode = nodes.stream().filter(node -> node.containsF(key.getLeft())).findFirst().orElseThrow();
+                var rightNode = nodes.stream().filter(node -> node.containsG(key.getRight())).findFirst().orElseThrow();
+
+                log.debug("Processing {} pair with {} precedence", key, value);
                 if (Precedence.LESS_THAN.equals(value)) {
-                    graph.addEdge(GraphNode.ofG(fusedTokensMap.get(key.getRight())), GraphNode.ofF(fusedTokensMap.get(key.getLeft())));
+                    log.debug("Adding edge from {} to {}", rightNode, leftNode);
+                    graph.addEdge(rightNode, leftNode);
                 } else if (Precedence.GREATER_THAN.equals(value)) {
-                    graph.addEdge(GraphNode.ofF(fusedTokensMap.get(key.getLeft())), GraphNode.ofG(fusedTokensMap.get(key.getRight())));
+                    log.debug("Adding edge from {} to {}", leftNode, rightNode);
+                    graph.addEdge(leftNode, rightNode);
                 }
             });
         } catch (IllegalArgumentException e) {
@@ -80,29 +81,50 @@ public final class PrecedenceFunctions implements IPrecedenceFunctions {
     }
 
     /**
-     * Builds map of fused tokens. When for two tokens the precedence is set to equal then they should
-     * be fused into single token represented by list of tokens.
+     * Generates set of nodes. If the precedence for two symbols is set to equals, symbols are merged into single node.
      * @param table precedence table
      * @return
      */
-    private Map<GenericToken, List<GenericToken>> fuseTokens(SimplePrecedenceTable table) {
-        Map<GenericToken, List<GenericToken>> fusedTokens = new HashMap<>();
+    private Set<GraphNode> generateNodes(PrecedenceTable<? extends GenericToken> table) {
+        Set<GraphNode> nodes = new HashSet<>();
 
         for(var entry : table.get().entrySet()) {
-            var pair = entry.getKey();
+            var left = entry.getKey().getLeft();
+            var right = entry.getKey().getRight();
             if(Precedence.EQUALS == entry.getValue()) { // fuse tokens if precedence is set to equal
-                List<GenericToken> fusedToken = List.of(pair.getLeft(), pair.getRight());
-                fusedTokens.put(pair.getLeft(), fusedToken);
-                fusedTokens.put(pair.getRight(), fusedToken);
+                fuseTokens(left, right, nodes);
             } else {
-                fusedTokens.putIfAbsent(pair.getLeft(), List.of(pair.getLeft()));
-                fusedTokens.putIfAbsent(pair.getRight(), List.of(pair.getRight()));
+                if(nodes.stream().noneMatch(node -> node.containsF(left))) {
+                    nodes.add(GraphNode.ofF(left));
+                }
+
+                if(nodes.stream().noneMatch(node -> node.containsG(right))) {
+                    nodes.add(GraphNode.ofG(right));
+                }
             }
         }
 
-        log.debug("Fused tokens map: {}", fusedTokens);
+        nodes = new HashSet<>(nodes);
 
-        return fusedTokens;
+        log.debug("Generated nodes: {}", nodes);
+
+        return nodes;
+    }
+
+    /**
+     * If left or right token is present in any of existing nodes, append second one to it
+     * @param left
+     * @param right
+     * @param nodes
+     */
+    private void fuseTokens(GenericToken left, GenericToken right, Set<GraphNode> nodes) {
+        for(GraphNode node : nodes) {
+            if(node.containsF(left)) {
+                node.addG(right);
+            } else if(node.containsG(right)) {
+                node.addF(left);
+            }
+        }
     }
 
     /**

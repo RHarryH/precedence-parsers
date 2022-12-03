@@ -1,45 +1,61 @@
 package com.avispa.parser.precedence.function;
 
 import com.avispa.parser.precedence.grammar.GenericToken;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Rafał Hiszpański
  */
-@AllArgsConstructor
 @EqualsAndHashCode
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 class GraphNode {
-    private enum Function {
-        F,
-        G
+    private final Set<GenericToken> fSymbols = new HashSet<>();
+    private final Set<GenericToken> gSymbols = new HashSet<>();
+
+    public static GraphNode ofF(GenericToken token) {
+        return new GraphNode().addF(token);
     }
 
-    private Function function;
-    @Getter
-    private List<GenericToken> tokens;
-
-    public static GraphNode ofF(List<GenericToken> tokens) {
-        return new GraphNode(Function.F, tokens);
+    public static GraphNode ofG(GenericToken token) {
+        return new GraphNode().addG(token);
     }
 
-    public static GraphNode ofG(List<GenericToken> tokens) {
-        return new GraphNode(Function.G, tokens);
+    public GraphNode addF(GenericToken token) {
+        this.fSymbols.add(token);
+        return this;
     }
 
-    public boolean isFNode() {
-        return function == Function.F;
+    public GraphNode addG(GenericToken token) {
+        this.gSymbols.add(token);
+        return this;
     }
 
-    public boolean isGNode() {
-        return function == Function.G;
+    public boolean containsF(GenericToken token) {
+        return this.fSymbols.contains(token);
+    }
+
+    public boolean containsG(GenericToken token) {
+        return this.gSymbols.contains(token);
+    }
+
+    public Set<GenericToken> getFSet() {
+        return Collections.unmodifiableSet(fSymbols);
+    }
+
+    public Set<GenericToken> getGSet() {
+        return Collections.unmodifiableSet(gSymbols);
     }
 
     @Override
     public String toString() {
-        return function + "_" + tokens;
+        return Stream.of(fSymbols, gSymbols).collect(Collectors.toSet()).toString();
     }
 }

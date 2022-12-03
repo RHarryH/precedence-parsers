@@ -7,6 +7,6 @@ import java.util.List;
 /**
  * @author Rafał Hiszpański
  */
-public interface IParser {
+public interface Parser {
     List<Token> parse(String expression);
 }

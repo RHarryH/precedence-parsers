@@ -1,6 +1,6 @@
 package com.avispa.parser.shuntingyard.output;
 
-import com.avispa.parser.shuntingyard.IParser;
+import com.avispa.parser.shuntingyard.Parser;
 import com.avispa.parser.token.Token;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public final class ReversePolishNotationList extends AbstractOutputTransformer<L
         super();
     }
 
-    public ReversePolishNotationList(IParser parser) {
+    public ReversePolishNotationList(Parser parser) {
         super(parser);
     }
 

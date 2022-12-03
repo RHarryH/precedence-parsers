@@ -16,7 +16,7 @@ class GrammarFileTest {
 
     @Test
     void givenCorrectGrammar_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-correct.txt").read();
+        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-correct.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -28,7 +28,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithAlternatives_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt").read();
+        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -40,7 +40,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithWhitespaceAfterAlternative_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt").read();
+        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -52,7 +52,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithIncorrectLine_whenRead_thenCreated() throws IncorrectGrammarException {
-        IGrammar grammar = new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt").read();
+        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt").read();
 
         assertEquals("IncorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getValue());
@@ -74,15 +74,15 @@ class GrammarFileTest {
         assertThrows(IllegalStateException.class, file::read);
     }
 
-    private Set<String> terminalsToValues(IGrammar grammar) {
+    private Set<String> terminalsToValues(Grammar grammar) {
         return grammar.getTerminals().stream().map(GenericToken::getValue).collect(Collectors.toSet());
     }
 
-    private Set<String> nonTerminalsToValues(IGrammar grammar) {
+    private Set<String> nonTerminalsToValues(Grammar grammar) {
         return grammar.getNonTerminals().stream().map(GenericToken::getValue).collect(Collectors.toSet());
     }
 
-    private List<String> productionsToStrings(IGrammar grammar) {
+    private List<String> productionsToStrings(Grammar grammar) {
         return grammar.getProductions().stream().map(Production::toString).collect(Collectors.toList());
     }
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * @author Rafał Hiszpański
  */
-public interface IGrammar {
+public interface Grammar {
     String getName();
 
     Set<Terminal> getTerminals();

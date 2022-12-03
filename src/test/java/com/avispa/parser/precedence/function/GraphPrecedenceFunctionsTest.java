@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
  * @author Rafał Hiszpański
  */
 @ExtendWith(MockitoExtension.class)
-class PrecedenceFunctionsTest {
+class GraphPrecedenceFunctionsTest {
 
     @Test
     void givenOperatorPrecedenceTable_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws PrecedenceFunctionsException {
@@ -63,7 +63,7 @@ class PrecedenceFunctionsTest {
         when(precedenceTable.get()).thenReturn(data);
 
         // when
-        IPrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
+        PrecedenceFunctions functions = new GraphPrecedenceFunctions(precedenceTable);
 
         // then
         assertEquals(4, functions.getFFor(number));
@@ -99,7 +99,7 @@ class PrecedenceFunctionsTest {
         when(precedenceTable.get()).thenReturn(data);
 
         // when/then
-        assertThrows(PrecedenceFunctionsException.class, () -> new PrecedenceFunctions(precedenceTable));
+        assertThrows(PrecedenceFunctionsException.class, () -> new GraphPrecedenceFunctions(precedenceTable));
     }
 
     @Test
@@ -109,7 +109,7 @@ class PrecedenceFunctionsTest {
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // when
-        PrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
+        GraphPrecedenceFunctions functions = new GraphPrecedenceFunctions(precedenceTable);
 
         // then
         assertEquals(0, functions.getFFor(expression));
@@ -138,7 +138,7 @@ class PrecedenceFunctionsTest {
         OperatorPrecedenceTable precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // when
-        PrecedenceFunctions functions = new PrecedenceFunctions(precedenceTable);
+        GraphPrecedenceFunctions functions = new GraphPrecedenceFunctions(precedenceTable);
 
         // then
         assertEquals(2, functions.getFFor(add));

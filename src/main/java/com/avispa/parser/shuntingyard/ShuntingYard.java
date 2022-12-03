@@ -17,7 +17,7 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public class ShuntingYard implements IParser{
+public class ShuntingYard implements Parser {
 
 	/**
 	 * Runs Shunting-yard algorithm for expressions parsing

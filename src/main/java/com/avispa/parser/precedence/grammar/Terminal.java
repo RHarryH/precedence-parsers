@@ -11,7 +11,7 @@ import java.util.regex.PatternSyntaxException;
  */
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
-public final class Terminal extends GenericToken {
+public final class Terminal extends Symbol {
     @EqualsAndHashCode.Exclude
     private final Pattern pattern;
 
@@ -19,8 +19,8 @@ public final class Terminal extends GenericToken {
         return new Terminal(name, regex);
     }
 
-    public static boolean isOf(GenericToken token) {
-        return token instanceof Terminal;
+    public static boolean isOf(Symbol symbol) {
+        return symbol instanceof Terminal;
     }
 
     private Terminal(String name, String regex) {

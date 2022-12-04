@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.Production;
@@ -47,7 +47,7 @@ class SimplePrecedenceTableTest {
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // then
-        Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(B, a), Precedence.EQUALS);
 
         expected.put(Pair.of(a, a), Precedence.EQUALS);
@@ -104,7 +104,7 @@ class SimplePrecedenceTableTest {
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // then
-        Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(expression, add), Precedence.EQUALS);
 
         expected.put(Pair.of(term, add), Precedence.GREATER_THAN);

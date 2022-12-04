@@ -19,7 +19,7 @@ class GrammarFileTest {
         Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-correct.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
-        assertEquals("expression", grammar.getStart().getValue());
+        assertEquals("expression", grammar.getStart().getName());
         assertEquals(Set.of("COUNTRY_CODE", "NUMBER"), terminalsToValues(grammar));
         assertEquals(Set.of("expression", "number"), nonTerminalsToValues(grammar));
         assertEquals(2, grammar.getProductions().size());
@@ -31,7 +31,7 @@ class GrammarFileTest {
         Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
-        assertEquals("expression", grammar.getStart().getValue());
+        assertEquals("expression", grammar.getStart().getName());
         assertEquals(Set.of("COUNTRY_CODE", "NUMBER"), terminalsToValues(grammar));
         assertEquals(Set.of("expression", "number"), nonTerminalsToValues(grammar));
         assertEquals(3, grammar.getProductions().size());
@@ -43,7 +43,7 @@ class GrammarFileTest {
         Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt").read();
 
         assertEquals("CorrectGrammar", grammar.getName());
-        assertEquals("expression", grammar.getStart().getValue());
+        assertEquals("expression", grammar.getStart().getName());
         assertEquals(Set.of("COUNTRY_CODE", "NUMBER"), terminalsToValues(grammar));
         assertEquals(Set.of("expression", "number"), nonTerminalsToValues(grammar));
         assertEquals(3, grammar.getProductions().size());
@@ -55,7 +55,7 @@ class GrammarFileTest {
         Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt").read();
 
         assertEquals("IncorrectGrammar", grammar.getName());
-        assertEquals("expression", grammar.getStart().getValue());
+        assertEquals("expression", grammar.getStart().getName());
         assertEquals(Set.of("COUNTRY_CODE", "NUMBER"), terminalsToValues(grammar));
         assertEquals(Set.of("expression", "number"), nonTerminalsToValues(grammar));
         assertEquals(2, grammar.getProductions().size());
@@ -75,11 +75,11 @@ class GrammarFileTest {
     }
 
     private Set<String> terminalsToValues(Grammar grammar) {
-        return grammar.getTerminals().stream().map(GenericToken::getValue).collect(Collectors.toSet());
+        return grammar.getTerminals().stream().map(Symbol::getName).collect(Collectors.toSet());
     }
 
     private Set<String> nonTerminalsToValues(Grammar grammar) {
-        return grammar.getNonTerminals().stream().map(GenericToken::getValue).collect(Collectors.toSet());
+        return grammar.getNonTerminals().stream().map(Symbol::getName).collect(Collectors.toSet());
     }
 
     private List<String> productionsToStrings(Grammar grammar) {

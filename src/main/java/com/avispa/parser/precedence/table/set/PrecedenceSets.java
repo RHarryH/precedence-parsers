@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import lombok.Getter;
@@ -48,39 +48,39 @@ public abstract class PrecedenceSets<K, V> {
     }
 
     /**
-     * Finds first or last token (of any type) from right-hand side tokens
-     * @param rhsTokens
+     * Finds first or last symbol (of any type) from right-hand side symbols
+     * @param rhsSymbols
      * @return
      */
-    protected abstract GenericToken findToken(List<GenericToken> rhsTokens);
+    protected abstract Symbol findSymbol(List<Symbol> rhsSymbols);
 
     /**
-     * Update set by adding token. If this is the first value, create empty set first.
+     * Update set by adding symbol. If this is the first value, create empty set first.
      * @param lhs
-     * @param token
+     * @param symbol
      */
-    protected final void update(K lhs, V token) {
+    protected final void update(K lhs, V symbol) {
         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
-                .add(token);
+                .add(symbol);
     }
 
     /**
-     * Update set by adding tokens. If these are the first values, create empty set first.
+     * Update set by adding symbols. If these are the first values, create empty set first.
      * @param lhs
-     * @param tokens
+     * @param symbols
      */
-    protected final void update(K lhs, Set<V> tokens) {
+    protected final void update(K lhs, Set<V> symbols) {
         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
-                .addAll(tokens);
+                .addAll(symbols);
     }
 
     /**
-     * Get set for provided token. If set does not exit, empty set is returned.
-     * @param token
+     * Get set for provided symbol. If set does not exit, empty set is returned.
+     * @param symbol
      * @return
      */
-    public final Set<V> getFor(K token) {
-        return Collections.unmodifiableSet(this.sets.getOrDefault(token, Set.of()));
+    public final Set<V> getFor(K symbol) {
+        return Collections.unmodifiableSet(this.sets.getOrDefault(symbol, Set.of()));
     }
 
     /**

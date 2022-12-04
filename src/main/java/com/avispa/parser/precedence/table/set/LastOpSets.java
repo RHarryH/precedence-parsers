@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,19 +17,19 @@ public final class LastOpSets extends OperatorPrecedenceSets {
     }
 
     /**
-     * Finds last terminal for right-hand side production tokens
-     * @param rhsTokens
+     * Finds last terminal for right-hand side production symbols
+     * @param rhsSymbols
      * @return
      */
     @Override
-    protected Terminal findTerminal(List<GenericToken> rhsTokens) {
-        log.debug("Looking for last terminal in {} right-hand side tokens.", rhsTokens);
-        var it = rhsTokens.listIterator(rhsTokens.size());
+    protected Terminal findTerminal(List<Symbol> rhsSymbols) {
+        log.debug("Looking for last terminal in {} right-hand side symbols.", rhsSymbols);
+        var it = rhsSymbols.listIterator(rhsSymbols.size());
         while(it.hasPrevious()) {
-            GenericToken token = it.previous();
-            if (Terminal.isOf(token)) {
-                log.debug("'{}' found.", token);
-                return (Terminal) token;
+            Symbol symbol = it.previous();
+            if (Terminal.isOf(symbol)) {
+                log.debug("'{}' found.", symbol);
+                return (Terminal) symbol;
             }
         }
 
@@ -37,12 +37,12 @@ public final class LastOpSets extends OperatorPrecedenceSets {
     }
 
     /**
-     * Finds first token for right-hand side production tokens
-     * @param rhsTokens
+     * Finds first symbol for right-hand side production symbols
+     * @param rhsSymbols
      * @return
      */
     @Override
-    protected GenericToken findToken(List<GenericToken> rhsTokens) {
-        return rhsTokens.get(rhsTokens.size() - 1);
+    protected Symbol findSymbol(List<Symbol> rhsSymbols) {
+        return rhsSymbols.get(rhsSymbols.size() - 1);
     }
 }

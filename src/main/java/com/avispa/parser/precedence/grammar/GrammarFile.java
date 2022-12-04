@@ -135,10 +135,10 @@ public class GrammarFile {
             String rightHandSideProductions = removeSemicolon(splitLine[1]);
             String[] rightHandSideProduction = rightHandSideProductions.split("\\|");
 
-            for(String rightHandSideTokens : rightHandSideProduction) {
-                String[] tokenNames = rightHandSideTokens.trim().split("\\s");
+            for(String rightHandSideSymbols : rightHandSideProduction) {
+                String[] symbolNames = rightHandSideSymbols.trim().split("\\s");
 
-                List<GenericToken> rhs = convertTokenNamesToTokens(tokenNames);
+                List<Symbol> rhs = convertSymbolNamesToSymbols(symbolNames);
 
                 productions.add(Production.of(lhs, rhs));
             }
@@ -164,23 +164,23 @@ public class GrammarFile {
     }
 
     /**
-     * Converts right-hand side token names extracted from the grammar file to GenericToken
+     * Converts right-hand side symbol names extracted from the grammar file to Symbol
      * instances list
-     * @param tokenNames
+     * @param symbolNames
      * @return
      */
-    private List<GenericToken> convertTokenNamesToTokens(String[] tokenNames) {
-        return Arrays.stream(tokenNames).map(token -> {
-            if(terminalPattern.matcher(token).matches()) {
-                if (terminals.containsKey(token)) {
-                    return terminals.get(token);
+    private List<Symbol> convertSymbolNamesToSymbols(String[] symbolNames) {
+        return Arrays.stream(symbolNames).map(symbol -> {
+            if(terminalPattern.matcher(symbol).matches()) {
+                if (terminals.containsKey(symbol)) {
+                    return terminals.get(symbol);
                 } else {
-                    throw new IllegalStateException("Undefined terminal " + token);
+                    throw new IllegalStateException("Undefined terminal " + symbol);
                 }
-            } else if(nonTerminalPattern.matcher(token).matches()) {
-                return NonTerminal.of(token);
+            } else if(nonTerminalPattern.matcher(symbol).matches()) {
+                return NonTerminal.of(symbol);
             } else { // in theory should not happen because of lexer/parser rules
-                throw new IllegalStateException("Illegal token name");
+                throw new IllegalStateException("Illegal symbol name");
             }
         }).collect(Collectors.toList());
     }

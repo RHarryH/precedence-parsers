@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.Production;
@@ -46,7 +46,7 @@ class OperatorPrecedenceTableTest {
         var precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
-        Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(a, a), Precedence.EQUALS);
         expected.put(Pair.of(a, marker), Precedence.GREATER_THAN);
 
@@ -67,7 +67,7 @@ class OperatorPrecedenceTableTest {
         var precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
-        Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(add, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(add, lpar), Precedence.LESS_THAN);
         expected.put(Pair.of(add, mul), Precedence.LESS_THAN);
@@ -149,7 +149,7 @@ class OperatorPrecedenceTableTest {
         var precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
-        Map<Pair<GenericToken, GenericToken>, Precedence> expected = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(add, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(add, mul), Precedence.LESS_THAN);
         expected.put(Pair.of(add, number), Precedence.LESS_THAN);

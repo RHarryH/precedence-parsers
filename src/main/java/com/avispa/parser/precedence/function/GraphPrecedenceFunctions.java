@@ -1,6 +1,6 @@
 package com.avispa.parser.precedence.function;
 
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.table.Precedence;
 import com.avispa.parser.precedence.table.PrecedenceTable;
 import lombok.Getter;
@@ -20,10 +20,10 @@ import java.util.Set;
 @Slf4j
 @Getter
 public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
-    private final Map<GenericToken, Integer> f = new HashMap<>();
-    private final Map<GenericToken, Integer> g = new HashMap<>();
+    private final Map<Symbol, Integer> f = new HashMap<>();
+    private final Map<Symbol, Integer> g = new HashMap<>();
 
-    public GraphPrecedenceFunctions(PrecedenceTable<? extends GenericToken> table) throws PrecedenceFunctionsException {
+    public GraphPrecedenceFunctions(PrecedenceTable<? extends Symbol> table) throws PrecedenceFunctionsException {
         var graph = createGraph(table);
 
         for (var node : graph.vertexSet()) { // for each node
@@ -43,7 +43,7 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable<? extends GenericToken> table) throws PrecedenceFunctionsException {
+    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable<? extends Symbol> table) throws PrecedenceFunctionsException {
         DirectedAcyclicGraph<GraphNode, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 
         var nodes = generateNodes(table);
@@ -86,14 +86,14 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
      * @param table precedence table
      * @return
      */
-    private Set<GraphNode> generateNodes(PrecedenceTable<? extends GenericToken> table) {
+    private Set<GraphNode> generateNodes(PrecedenceTable<? extends Symbol> table) {
         Set<GraphNode> nodes = new HashSet<>();
 
         for(var entry : table.get().entrySet()) {
             var left = entry.getKey().getLeft();
             var right = entry.getKey().getRight();
-            if(Precedence.EQUALS == entry.getValue()) { // fuse tokens if precedence is set to equal
-                fuseTokens(left, right, nodes);
+            if(Precedence.EQUALS == entry.getValue()) { // fuse symbols if precedence is set to equal
+                fuseSymbols(left, right, nodes);
             } else {
                 if(nodes.stream().noneMatch(node -> node.containsF(left))) {
                     nodes.add(GraphNode.ofF(left));
@@ -113,12 +113,12 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
     }
 
     /**
-     * If left or right token is present in any of existing nodes, append second one to it
+     * If left or right symbol is present in any of existing nodes, append second one to it
      * @param left
      * @param right
      * @param nodes
      */
-    private void fuseTokens(GenericToken left, GenericToken right, Set<GraphNode> nodes) {
+    private void fuseSymbols(Symbol left, Symbol right, Set<GraphNode> nodes) {
         for(GraphNode node : nodes) {
             if(node.containsF(left)) {
                 node.addG(right);
@@ -176,12 +176,12 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
     }
 
     @Override
-    public int getFFor(GenericToken token) {
-        return f.get(token);
+    public int getFFor(Symbol symbol) {
+        return f.get(symbol);
     }
 
     @Override
-    public int getGFor(GenericToken token) {
-        return g.get(token);
+    public int getGFor(Symbol symbol) {
+        return g.get(symbol);
     }
 }

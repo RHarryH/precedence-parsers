@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.function;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.table.OperatorPrecedenceTable;
@@ -41,7 +41,7 @@ class GraphPrecedenceFunctionsTest {
         // given
         SimplePrecedenceTable precedenceTable = Mockito.mock(SimplePrecedenceTable.class);
 
-        Map<Pair<GenericToken, GenericToken>, Precedence> data = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> data = new HashMap<>();
         data.put(Pair.of(number, add), Precedence.GREATER_THAN);
         data.put(Pair.of(number, mul), Precedence.GREATER_THAN);
         data.put(Pair.of(number, marker), Precedence.GREATER_THAN);
@@ -90,7 +90,7 @@ class GraphPrecedenceFunctionsTest {
         // given
         SimplePrecedenceTable precedenceTable = Mockito.mock(SimplePrecedenceTable.class);
 
-        Map<Pair<GenericToken, GenericToken>, Precedence> data = new HashMap<>();
+        Map<Pair<Symbol, Symbol>, Precedence> data = new HashMap<>();
         data.put(Pair.of(number, number), Precedence.GREATER_THAN);
         data.put(Pair.of(add, number), Precedence.LESS_THAN);
         data.put(Pair.of(add, add), Precedence.GREATER_THAN);

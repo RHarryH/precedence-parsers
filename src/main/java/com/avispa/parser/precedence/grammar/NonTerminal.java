@@ -6,14 +6,14 @@ import lombok.EqualsAndHashCode;
  * @author Rafał Hiszpański
  */
 @EqualsAndHashCode(callSuper = true)
-public final class NonTerminal extends GenericToken {
+public final class NonTerminal extends Symbol {
 
     public static NonTerminal of(String name) {
         return new NonTerminal(name);
     }
 
-    public static boolean isOf(GenericToken token) {
-        return token instanceof NonTerminal;
+    public static boolean isOf(Symbol symbol) {
+        return symbol instanceof NonTerminal;
     }
 
     private NonTerminal(String name) {

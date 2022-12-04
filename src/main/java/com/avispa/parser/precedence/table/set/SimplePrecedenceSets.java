@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, GenericToken> {
+abstract class SimplePrecedenceSets extends PrecedenceSets<Symbol, Symbol> {
 
     SimplePrecedenceSets(ContextFreeGrammar grammar, String setsName) {
         super(setsName);
@@ -43,8 +43,8 @@ abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, Generic
     }
 
     /**
-     * Recursively iterate through productions. Last token on the right is added to LAST_ALL set. If token is a non-terminal
-     * it is recursively checked for it's last token until end of possible derivation is reached. The algorithm does not do
+     * Recursively iterate through productions. Last symbol on the right is added to LAST_ALL set. If symbol is a non-terminal
+     * it is recursively checked for it's last symbol until end of possible derivation is reached. The algorithm does not do
      * recursive check if non-terminal was already visited.
      *  @param topLhs non-terminal for which LAST_ALL is built
      * @param currentLhs currently visited production's lhs
@@ -53,21 +53,21 @@ abstract class SimplePrecedenceSets extends PrecedenceSets<GenericToken, Generic
      * @param visited set of already visited nodes for top lhs non-terminal
      */
     private void constructFor(NonTerminal topLhs, NonTerminal currentLhs, List<Production> currentRhsProductions, Map<NonTerminal, List<Production>> productionsByLhs, Set<NonTerminal> visited) {
-        visited.add(currentLhs); // do not visit already visiting token to avoid endless loop
+        visited.add(currentLhs); // do not visit already visiting symbol to avoid endless loop
 
         for (Production production : currentRhsProductions) { // for all alternatives
             log.debug("Checking {} production for {} set.", production, name);
-            List<GenericToken> rhsTokens = production.getRhs();
+            List<Symbol> rhsSymbols = production.getRhs();
 
-            GenericToken token = findToken(rhsTokens);
-            log.debug("First/last token for {} production is {}. Adding to {} set.", production, token, name);
+            Symbol symbol = findSymbol(rhsSymbols);
+            log.debug("First/last symbol for {} production is {}. Adding to {} set.", production, symbol, name);
 
-            update(topLhs, token);
-            if(NonTerminal.isOf(token) && !visited.contains(token)) {
-                log.debug("Token {} is a non-terminal and wasn't visited before. Check it recursively for it's first token.", token);
-                constructFor(topLhs, (NonTerminal) token, productionsByLhs.get(token), productionsByLhs, visited);
+            update(topLhs, symbol);
+            if(NonTerminal.isOf(symbol) && !visited.contains(symbol)) {
+                log.debug("Symbol {} is a non-terminal and wasn't visited before. Check it recursively for it's first symbol.", symbol);
+                constructFor(topLhs, (NonTerminal) symbol, productionsByLhs.get(symbol), productionsByLhs, visited);
             } else {
-                log.debug("Token {} is a terminal or was visited before. Skipping.", token);
+                log.debug("Symbol {} is a terminal or was visited before. Skipping.", symbol);
             }
         }
     }

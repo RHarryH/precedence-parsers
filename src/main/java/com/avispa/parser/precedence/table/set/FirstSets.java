@@ -1,6 +1,6 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
+public class FirstSets extends PrecedenceSets<Symbol, Terminal> {
     public FirstSets(FirstAllSets firstAll, Set<Terminal> terminals) {
         super("FIRST");
         log.debug("Constructing {} set.", name);
@@ -37,12 +37,12 @@ public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
      */
     private void construct(FirstAllSets firstAll) {
         var firstAllMap = firstAll.get();
-        for(var firstAllForToken : firstAllMap.entrySet()) {
-            GenericToken setToken = firstAllForToken.getKey();
-            if(NonTerminal.isOf(setToken)) {
-                for(GenericToken token : firstAllForToken.getValue()) {
-                    if(Terminal.isOf(token)) {
-                        update(setToken, (Terminal) token);
+        for(var firstAllForSymbol : firstAllMap.entrySet()) {
+            Symbol setSymbol = firstAllForSymbol.getKey();
+            if(NonTerminal.isOf(setSymbol)) {
+                for(Symbol symbol : firstAllForSymbol.getValue()) {
+                    if(Terminal.isOf(symbol)) {
+                        update(setSymbol, (Terminal) symbol);
                     }
                 }
             }
@@ -50,7 +50,7 @@ public class FirstSets extends PrecedenceSets<GenericToken, Terminal> {
     }
 
     @Override
-    protected GenericToken findToken(List<GenericToken> rhsTokens) {
+    protected Symbol findSymbol(List<Symbol> rhsSymbols) {
         throw new UnsupportedOperationException("This method is not required as FIRST is derived from FIRST_ALL");
     }
 }

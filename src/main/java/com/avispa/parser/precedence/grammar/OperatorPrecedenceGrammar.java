@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * Grammar is an operator-precedence grammar when it is an operator grammar, and it is possible to construct and
- * operator-precedence table without conflicts (when there are existing more than one precedence for any pair of tokens).
+ * operator-precedence table without conflicts (when there are existing more than one precedence for any pair of symbols).
  * @author Rafał Hiszpański
  */
 @Slf4j

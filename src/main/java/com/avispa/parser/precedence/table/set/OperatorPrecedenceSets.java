@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
@@ -59,27 +59,27 @@ abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Termin
 
     /**
      * Method constructs set of terminals, which applies to FIRST_OP or LAST_OP sets defined for left-hand side non-terminal.
-     * First it gets first/last token of production and it i
-     * First/last terminals on the right are added to FIRST_OP and LAST_OP sets respectively. If token is a non-terminal
-     * it is recursively checked for it's first/last tokens until end of possible derivation
+     * First it gets first/last symbol of production and it i
+     * First/last terminals on the right are added to FIRST_OP and LAST_OP sets respectively. If symbol is a non-terminal
+     * it is recursively checked for it's first/last symbols until end of possible derivation
      * is reached. The algorithm does not do recursive check if non-terminal was already visited to prevent infinite loop.
      *
      * @param lhs
-     * @param rhsTokens
+     * @param rhsSymbols
      * @param productionsByLhs
      * @param recursionChain
      * @return
      */
-    private Set<Terminal> constructDownstream(NonTerminal lhs, List<GenericToken> rhsTokens, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
-        GenericToken token = findToken(rhsTokens);
+    private Set<Terminal> constructDownstream(NonTerminal lhs, List<Symbol> rhsSymbols, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
+        Symbol symbol = findSymbol(rhsSymbols);
 
         Set<Terminal> downstreamTerminals = new HashSet<>();
-        if(NonTerminal.isOf(token)) {
-            NonTerminal nonTerminal = (NonTerminal) token;
+        if(NonTerminal.isOf(symbol)) {
+            NonTerminal nonTerminal = (NonTerminal) symbol;
 
-            if(this.sets.containsKey(token)) {
-                log.debug("Set for '{}' already exists. It will be reused.", token);
-                downstreamTerminals = new HashSet<>(this.sets.get(token)); // make a copy, otherwise set for last token non-terminal will be overwritten
+            if(this.sets.containsKey(symbol)) {
+                log.debug("Set for '{}' already exists. It will be reused.", symbol);
+                downstreamTerminals = new HashSet<>(this.sets.get(symbol)); // make a copy, otherwise set for last symbol non-terminal will be overwritten
             } else if(recursionChain.contains(nonTerminal)) {
                 log.debug("Set for '{}' does not exist and is already under construction.", nonTerminal);
             } else {
@@ -90,12 +90,12 @@ abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Termin
                 recursionChain.pop();
             }
 
-            Terminal terminal = findTerminal(rhsTokens); // find first terminal
+            Terminal terminal = findTerminal(rhsSymbols); // find first terminal
             if(null != terminal) {
                 downstreamTerminals.add(terminal); // add found terminal to propagate it upstream
             }
         } else {
-            downstreamTerminals.add((Terminal) token);
+            downstreamTerminals.add((Terminal) symbol);
         }
 
         log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);
@@ -105,9 +105,9 @@ abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Termin
     }
 
     /**
-     * Find first or last terminal from right-hand side tokens
-     * @param rhsTokens
+     * Find first or last terminal from right-hand side symbols
+     * @param rhsSymbols
      * @return
      */
-    protected abstract Terminal findTerminal(List<GenericToken> rhsTokens);
+    protected abstract Terminal findTerminal(List<Symbol> rhsSymbols);
 }

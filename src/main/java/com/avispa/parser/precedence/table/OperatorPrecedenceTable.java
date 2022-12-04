@@ -2,7 +2,7 @@ package com.avispa.parser.precedence.table;
 
 import com.avispa.parser.misc.ListUtil;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
@@ -58,7 +58,7 @@ public class OperatorPrecedenceTable extends PrecedenceTable<Terminal> {
         return result;
     }
 
-    private void addRelations(Pair<GenericToken, GenericToken> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
+    private void addRelations(Pair<Symbol, Symbol> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
         var left = currentPair.getLeft();
         var right = currentPair.getRight();
 
@@ -90,13 +90,13 @@ public class OperatorPrecedenceTable extends PrecedenceTable<Terminal> {
     }
 
     @Override
-    protected final void addEqualsRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
+    protected final void addEqualsRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
         var castedPair = Pair.of((Terminal)currentPair.getLeft(), (Terminal)currentPair.getRight());
         addRelation(castedPair, Precedence.EQUALS, result);
     }
 
     @Override
-    protected final void addLessThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
+    protected final void addLessThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
         log.debug("Adding relations: {} ⋖ FIRST_OP({})", currentPair.getLeft(), currentPair.getRight());
 
         this.firstOp.getFor((NonTerminal) currentPair.getRight())
@@ -104,7 +104,7 @@ public class OperatorPrecedenceTable extends PrecedenceTable<Terminal> {
     }
 
     @Override
-    protected final void addGreaterThanRelation(Pair<GenericToken, GenericToken> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
+    protected final void addGreaterThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Terminal, Terminal>, Precedence> result) {
         log.debug("Adding relations: LAST_OP({}) ⋗ {}", currentPair.getLeft(), currentPair.getRight());
 
         this.lastOp.getFor((NonTerminal) currentPair.getLeft())

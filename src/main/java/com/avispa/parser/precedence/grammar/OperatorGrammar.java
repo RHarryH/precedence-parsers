@@ -17,7 +17,7 @@ import java.util.Set;
 @Slf4j
 abstract class OperatorGrammar extends ContextFreeGrammar {
     protected PrecedenceFunctions functions;
-    protected PrecedenceTable<? extends GenericToken> table;
+    protected PrecedenceTable<? extends Symbol> table;
 
     OperatorGrammar(String name, Set<Terminal> terminals, List<Production> productions) throws IncorrectGrammarException {
         super(name, terminals, productions);
@@ -29,7 +29,7 @@ abstract class OperatorGrammar extends ContextFreeGrammar {
 
     private boolean isOperatorGrammar() {
         for(Production production : getProductions()) {
-            List<GenericToken> rhs = production.getRhs();
+            List<Symbol> rhs = production.getRhs();
 
             if(rhs.isEmpty()) {
                 log.error("Empty productions are not all allowed for operator grammars: {}.", production);
@@ -45,10 +45,10 @@ abstract class OperatorGrammar extends ContextFreeGrammar {
         return true;
     }
 
-    private boolean hasConsecutiveNonTerminals(List<GenericToken> rhs) {
+    private boolean hasConsecutiveNonTerminals(List<Symbol> rhs) {
         boolean previousIsNonTerminal = false;
-        for(var token : rhs) {
-            if(token instanceof NonTerminal) {
+        for(var symbol : rhs) {
+            if(symbol instanceof NonTerminal) {
                 if(previousIsNonTerminal) {
                     return true;
                 }

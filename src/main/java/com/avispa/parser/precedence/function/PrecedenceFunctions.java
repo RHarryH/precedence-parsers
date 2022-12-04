@@ -1,6 +1,6 @@
 package com.avispa.parser.precedence.function;
 
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 
 import java.util.Map;
 
@@ -17,9 +17,9 @@ import java.util.Map;
  * @author Rafał Hiszpański
  */
 public interface PrecedenceFunctions {
-    Map<GenericToken, Integer> getF();
-    Map<GenericToken, Integer> getG();
+    Map<Symbol, Integer> getF();
+    Map<Symbol, Integer> getG();
 
-    int getFFor(GenericToken token);
-    int getGFor(GenericToken token);
+    int getFFor(Symbol symbol);
+    int getGFor(Symbol symbol);
 }

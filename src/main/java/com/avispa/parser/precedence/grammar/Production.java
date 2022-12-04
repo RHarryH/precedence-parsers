@@ -15,9 +15,9 @@ import java.util.List;
 @EqualsAndHashCode
 public final class Production {
     private NonTerminal lhs;
-    private List<GenericToken> rhs;
+    private List<Symbol> rhs;
 
-    public static Production of(NonTerminal lhs, List<GenericToken> rhs) {
+    public static Production of(NonTerminal lhs, List<Symbol> rhs) {
         return new Production(lhs, rhs);
     }
 

@@ -54,8 +54,8 @@ public class ContextFreeGrammar implements Grammar {
     }
 
     /**
-     * Scans lhs and rhs of productions. If there is a difference of only one token (lhs has one more token)
-     * then this token is a start symbol.
+     * Scans lhs and rhs of productions. If there is a difference of only one symbol (lhs has one more symbol)
+     * then this symbol is a start symbol.
      * @param productions
      * @return non-terminals list
      * @throws IncorrectGrammarException
@@ -68,19 +68,19 @@ public class ContextFreeGrammar implements Grammar {
 
         Set<NonTerminal> rhsNonTerminals = new HashSet<>();
         for(Production production : productions) {
-            for(GenericToken token : production.getRhs()) {
-                if (NonTerminal.isOf(token)) {
-                    if(!lhsNonTerminals.contains(token)) {
-                        throw new IncorrectGrammarException("Token " + token + " is not present on the left-hand side of any production");
+            for(Symbol symbol : production.getRhs()) {
+                if (NonTerminal.isOf(symbol)) {
+                    if(!lhsNonTerminals.contains(symbol)) {
+                        throw new IncorrectGrammarException("Symbol " + symbol + " is not present on the left-hand side of any production");
                     }
-                    if(!rhsNonTerminals.contains(token)) {
-                        rhsNonTerminals.add((NonTerminal) token);
+                    if(!rhsNonTerminals.contains(symbol)) {
+                        rhsNonTerminals.add((NonTerminal) symbol);
                     }
                 }
             }
         }
 
-        this.start = findStartToken(lhsNonTerminals, productions);
+        this.start = findStartSymbol(lhsNonTerminals, productions);
 
         lhsNonTerminals.add(start); // add start symbol to lhs, this becomes the full set of non-terminals
 
@@ -88,7 +88,7 @@ public class ContextFreeGrammar implements Grammar {
     }
 
     /**
-     * Finds start token.
+     * Finds start symbol.
      *
      * First all non-terminals are candidates but when the non-terminal will be found on the productions right-hand
      * side then it is eliminated. Non-terminal is not eliminated when it is left-hand side of the production in single
@@ -98,7 +98,7 @@ public class ContextFreeGrammar implements Grammar {
      * @return
      * @throws IncorrectGrammarException
      */
-    private NonTerminal findStartToken(Set<NonTerminal> nonTerminals, List<Production> productions) throws IncorrectGrammarException {
+    private NonTerminal findStartSymbol(Set<NonTerminal> nonTerminals, List<Production> productions) throws IncorrectGrammarException {
         Set<NonTerminal> candidates = new HashSet<>(nonTerminals);
         for(Production production : productions) {
             NonTerminal candidate = production.getLhs();
@@ -117,8 +117,8 @@ public class ContextFreeGrammar implements Grammar {
         }
 
         return candidates.stream().reduce((a, b) -> {
-            throw new IllegalStateException("Multiple start token candidates: " + a + ", " + b);
-        }).orElseThrow(() -> new IncorrectGrammarException("Start token not detected"));
+            throw new IllegalStateException("Multiple start symbol candidates: " + a + ", " + b);
+        }).orElseThrow(() -> new IncorrectGrammarException("Start symbol not detected"));
     }
 
     @Override

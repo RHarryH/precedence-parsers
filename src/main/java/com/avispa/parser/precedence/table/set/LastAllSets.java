@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,12 +17,12 @@ public class LastAllSets extends SimplePrecedenceSets {
     }
 
     /**
-     * Finds last token
-     * @param rhsTokens
+     * Finds last symbol
+     * @param rhsSymbols
      * @return
      */
     @Override
-    protected GenericToken findToken(List<GenericToken> rhsTokens) {
-        return rhsTokens.get(rhsTokens.size() - 1);
+    protected Symbol findSymbol(List<Symbol> rhsSymbols) {
+        return rhsSymbols.get(rhsSymbols.size() - 1);
     }
 }

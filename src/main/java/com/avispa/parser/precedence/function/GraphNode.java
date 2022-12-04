@@ -1,6 +1,6 @@
 package com.avispa.parser.precedence.function;
 
-import com.avispa.parser.precedence.grammar.GenericToken;
+import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -17,40 +17,40 @@ import java.util.stream.Stream;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 class GraphNode {
-    private final Set<GenericToken> fSymbols = new HashSet<>();
-    private final Set<GenericToken> gSymbols = new HashSet<>();
+    private final Set<Symbol> fSymbols = new HashSet<>();
+    private final Set<Symbol> gSymbols = new HashSet<>();
 
-    public static GraphNode ofF(GenericToken token) {
-        return new GraphNode().addF(token);
+    public static GraphNode ofF(Symbol symbol) {
+        return new GraphNode().addF(symbol);
     }
 
-    public static GraphNode ofG(GenericToken token) {
-        return new GraphNode().addG(token);
+    public static GraphNode ofG(Symbol symbol) {
+        return new GraphNode().addG(symbol);
     }
 
-    public GraphNode addF(GenericToken token) {
-        this.fSymbols.add(token);
+    public GraphNode addF(Symbol symbol) {
+        this.fSymbols.add(symbol);
         return this;
     }
 
-    public GraphNode addG(GenericToken token) {
-        this.gSymbols.add(token);
+    public GraphNode addG(Symbol symbol) {
+        this.gSymbols.add(symbol);
         return this;
     }
 
-    public boolean containsF(GenericToken token) {
-        return this.fSymbols.contains(token);
+    public boolean containsF(Symbol symbol) {
+        return this.fSymbols.contains(symbol);
     }
 
-    public boolean containsG(GenericToken token) {
-        return this.gSymbols.contains(token);
+    public boolean containsG(Symbol symbol) {
+        return this.gSymbols.contains(symbol);
     }
 
-    public Set<GenericToken> getFSet() {
+    public Set<Symbol> getFSet() {
         return Collections.unmodifiableSet(fSymbols);
     }
 
-    public Set<GenericToken> getGSet() {
+    public Set<Symbol> getGSet() {
         return Collections.unmodifiableSet(gSymbols);
     }
 

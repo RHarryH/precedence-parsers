@@ -39,7 +39,13 @@ public abstract class PrecedenceTable<T extends GenericToken> {
         if(result.containsKey(pair)) {
             Precedence currentPrecedence = result.get(pair);
             if(precedence.equals(currentPrecedence)) {
-                log.warn("Trying to overwrite existing precedence with the same value. Skipping");
+                log.warn("Trying to overwrite existing precedence with the same value. Skipping.");
+                return;
+            }
+
+            if(currentPrecedence.equals(Precedence.LESS_THAN_OR_EQUALS) &&
+                    (precedence.equals(Precedence.LESS_THAN) || precedence.equals(Precedence.EQUALS))) {
+                log.warn("There is already {} precedence. Tried to insert {}. Skipping.", currentPrecedence, precedence);
                 return;
             }
 

@@ -58,6 +58,24 @@ public class GrammarFile {
     }
 
     public ContextFreeGrammar read() throws IncorrectGrammarException {
+        parseFile();
+
+        return new ContextFreeGrammar(name, new HashSet<>(terminals.values()), productions);
+    }
+
+    public ContextFreeGrammar readOperatorPrecedence() throws IncorrectGrammarException {
+        parseFile();
+
+        return new OperatorPrecedenceGrammar(name, new HashSet<>(terminals.values()), productions);
+    }
+
+    public ContextFreeGrammar readSimplePrecedence() throws IncorrectGrammarException {
+        parseFile();
+
+        return new SimplePrecedenceGrammar(name, new HashSet<>(terminals.values()), productions);
+    }
+
+    private void parseFile() throws IncorrectGrammarException {
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
             stream.forEach(this::parseLine);
         } catch (IOException e) {
@@ -65,8 +83,6 @@ public class GrammarFile {
             log.error("Original exception: ", e);
             throw new IncorrectGrammarException(message);
         }
-
-        return new ContextFreeGrammar(name, new HashSet<>(terminals.values()), productions);
     }
 
     private void parseLine(String line) {

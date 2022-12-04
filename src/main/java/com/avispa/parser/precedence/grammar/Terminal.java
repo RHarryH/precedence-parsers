@@ -3,6 +3,7 @@ package com.avispa.parser.precedence.grammar;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -26,7 +27,7 @@ public final class Terminal extends Symbol {
     private Terminal(String name, String regex) {
         super(name);
         try {
-            this.pattern = Pattern.compile(regex);
+            this.pattern = Pattern.compile("^" + regex);
         } catch (PatternSyntaxException e) {
             String message = String.format("Provided pattern is not a valid regular expression: %s", e.getMessage());
             log.error("Original exception: ", e);
@@ -34,7 +35,8 @@ public final class Terminal extends Symbol {
         }
     }
 
-    public boolean is(String value) {
-        return pattern.matcher(value).matches();
+    public int lastMatchedChar(String value) {
+        Matcher matcher = pattern.matcher(value);
+        return matcher.find() ?  matcher.end() : 0;
     }
 }

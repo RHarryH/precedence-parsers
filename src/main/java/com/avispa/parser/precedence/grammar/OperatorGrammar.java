@@ -25,6 +25,8 @@ abstract class OperatorGrammar extends ContextFreeGrammar {
         if(!isOperatorGrammar()) {
             throw new IncorrectGrammarException("Grammar is not an operator grammar");
         }
+
+        this.getTerminals().add(Terminal.BOUNDARY_MARKER); // add boundary marker as known terminal symbol
     }
 
     private boolean isOperatorGrammar() {

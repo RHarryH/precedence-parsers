@@ -13,6 +13,8 @@ import java.util.regex.PatternSyntaxException;
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 public final class Terminal extends Symbol {
+    public static final Terminal BOUNDARY_MARKER = Terminal.of("MARKER", "\\$");
+
     @EqualsAndHashCode.Exclude
     private final Pattern pattern;
 

@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.avispa.parser.precedence.grammar.Terminal.BOUNDARY_MARKER;
+
 /**
  * @author Rafał Hiszpański
  */

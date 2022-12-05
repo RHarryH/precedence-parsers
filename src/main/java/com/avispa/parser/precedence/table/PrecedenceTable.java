@@ -17,8 +17,6 @@ import java.util.Map;
  */
 @Slf4j
 public abstract class PrecedenceTable<T extends Symbol> {
-    protected static final Terminal BOUNDARY_MARKER = Terminal.of("MARKER", "\\$");
-
     protected Map<Pair<T, T>, Precedence> table;
 
     public Map<Pair<T, T>, Precedence> get() {

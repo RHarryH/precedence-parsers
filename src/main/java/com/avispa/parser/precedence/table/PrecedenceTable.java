@@ -1,10 +1,10 @@
 package com.avispa.parser.precedence.table;
 
+import com.avispa.parser.misc.ListUtil;
 import com.avispa.parser.misc.TablePrinter;
-import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
-import com.avispa.parser.precedence.grammar.Terminal;
+import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -16,22 +16,34 @@ import java.util.Map;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class PrecedenceTable<T extends Symbol> {
-    protected Map<Pair<T, T>, Precedence> table;
+public abstract class PrecedenceTable {
+    protected Map<Pair<Symbol, Symbol>, Precedence> table;
 
-    public Map<Pair<T, T>, Precedence> get() {
-        return table;
+    protected abstract Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions, NonTerminal start);
+
+    protected Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions) {
+        Map<Pair<Symbol, Symbol>, Precedence> result = new HashMap<>();
+
+        productions.stream()
+                .map(Production::getRhs)
+                .flatMap(rhs -> ListUtil.sliding(rhs, 2))
+                .map(window -> Pair.of(window.get(0), window.get(1)))
+                .forEach(pair -> {
+                    log.debug("Sliding pair: {}", pair);
+                    addRelations(pair, result);
+                });
+        return result;
     }
 
-    protected abstract Map<Pair<T, T>, Precedence> construct(List<Production> productions, NonTerminal start);
+    protected abstract void addRelations(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result);
 
-    protected abstract void addEqualsRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<T, T>, Precedence> result);
+    protected abstract void addEqualsRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result);
 
-    protected abstract void addLessThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<T, T>, Precedence> result);
+    protected abstract void addLessThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result);
 
-    protected abstract void addGreaterThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<T, T>, Precedence> result);
+    protected abstract void addGreaterThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result);
 
-    protected final void addRelation(Pair<T, T> pair, Precedence precedence, Map<Pair<T, T>, Precedence> result) {
+    protected final void addRelation(Pair<Symbol, Symbol> pair, Precedence precedence, Map<Pair<Symbol, Symbol>, Precedence> result) {
         log.debug("Adding relation: {} {} {}", pair.getLeft(), precedence.getSymbol(), pair.getRight());
 
         if(result.containsKey(pair)) {
@@ -59,6 +71,14 @@ public abstract class PrecedenceTable<T extends Symbol> {
         } else {
             result.put(pair, precedence);
         }
+    }
+
+    public Map<Pair<Symbol, Symbol>, Precedence> get() {
+        return table;
+    }
+
+    public Precedence get(Symbol a, Symbol b) {
+        return table.get(Pair.of(a, b));
     }
 
     @Override

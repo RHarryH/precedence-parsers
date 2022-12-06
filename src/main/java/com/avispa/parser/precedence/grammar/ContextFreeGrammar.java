@@ -3,6 +3,7 @@ package com.avispa.parser.precedence.grammar;
 import lombok.Getter;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class ContextFreeGrammar implements Grammar {
     public ContextFreeGrammar(String name, Set<Terminal> terminals, List<Production> productions) throws IncorrectGrammarException {
         this.name = name;
 
-        this.terminals = terminals;
+        this.terminals = new HashSet<>(terminals);
         this.productions = productions;
 
         verifyTerminalsMatch(productions);
@@ -119,6 +120,26 @@ public class ContextFreeGrammar implements Grammar {
         return candidates.stream().reduce((a, b) -> {
             throw new IllegalStateException("Multiple start symbol candidates: " + a + ", " + b);
         }).orElseThrow(() -> new IncorrectGrammarException("Start symbol not detected"));
+    }
+
+    /**
+     * Add special terminal symbol not defined directly in grammar.
+     * @param terminal
+     */
+    protected final void addTerminal(Terminal terminal) {
+        this.terminals.add(terminal);
+    }
+
+    public Set<Terminal> getTerminals() {
+        return Collections.unmodifiableSet(this.terminals);
+    }
+
+    public Set<NonTerminal> getNonTerminals() {
+        return Collections.unmodifiableSet(this.nonTerminals);
+    }
+
+    public List<Production> getProductions() {
+        return Collections.unmodifiableList(this.productions);
     }
 
     @Override

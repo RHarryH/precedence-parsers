@@ -23,6 +23,16 @@ public class TreeNode<T> {
         children.add(child);
     }
 
+    public TreeNode<T> getChild(T value) {
+        for(var child : children) {
+            if(child.getValue().equals(value)) {
+                return child;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Adds child as the first node on children list
      * @param child

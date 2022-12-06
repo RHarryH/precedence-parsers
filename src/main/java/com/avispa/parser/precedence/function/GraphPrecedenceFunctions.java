@@ -23,7 +23,7 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
     private final Map<Symbol, Integer> f = new HashMap<>();
     private final Map<Symbol, Integer> g = new HashMap<>();
 
-    public GraphPrecedenceFunctions(PrecedenceTable<? extends Symbol> table) throws PrecedenceFunctionsException {
+    public GraphPrecedenceFunctions(PrecedenceTable table) throws PrecedenceFunctionsException {
         var graph = createGraph(table);
 
         for (var node : graph.vertexSet()) { // for each node
@@ -43,7 +43,7 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
      * @return
      * @throws PrecedenceFunctionsException
      */
-    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable<? extends Symbol> table) throws PrecedenceFunctionsException {
+    private DirectedAcyclicGraph<GraphNode, DefaultEdge> createGraph(PrecedenceTable table) throws PrecedenceFunctionsException {
         DirectedAcyclicGraph<GraphNode, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 
         var nodes = generateNodes(table);
@@ -86,7 +86,7 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
      * @param table precedence table
      * @return
      */
-    private Set<GraphNode> generateNodes(PrecedenceTable<? extends Symbol> table) {
+    private Set<GraphNode> generateNodes(PrecedenceTable table) {
         Set<GraphNode> nodes = new HashSet<>();
 
         for(var entry : table.get().entrySet()) {

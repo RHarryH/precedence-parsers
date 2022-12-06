@@ -37,7 +37,7 @@ public final class Terminal extends Symbol {
         }
     }
 
-    public int lastMatchedChar(String value) {
+    public int lastMatchedIndex(String value) {
         Matcher matcher = pattern.matcher(value);
         return matcher.find() ?  matcher.end() : 0;
     }

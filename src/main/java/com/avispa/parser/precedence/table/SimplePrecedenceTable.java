@@ -1,10 +1,9 @@
 package com.avispa.parser.precedence.table;
 
-import com.avispa.parser.misc.ListUtil;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.table.set.FirstAllSets;
 import com.avispa.parser.precedence.table.set.FirstSets;
 import com.avispa.parser.precedence.table.set.LastAllSets;
@@ -12,7 +11,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +21,7 @@ import static com.avispa.parser.precedence.grammar.Terminal.BOUNDARY_MARKER;
  */
 @Slf4j
 @Getter
-public class SimplePrecedenceTable extends PrecedenceTable<Symbol> {
+public class SimplePrecedenceTable extends PrecedenceTable {
     private final FirstAllSets firstAll;
     private final LastAllSets lastAll;
     private final FirstSets first;
@@ -38,16 +36,7 @@ public class SimplePrecedenceTable extends PrecedenceTable<Symbol> {
 
     @Override
     protected final Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions, NonTerminal start) {
-        Map<Pair<Symbol, Symbol>, Precedence> result = new HashMap<>();
-
-        productions.stream()
-                .map(Production::getRhs)
-                .flatMap(rhs -> ListUtil.sliding(rhs, 2))
-                .map(window -> Pair.of(window.get(0), window.get(1)))
-                .forEach(pair -> {
-                    log.debug("Sliding pair: {}", pair);
-                    addRelations(pair, result);
-                });
+        Map<Pair<Symbol, Symbol>, Precedence> result = construct(productions);
 
         // $ ⋖ FIRST_ALL(S)
         addLessThanRelationForStartAndMarker(start, result);
@@ -58,7 +47,8 @@ public class SimplePrecedenceTable extends PrecedenceTable<Symbol> {
         return result;
     }
 
-    private void addRelations(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result) {
+    @Override
+    protected void addRelations(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result) {
         // X ≐ Y
         addEqualsRelation(currentPair, result);
 

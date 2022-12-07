@@ -32,9 +32,9 @@ class LexerTest {
         Lexer lexer = new Lexer(input, grammar);
 
         List<Lexeme> expected = List.of(
-                Lexeme.of("2", number),
-                Lexeme.of("+", add),
-                Lexeme.of("3", number));
+                Lexeme.of("2", number, 1),
+                Lexeme.of("+", add, 1),
+                Lexeme.of("3", number, 2));
 
         // when
         List<Lexeme> result = getLexemes(lexer);

@@ -20,15 +20,17 @@ class ProductionsTreeBuilder {
     static TreeNode<Symbol> build(List<Production> productions) {
         final TreeNode<Symbol> productionsTree = new TreeNode<>(null);
 
-        for(Production production : productions) {
+        for (int productionId = 0; productionId < productions.size(); productionId++) {
+            Production production = productions.get(productionId);
+
             var currentNode = productionsTree;
             var symbols = production.getRhs();
             var it = symbols.listIterator(symbols.size());
 
-            while(it.hasPrevious()) {
+            while (it.hasPrevious()) {
                 currentNode = addNode(currentNode, it.previous());
             }
-            addNode(currentNode, production.getLhs());
+            addProductionNode(currentNode, production.getLhs(), productionId);
         }
 
         if(log.isDebugEnabled()) {
@@ -38,13 +40,18 @@ class ProductionsTreeBuilder {
         return productionsTree;
     }
 
-    private static TreeNode<Symbol> addNode(TreeNode<Symbol> currentNode, Symbol symbol) {
-        var node = currentNode.getChild(symbol);
-        if(null == node) {
-            node = new TreeNode<>(symbol);
+    private static TreeNode<Symbol> addNode(final TreeNode<Symbol> currentNode, Symbol symbol) {
+        return currentNode.getChild(symbol).orElseGet(() -> {
+            var newNode = new TreeNode<>(symbol);
+            currentNode.addChild(newNode);
+            return newNode;
+        });
+    }
+
+    private static void addProductionNode(final TreeNode<Symbol> currentNode, Symbol symbol, int productionId) {
+        currentNode.getChild(symbol).ifPresentOrElse(node -> {}, () -> {
+            var node = new ProductionTreeNode<>(symbol, productionId);
             currentNode.addChild(node);
-        }
-        currentNode = node;
-        return currentNode;
+        });
     }
 }

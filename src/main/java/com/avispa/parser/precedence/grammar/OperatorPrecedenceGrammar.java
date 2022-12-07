@@ -32,6 +32,14 @@ public class OperatorPrecedenceGrammar extends OperatorGrammar {
         } catch (PrecedenceFunctionsException e) {
             log.warn("Precedence functions can't be calculated. Precedence table will be used instead.", e);
         }
+
+        if(log.isDebugEnabled()) {
+            if(null != functions) {
+                log.debug("Precedence functions: {}", functions);
+            } else {
+                log.debug("Precedence table: {}", table);
+            }
+        }
     }
 
     private boolean isOperatorPrecedence() {

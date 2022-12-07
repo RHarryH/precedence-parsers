@@ -142,8 +142,41 @@ public class ContextFreeGrammar implements Grammar {
         return Collections.unmodifiableList(this.productions);
     }
 
+    /**
+     * Get production by its index on the list
+     * @param index
+     * @return
+     */
+    public Production getProduction(int index) {
+        return this.productions.get(index);
+    }
+
     @Override
     public String toString() {
-        return "G(" + name + ") = (" + terminals + ", " + nonTerminals + ", " + productions + ", " + start + ")";
+        final String newLine = System.lineSeparator();
+
+        StringBuilder sb = new StringBuilder("G(");
+        sb.append(name).append(") = (N, Σ, P, S)").append(newLine).append(newLine);
+
+        // terminals
+        sb.append("Σ = {").append(symbolsToString(terminals)).append("}").append(newLine);
+        // non-terminals
+        sb.append("N = {").append(symbolsToString(nonTerminals)).append("}").append(newLine);
+        // productions
+        sb.append("P = {").append(newLine);
+
+        for(int i = 0; i < productions.size(); i++) {
+            sb.append(i + 1).append(": ").append(productions.get(i)).append(newLine);
+        }
+
+        sb.append("}").append(newLine);
+        // start
+        sb.append("S = {").append(start).append("}");
+
+        return sb.toString();
+    }
+
+    private <T extends Symbol> String symbolsToString(final Set<T> symbols) {
+        return symbols.stream().map(Symbol::toString).collect(Collectors.joining(", "));
     }
 }

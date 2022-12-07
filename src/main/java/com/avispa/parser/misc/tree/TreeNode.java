@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Rafał Hiszpański
@@ -23,14 +24,14 @@ public class TreeNode<T> {
         children.add(child);
     }
 
-    public TreeNode<T> getChild(T value) {
+    public Optional<TreeNode<T>> getChild(T value) {
         for(var child : children) {
-            if(child.getValue().equals(value)) {
-                return child;
+            if(!child.isLeaf() && child.getValue().equals(value)) {
+                return Optional.of(child);
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -39,5 +40,28 @@ public class TreeNode<T> {
      */
     public void addFirstChild(TreeNode<T> child) {
         children.add(0, child);
+    }
+
+    /**
+     * Returns direct leaf of current node
+     * @return
+     */
+    public Optional<TreeNode<T>> findClosestLeaf() {
+        for(TreeNode<T> child : children) {
+            if(child.isLeaf()) {
+                return Optional.of(child);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public boolean isLeaf() {
+        return children.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return null != value ? value.toString() : "<root>";
     }
 }

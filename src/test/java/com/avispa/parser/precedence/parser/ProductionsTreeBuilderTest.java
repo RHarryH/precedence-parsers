@@ -49,7 +49,7 @@ class ProductionsTreeBuilderTest {
     private void expressionBranch(TreeNode<Symbol> expectedTree) {
         TreeNode<Symbol> expressionNode = new TreeNode<>(expression);
         expectedTree.addChild(expressionNode);
-        expressionNode.addChild(new TreeNode<>(start));
+        expressionNode.addChild(new ProductionTreeNode<>(start, 0));
     }
 
     private void termBranch(TreeNode<Symbol> expectedTree) {
@@ -59,9 +59,9 @@ class ProductionsTreeBuilderTest {
         termNode.addChild(addNode);
         TreeNode<Symbol> expressionNode = new TreeNode<>(expression);
         addNode.addChild(expressionNode);
-        expressionNode.addChild(new TreeNode<>(expression));
+        expressionNode.addChild(new ProductionTreeNode<>(expression, 1));
 
-        termNode.addChild(new TreeNode<>(expression));
+        termNode.addChild(new ProductionTreeNode<>(expression, 2));
     }
 
     private void factorBranch(TreeNode<Symbol> expectedTree) {
@@ -71,15 +71,15 @@ class ProductionsTreeBuilderTest {
         factorNode.addChild(mulNode);
         TreeNode<Symbol> termNode = new TreeNode<>(term);
         mulNode.addChild(termNode);
-        termNode.addChild(new TreeNode<>(term));
+        termNode.addChild(new ProductionTreeNode<>(term, 3));
 
-        factorNode.addChild(new TreeNode<>(term));
+        factorNode.addChild(new ProductionTreeNode<>(term, 4));
     }
 
     private void numberBranch(TreeNode<Symbol> expectedTree) {
         TreeNode<Symbol> numberNode = new TreeNode<>(number);
         expectedTree.addChild(numberNode);
-        numberNode.addChild(new TreeNode<>(factor));
+        numberNode.addChild(new ProductionTreeNode<>(factor, 5));
     }
 
     private void parenthesisBranch(TreeNode<Symbol> expectedTree) {
@@ -89,7 +89,7 @@ class ProductionsTreeBuilderTest {
         rparNode.addChild(expressionNode);
         TreeNode<Symbol> lparNode = new TreeNode<>(lpar);
         expressionNode.addChild(lparNode);
-        lparNode.addChild(new TreeNode<>(factor));
+        lparNode.addChild(new ProductionTreeNode<>(factor, 6));
     }
 
 }

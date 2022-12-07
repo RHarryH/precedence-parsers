@@ -33,8 +33,11 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
             node.getGSet().forEach(symbol -> g.put(symbol, longestPath));
         }
 
-        log.debug("f()={}", f);
-        log.debug("g()={}", g);
+        if(log.isDebugEnabled()) {
+            log.debug("Precedence functions generated.");
+            log.debug("f()={}", f);
+            log.debug("g()={}", g);
+        }
     }
 
     /**
@@ -183,5 +186,10 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
     @Override
     public int getGFor(Symbol symbol) {
         return g.get(symbol);
+    }
+
+    @Override
+    public String toString() {
+        return "f()=" + f + ", g()={}" + g;
     }
 }

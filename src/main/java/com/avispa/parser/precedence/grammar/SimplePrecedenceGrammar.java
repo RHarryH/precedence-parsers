@@ -45,6 +45,16 @@ public class SimplePrecedenceGrammar extends OperatorGrammar {
         } else {
             log.warn("Precedence functions won't be calculated because weak-precedence grammar was detected.");
         }
+
+        if(log.isDebugEnabled()) {
+            if(null != functions) {
+                log.debug("Precedence functions:");
+                log.debug("{}", functions);
+            } else {
+                log.debug("Precedence table:");
+                log.debug("{}", table);
+            }
+        }
     }
 
     private boolean isSimplePrecedence() {
@@ -76,6 +86,7 @@ public class SimplePrecedenceGrammar extends OperatorGrammar {
 
     @Override
     public String toString() {
-        return weak ? "Weak-precedence grammar" : "Simple precedence grammar:" + super.toString();
+        final String newLine = System.lineSeparator();
+        return (weak ? "Weak-precedence grammar: " : "Simple precedence grammar: ") + newLine + super.toString();
     }
 }

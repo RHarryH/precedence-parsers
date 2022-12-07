@@ -63,13 +63,13 @@ public class GrammarFile {
         return new ContextFreeGrammar(name, new HashSet<>(terminals.values()), productions);
     }
 
-    public OperatorGrammar readOperatorPrecedence() throws IncorrectGrammarException {
+    public OperatorPrecedenceGrammar readOperatorPrecedence() throws IncorrectGrammarException {
         parseFile();
 
         return new OperatorPrecedenceGrammar(name, new HashSet<>(terminals.values()), productions);
     }
 
-    public OperatorGrammar readSimplePrecedence() throws IncorrectGrammarException {
+    public SimplePrecedenceGrammar readSimplePrecedence() throws IncorrectGrammarException {
         parseFile();
 
         return new SimplePrecedenceGrammar(name, new HashSet<>(terminals.values()), productions);

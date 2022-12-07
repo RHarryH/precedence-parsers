@@ -14,14 +14,22 @@ public final class Lexeme extends Symbol {
     private final String value;
     private final Terminal terminal;
 
+    public static Lexeme of(String value, Terminal terminal, int index) {
+        return new Lexeme(value, terminal, index);
+    }
+
     public static Lexeme of(String value, Terminal terminal) {
         return new Lexeme(value, terminal);
     }
 
-    private Lexeme(String value, Terminal terminal) {
-        super("");
+    private Lexeme(String value, Terminal terminal, int index) {
+        super(Integer.toString(index));
         this.value = value;
         this.terminal = terminal;
+    }
+
+    private Lexeme(String value, Terminal terminal) {
+        this(value, terminal, 1);
     }
 
     public void setIndex(int index) {

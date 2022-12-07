@@ -27,8 +27,7 @@ public class TreePrinter {
     private static <T> StringBuilder print(TreeNode<T> tree, StringBuilder sb, List<Boolean> hasUnprocessedChildren, String lineSeparator) {
         List<TreeNode<T>> children = tree.getChildren();
 
-        T rootValue = tree.getValue();
-        sb.append(null != rootValue ? rootValue : "<root>").append(lineSeparator);
+        sb.append(tree).append(lineSeparator);
 
         for(int i = 0; i < children.size(); i++) {
             if(i == children.size() - 1) {

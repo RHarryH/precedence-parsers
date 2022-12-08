@@ -10,21 +10,21 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static com.avispa.parser.precedence.TokenUtil.A;
-import static com.avispa.parser.precedence.TokenUtil.B;
-import static com.avispa.parser.precedence.TokenUtil.C;
-import static com.avispa.parser.precedence.TokenUtil.D;
-import static com.avispa.parser.precedence.TokenUtil.a;
-import static com.avispa.parser.precedence.TokenUtil.add;
-import static com.avispa.parser.precedence.TokenUtil.b;
-import static com.avispa.parser.precedence.TokenUtil.expression;
-import static com.avispa.parser.precedence.TokenUtil.factor;
-import static com.avispa.parser.precedence.TokenUtil.lpar;
-import static com.avispa.parser.precedence.TokenUtil.mul;
-import static com.avispa.parser.precedence.TokenUtil.number;
-import static com.avispa.parser.precedence.TokenUtil.rpar;
-import static com.avispa.parser.precedence.TokenUtil.start;
-import static com.avispa.parser.precedence.TokenUtil.term;
+import static com.avispa.parser.precedence.TestSymbols.A;
+import static com.avispa.parser.precedence.TestSymbols.B;
+import static com.avispa.parser.precedence.TestSymbols.C;
+import static com.avispa.parser.precedence.TestSymbols.D;
+import static com.avispa.parser.precedence.TestSymbols.a;
+import static com.avispa.parser.precedence.TestSymbols.add;
+import static com.avispa.parser.precedence.TestSymbols.b;
+import static com.avispa.parser.precedence.TestSymbols.expression;
+import static com.avispa.parser.precedence.TestSymbols.factor;
+import static com.avispa.parser.precedence.TestSymbols.lpar;
+import static com.avispa.parser.precedence.TestSymbols.mul;
+import static com.avispa.parser.precedence.TestSymbols.number;
+import static com.avispa.parser.precedence.TestSymbols.rpar;
+import static com.avispa.parser.precedence.TestSymbols.start;
+import static com.avispa.parser.precedence.TestSymbols.term;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

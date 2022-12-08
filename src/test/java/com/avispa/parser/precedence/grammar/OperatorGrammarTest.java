@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Set;
 
-import static com.avispa.parser.precedence.TokenUtil.A;
-import static com.avispa.parser.precedence.TokenUtil.B;
-import static com.avispa.parser.precedence.TokenUtil.a;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.avispa.parser.precedence.TestSymbols.A;
+import static com.avispa.parser.precedence.TestSymbols.B;
+import static com.avispa.parser.precedence.TestSymbols.a;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Rafał Hiszpański

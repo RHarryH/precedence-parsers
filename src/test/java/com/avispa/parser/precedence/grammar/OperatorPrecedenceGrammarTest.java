@@ -1,17 +1,15 @@
 package com.avispa.parser.precedence.grammar;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.avispa.parser.precedence.TokenUtil.A;
-import static com.avispa.parser.precedence.TokenUtil.B;
-import static com.avispa.parser.precedence.TokenUtil.a;
-import static com.avispa.parser.precedence.TokenUtil.b;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.avispa.parser.precedence.TestSymbols.A;
+import static com.avispa.parser.precedence.TestSymbols.B;
+import static com.avispa.parser.precedence.TestSymbols.a;
+import static com.avispa.parser.precedence.TestSymbols.b;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Rafał Hiszpański

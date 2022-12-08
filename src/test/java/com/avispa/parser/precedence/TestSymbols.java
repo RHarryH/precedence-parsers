@@ -2,11 +2,14 @@ package com.avispa.parser.precedence;
 
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Terminal;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Rafał Hiszpański
  */
-public class TokenUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TestSymbols {
     public static final NonTerminal start = NonTerminal.of("start");
     public static final NonTerminal expression = NonTerminal.of("expression");
     public static final NonTerminal term_prime = NonTerminal.of("term_prime");

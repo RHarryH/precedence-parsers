@@ -16,6 +16,9 @@ public final class Lexeme extends Symbol {
     private final Terminal terminal;
 
     public static Lexeme of(String value, Terminal terminal, int index) {
+        if(index < 1) {
+            throw new IllegalArgumentException("Index must be greater than 0");
+        }
         return new Lexeme(value, terminal, index);
     }
 

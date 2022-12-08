@@ -1,7 +1,6 @@
 package com.avispa.parser.precedence.parser;
 
-
-import com.avispa.parser.precedence.grammar.SimplePrecedenceGrammar;
+import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Slf4j
 public class OperatorPrecedenceParser extends PrecedenceParser<Symbol> {
-    public OperatorPrecedenceParser(SimplePrecedenceGrammar grammar) {
+    public OperatorPrecedenceParser(OperatorPrecedenceGrammar grammar) {
         super(grammar);
     }
 

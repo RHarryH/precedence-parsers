@@ -24,7 +24,7 @@ public class OperatorPrecedenceGrammar extends OperatorGrammar {
         }
 
         if(hasLessThanOrEqualsConflict()) {
-            throw new IncorrectGrammarException("Weak-precedence detected. It is not supported for operator-precedence grammars");
+            throw new IllegalStateException("Weak-precedence detected. It is not supported for operator-precedence grammars");
         }
 
         try {

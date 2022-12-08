@@ -28,7 +28,8 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
 
     @Override
     public List<O> parse(String input) throws LexerException, SyntaxException {
-        input = "$" + input + "$";
+        input = "$" + input + "$"; // add markers
+
         Deque<Symbol> deque = new ArrayDeque<>();
         Lexer lexer = new Lexer(input, grammar);
 

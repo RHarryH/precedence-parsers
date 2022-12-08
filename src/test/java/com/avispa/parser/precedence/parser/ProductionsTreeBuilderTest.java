@@ -3,19 +3,19 @@ package com.avispa.parser.precedence.parser;
 import com.avispa.parser.misc.tree.TreeNode;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
-import com.avispa.parser.precedence.grammar.OperatorGrammar;
+import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import org.junit.jupiter.api.Test;
 
-import static com.avispa.parser.precedence.TokenUtil.add;
-import static com.avispa.parser.precedence.TokenUtil.expression;
-import static com.avispa.parser.precedence.TokenUtil.factor;
-import static com.avispa.parser.precedence.TokenUtil.lpar;
-import static com.avispa.parser.precedence.TokenUtil.mul;
-import static com.avispa.parser.precedence.TokenUtil.number;
-import static com.avispa.parser.precedence.TokenUtil.rpar;
-import static com.avispa.parser.precedence.TokenUtil.start;
-import static com.avispa.parser.precedence.TokenUtil.term;
+import static com.avispa.parser.precedence.TestSymbols.add;
+import static com.avispa.parser.precedence.TestSymbols.expression;
+import static com.avispa.parser.precedence.TestSymbols.factor;
+import static com.avispa.parser.precedence.TestSymbols.lpar;
+import static com.avispa.parser.precedence.TestSymbols.mul;
+import static com.avispa.parser.precedence.TestSymbols.number;
+import static com.avispa.parser.precedence.TestSymbols.rpar;
+import static com.avispa.parser.precedence.TestSymbols.start;
+import static com.avispa.parser.precedence.TestSymbols.term;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -25,7 +25,7 @@ class ProductionsTreeBuilderTest {
     @Test
     void givenOperatorPrecedenceGrammar_whenBuildTree_thenCorrect() throws IncorrectGrammarException {
         // given
-        OperatorGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").readOperatorPrecedence();
+        OperatorPrecedenceGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").readOperatorPrecedence();
 
         TreeNode<Symbol> expectedTree = createExpectedTree();
 

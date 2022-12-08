@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.avispa.parser.precedence.TokenUtil.add;
-import static com.avispa.parser.precedence.TokenUtil.number;
+import static com.avispa.parser.precedence.TestSymbols.add;
+import static com.avispa.parser.precedence.TestSymbols.number;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

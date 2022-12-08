@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,11 +15,15 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public final class Production {
-    private NonTerminal lhs;
-    private List<Symbol> rhs;
+    private final NonTerminal lhs;
+    private final List<Symbol> rhs;
 
     public static Production of(NonTerminal lhs, List<Symbol> rhs) {
         return new Production(lhs, rhs);
+    }
+
+    public List<Symbol> getRhs() {
+        return Collections.unmodifiableList(rhs);
     }
 
     @Override

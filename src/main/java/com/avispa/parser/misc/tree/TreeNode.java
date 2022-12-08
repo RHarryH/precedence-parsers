@@ -26,7 +26,7 @@ public class TreeNode<T> {
 
     public Optional<TreeNode<T>> getChild(T value) {
         for(var child : children) {
-            if(!child.isLeaf() && child.getValue().equals(value)) {
+            if(child.getValue().equals(value)) {
                 return Optional.of(child);
             }
         }

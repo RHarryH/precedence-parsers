@@ -1,5 +1,7 @@
 package com.avispa.parser.shuntingyard.output;
 
+import com.avispa.parser.lexer.LexerException;
+import com.avispa.parser.precedence.parser.SyntaxException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -14,22 +16,22 @@ class EvaluatorTest {
     private static final Evaluator evaluator = new Evaluator();
 
     @Test
-    void givenNothing_whenParse_thenReturnZero() {
+    void givenNothing_whenParse_thenReturnZero() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("0"), evaluator.parse(""));
     }
 
     @Test
-    void givenSimpleUnaryOperation_whenParse_thenCorrectResult() {
+    void givenSimpleUnaryOperation_whenParse_thenCorrectResult() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("-2"), evaluator.parse("-2"));
     }
 
     @Test
-    void givenSimpleBinaryOperation_whenParse_thenCorrectResult() {
+    void givenSimpleBinaryOperation_whenParse_thenCorrectResult() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("15"), evaluator.parse("3*5"));
     }
 
     @Test
-    void givenRightAssociativeOperation_whenParse_thenCorrectResult() {
+    void givenRightAssociativeOperation_whenParse_thenCorrectResult() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("25"), evaluator.parse("5^2"));
     }
 
@@ -39,17 +41,17 @@ class EvaluatorTest {
     }
 
     @Test
-    void givenFunction_whenParse_thenCorrectResult() {
+    void givenFunction_whenParse_thenCorrectResult() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("5"), evaluator.parse("max(5, 2)"));
     }
 
     @Test
-    void givenNestedFunction_whenParse_thenCorrectResult() {
+    void givenNestedFunction_whenParse_thenCorrectResult() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("5"), evaluator.parse("max(5, sqrt(4))"));
     }
 
     @Test
-    void givenComplexExpression_whenParse_thenCorrectResult() {
+    void givenComplexExpression_whenParse_thenCorrectResult() throws SyntaxException, LexerException {
         assertEquals(new BigDecimal("11"), evaluator.parse("15.4 - 16.4 + (4 * max(2, 3))"));
     }
 }

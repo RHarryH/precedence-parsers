@@ -1,9 +1,12 @@
 package com.avispa.parser.precedence.lexer;
 
+import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +19,7 @@ public class Lexer {
     private String input;
     private final Set<Terminal> terminals;
 
-    private Map<Terminal, Integer> occurence = new HashMap<>();
+    private final Map<Terminal, Integer> occurrenceCounterMap = new HashMap<>();
     private Lexeme lastLexeme = null;
 
     public Lexer(String input, ContextFreeGrammar grammar) {
@@ -70,41 +73,22 @@ public class Lexer {
      * @throws LexerException
      */
     private Lexeme next() throws LexerException {
-        Lexeme longestMatchLexeme = null;
-        for(Terminal terminal : terminals) {
-            int matchLength = terminal.lastMatchedIndex(input);
-            if(matchLength > 0) {
-                String value = input.substring(0, matchLength);
-
-                Lexeme lexeme = Lexeme.of(value, terminal);
-                if (longestMatchLexeme == null || matchLength > longestMatchLexeme.getValueLength()) {
-                    // new longest match
-                    longestMatchLexeme = lexeme;
-                }
-            }
-        }
-
-        if(null == longestMatchLexeme) {
-            throw new LexerException(input);
-        }
-
-        setLexemeIndex(longestMatchLexeme);
-
-        return longestMatchLexeme;
+        return terminals.stream()
+                .map(terminal -> Pair.of(terminal, terminal.lastMatchedIndex(input))) // get terminal with its match length
+                .filter(match -> match.getRight() > 0) // filter results without match
+                .max(Comparator.comparingInt(Pair::getRight)) // get max result
+                .map(match -> Lexeme.of(input.substring(0, match.getRight()), match.getLeft(), getIndex(match.getLeft()))) // map result to lexeme
+                .orElseThrow(() -> new LexerException(input)); // missing terminal matching input
     }
 
     /**
-     * In case more than one lexeme is matched by the same terminal, set up additional index to distinguish them from
-     * each other.
-     * @param lexeme
+     * In case more than one lexeme is matched by the same terminal, calculate additional index to distinguish
+     * them from each other.
+     * @param terminal
      */
-    private void setLexemeIndex(Lexeme lexeme) {
-        Terminal terminal = lexeme.getTerminal();
-
+    private int getIndex(Terminal terminal) {
         // get value for terminal or initialize with 1, when value exists one is added
-        int number = occurence.merge(terminal, 1, Integer::sum);
-
-        lexeme.setIndex(number);
+        return occurrenceCounterMap.merge(terminal, 1, Integer::sum);
     }
 
     public boolean hasCharactersLeft() {

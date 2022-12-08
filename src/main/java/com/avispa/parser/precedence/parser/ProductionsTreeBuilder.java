@@ -50,7 +50,7 @@ class ProductionsTreeBuilder {
 
     private static void addProductionNode(final TreeNode<Symbol> currentNode, Symbol symbol, int productionId) {
         currentNode.getChild(symbol).ifPresentOrElse(node -> {}, () -> {
-            var node = new ProductionTreeNode<>(symbol, productionId);
+            var node = new ProductionTreeNode(symbol, productionId);
             currentNode.addChild(node);
         });
     }

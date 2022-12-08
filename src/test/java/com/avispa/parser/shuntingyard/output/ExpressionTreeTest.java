@@ -1,6 +1,8 @@
 package com.avispa.parser.shuntingyard.output;
 
+import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.misc.tree.TreeNode;
+import com.avispa.parser.precedence.parser.SyntaxException;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Operand;
@@ -18,12 +20,12 @@ class ExpressionTreeTest {
     private static final ExpressionTree expressionTree = new ExpressionTree();
 
     @Test
-    void givenNothing_whenParse_thenNull() {
+    void givenNothing_whenParse_thenNull() throws SyntaxException, LexerException {
         assertNull(expressionTree.parse(""));
     }
 
     @Test
-    void givenOperand_whenParse_thenCorrectExpressionTree() {
+    void givenOperand_whenParse_thenCorrectExpressionTree() throws SyntaxException, LexerException {
         Operand two = Operand.from("2");
         TreeNode<Token> root = new TreeNode<>(two);
 
@@ -31,7 +33,7 @@ class ExpressionTreeTest {
     }
 
     @Test
-    void givenAddition_whenParse_thenCorrectExpressionTree() {
+    void givenAddition_whenParse_thenCorrectExpressionTree() throws SyntaxException, LexerException {
         TreeNode<Token> root = new TreeNode<>(BinaryOperatorToken.ADD);
         TreeNode<Token> operand1 = new TreeNode<>(Operand.from("2"));
         TreeNode<Token> operand2 = new TreeNode<>(Operand.from("3"));
@@ -42,7 +44,7 @@ class ExpressionTreeTest {
     }
 
     @Test
-    void givenSubtraction_whenParse_thenCorrectExpressionTree() {
+    void givenSubtraction_whenParse_thenCorrectExpressionTree() throws SyntaxException, LexerException {
         TreeNode<Token> root = new TreeNode<>(BinaryOperatorToken.SUBTRACT);
         TreeNode<Token> operand1 = new TreeNode<>(Operand.from("2"));
         TreeNode<Token> operand2 = new TreeNode<>(Operand.from("3"));
@@ -53,7 +55,7 @@ class ExpressionTreeTest {
     }
 
     @Test
-    void givenUnaryOperator_whenParse_thenCorrectExpressionTree() {
+    void givenUnaryOperator_whenParse_thenCorrectExpressionTree() throws SyntaxException, LexerException {
         TreeNode<Token> root = new TreeNode<>(UnaryOperatorToken.PLUS);
         TreeNode<Token> operand1 = new TreeNode<>(Operand.from("2"));
         root.addChild(operand1);
@@ -62,7 +64,7 @@ class ExpressionTreeTest {
     }
 
     @Test
-    void givenFunction_whenParse_thenCorrectExpressionTree() {
+    void givenFunction_whenParse_thenCorrectExpressionTree() throws SyntaxException, LexerException {
         TreeNode<Token> root = new TreeNode<>(FunctionToken.MAX);
         TreeNode<Token> operand1 = new TreeNode<>(Operand.from("2"));
         TreeNode<Token> operand2 = new TreeNode<>(Operand.from("3"));
@@ -73,7 +75,7 @@ class ExpressionTreeTest {
     }
 
     @Test
-    void givenCombinedOperations_whenParse_thenCorrectExpressionTree() {
+    void givenCombinedOperations_whenParse_thenCorrectExpressionTree() throws SyntaxException, LexerException {
         TreeNode<Token> root = new TreeNode<>(BinaryOperatorToken.ADD);
         TreeNode<Token> operand1 = new TreeNode<>(Operand.from("2"));
         TreeNode<Token> operator1 = new TreeNode<>(BinaryOperatorToken.MULTIPLY);

@@ -1,5 +1,8 @@
 package com.avispa.parser.shuntingyard;
 
+import com.avispa.parser.Parser;
+import com.avispa.parser.lexer.LexerException;
+import com.avispa.parser.precedence.parser.SyntaxException;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.MathOperator;
 import com.avispa.parser.shuntingyard.token.Misc;
@@ -17,15 +20,15 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public class ShuntingYard implements Parser {
+public class ShuntingYard implements Parser<Token> {
 
 	/**
-	 * Runs Shunting-yard algorithm for expressions parsing
+	 * Runs Shunting-yard algorithm for expressions parsing.
 	 * @param expression input string expression
 	 * @return list of parsed tokens
 	 */
 	@Override
-    public List<Token> parse(String expression) {
+    public List<Token> parse(String expression) throws LexerException, SyntaxException {
 		List<Token> output = new ArrayList<>();
 		Deque<Token> opStack = new ArrayDeque<>();
 		Deque<Call> callStack = new ArrayDeque<>();
@@ -60,7 +63,7 @@ public class ShuntingYard implements Parser {
 		while(!opStack.isEmpty()) {
 			Token token = opStack.pop();
 			if(Misc.LEFT_PARENTHESIS.equals(token)) {
-				throw new IllegalStateException("Mismatched parentheses!");
+				throw new SyntaxException("Mismatched parentheses!");
 			}
 			output.add(token);
 		}
@@ -76,11 +79,11 @@ public class ShuntingYard implements Parser {
 	 * @param opStack operators stack
 	 * @param output output token list
 	 */
-	private void closeParenthesesGroup(Deque<Token> opStack, List<Token> output) {
+	private void closeParenthesesGroup(Deque<Token> opStack, List<Token> output) throws SyntaxException {
 		while(!Misc.LEFT_PARENTHESIS.equals(opStack.peek())) {
 			output.add(opStack.pop());
 			if(opStack.isEmpty()) {
-				throw new IllegalStateException("Missing left parenthesis");
+				throw new SyntaxException("Missing left parenthesis");
 			}
 		}
 	}
@@ -89,11 +92,11 @@ public class ShuntingYard implements Parser {
 	 * When the call stack is not empty, increment argument list for the last element on the call stack.
 	 * @param callStack stack containing information about functions
 	 */
-	private void incrementPeekFunctionArgumentCount(Deque<Call> callStack) {
+	private void incrementPeekFunctionArgumentCount(Deque<Call> callStack) throws SyntaxException {
 		if(!callStack.isEmpty()) {
 			callStack.peek().incArgumentCount();
 		} else {
-			throw new IllegalStateException("No function found. Comma used in the wrong place.");
+			throw new SyntaxException("No function found. Comma used in the wrong place.");
 		}
 	}
 
@@ -124,7 +127,7 @@ public class ShuntingYard implements Parser {
 	 * @param callStack stack containing information about functions
 	 * @param output output token list
 	 */
-	private void processFunctionClosure(Deque<Token> opStack, Deque<Call> callStack, List<Token> output) {
+	private void processFunctionClosure(Deque<Token> opStack, Deque<Call> callStack, List<Token> output) throws SyntaxException {
 		if(opStack.peek() instanceof FunctionToken) {
 			Call call = callStack.pop();
 
@@ -133,7 +136,7 @@ public class ShuntingYard implements Parser {
 				output.add(opStack.pop());
 			} else {
 				String message = String.format("Function does not have all arguments defined. Expected: %s, is: %s", call.getFunctionToken().getExpectedArgCount(), call.getArgCount());
-				throw new IllegalStateException(message);
+				throw new SyntaxException(message);
 			}
 		}
 	}

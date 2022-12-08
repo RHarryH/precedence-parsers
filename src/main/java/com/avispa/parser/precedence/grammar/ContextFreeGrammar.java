@@ -166,7 +166,7 @@ public class ContextFreeGrammar implements Grammar {
         sb.append("P = {").append(newLine);
 
         for(int i = 0; i < productions.size(); i++) {
-            sb.append(i + 1).append(": ").append(productions.get(i)).append(newLine);
+            sb.append(i).append(": ").append(productions.get(i)).append(newLine);
         }
 
         sb.append("}").append(newLine);

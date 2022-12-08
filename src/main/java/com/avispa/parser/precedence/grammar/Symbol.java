@@ -1,17 +1,14 @@
 package com.avispa.parser.precedence.grammar;
 
 import com.avispa.parser.precedence.lexer.Lexeme;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 
 /**
  * @author Rafał Hiszpański
  */
 @EqualsAndHashCode
 public abstract class Symbol {
-    @Setter(AccessLevel.PROTECTED)
-    private String name;
+    protected String name;
 
     protected Symbol(String name) {
         this.name = name;

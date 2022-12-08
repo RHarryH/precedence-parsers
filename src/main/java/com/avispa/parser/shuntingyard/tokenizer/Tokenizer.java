@@ -1,5 +1,6 @@
 package com.avispa.parser.shuntingyard.tokenizer;
 
+import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Misc;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
 public class Tokenizer {
     private static final Pattern operandPattern = Pattern.compile("^((\\d+(\\.\\d*)?)|(\\.\\d+))");
 
-    public List<Token> tokenize(String expression) {
+    public List<Token> tokenize(String expression) throws LexerException {
         List<Token> tokens = new ArrayList<>();
         
         expression = expression.replaceAll("\\s+","");
@@ -37,7 +38,7 @@ public class Tokenizer {
             if(tokenFound) {
                 expression = expression.substring(tokens.get(tokens.size() - 1).getValue().length());
             } else {
-                throw new IllegalStateException("Unknown token starting from \"" + expression + "\"");
+                throw new LexerException("Unknown token starting from \"" + expression + "\"");
             }
         }
         

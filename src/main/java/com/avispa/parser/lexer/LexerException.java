@@ -1,4 +1,4 @@
-package com.avispa.parser.precedence.lexer;
+package com.avispa.parser.lexer;
 
 import org.apache.commons.lang3.StringUtils;
 

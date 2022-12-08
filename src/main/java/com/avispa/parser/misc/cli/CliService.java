@@ -1,6 +1,8 @@
 package com.avispa.parser.misc.cli;
 
+import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.misc.tree.TreePrinter;
+import com.avispa.parser.precedence.parser.SyntaxException;
 import com.avispa.parser.shuntingyard.ShuntingYard;
 import com.avispa.parser.shuntingyard.output.Evaluator;
 import com.avispa.parser.shuntingyard.output.ExpressionTree;
@@ -43,21 +45,27 @@ public class CliService {
             throw new MissingArgumentException("Input is mandatory");
         }
 
-        if(commandLine.hasOption(OUTPUT.getName())) {
-            String value = commandLine.getOptionValue(OUTPUT.getName());
+        try {
+            if (commandLine.hasOption(OUTPUT.getName())) {
+                String value = commandLine.getOptionValue(OUTPUT.getName());
 
-            if(EVALUATED.getName().equals(value)) {
-                return new Evaluator().parse(expression).toPlainString();
-            } else if(EXPRESSION_TREE.getName().equals(value)) {
-                return TreePrinter.print(new ExpressionTree().parse(expression));
-            } else if(REVERSE_POLISH_NOTATION.getName().equals(value)) {
-                return new ReversePolishNotationText().parse(expression);
-            } else {
+                if (EVALUATED.getName().equals(value)) {
+                    return new Evaluator().parse(expression).toPlainString();
+                } else if (EXPRESSION_TREE.getName().equals(value)) {
+                    return TreePrinter.print(new ExpressionTree().parse(expression));
+                } else if (REVERSE_POLISH_NOTATION.getName().equals(value)) {
+                    return new ReversePolishNotationText().parse(expression);
+                } else {
+                    return new ShuntingYard().parse(expression).toString();
+                }
+            } else { // by default list of tokens
                 return new ShuntingYard().parse(expression).toString();
             }
-        } else { // by default list of tokens
-            return new ShuntingYard().parse(expression).toString();
+        } catch(SyntaxException| LexerException e) {
+            log.error("Parsing failed.", e);
         }
+
+        return "";
     }
 
     private CommandLine getCommandLine(String[] args, Options options, CommandLineParser parser) throws MissingArgumentException {

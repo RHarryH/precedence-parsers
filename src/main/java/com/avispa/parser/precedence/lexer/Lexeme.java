@@ -12,28 +12,18 @@ import lombok.Getter;
 @Getter
 public final class Lexeme extends Symbol {
     private final String value;
+    private final int index;
     private final Terminal terminal;
 
     public static Lexeme of(String value, Terminal terminal, int index) {
         return new Lexeme(value, terminal, index);
     }
 
-    public static Lexeme of(String value, Terminal terminal) {
-        return new Lexeme(value, terminal);
-    }
-
     private Lexeme(String value, Terminal terminal, int index) {
-        super(Integer.toString(index));
+        super(terminal.getName());
+        this.index = index;
         this.value = value;
         this.terminal = terminal;
-    }
-
-    private Lexeme(String value, Terminal terminal) {
-        this(value, terminal, 1);
-    }
-
-    public void setIndex(int index) {
-        setName(Integer.toString(index));
     }
 
     public int getValueLength() {
@@ -42,9 +32,6 @@ public final class Lexeme extends Symbol {
 
     @Override
     public String toString() {
-        String name = getName();
-        String index = name.isEmpty() ? "" : "_" + name;
-
-        return terminal + index + ": " + value;
+        return super.toString() + "_" + index + ":" + value;
     }
 }

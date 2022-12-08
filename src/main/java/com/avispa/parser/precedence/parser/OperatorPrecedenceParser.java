@@ -5,16 +5,17 @@ import com.avispa.parser.precedence.grammar.SimplePrecedenceGrammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Deque;
 import java.util.List;
 
 @Slf4j
-public class OperatorPrecedenceParser extends Parser<Symbol> {
-    public OperatorPrecedenceParser(String input, SimplePrecedenceGrammar grammar) {
-        super(input, grammar);
+public class OperatorPrecedenceParser extends PrecedenceParser<Symbol> {
+    public OperatorPrecedenceParser(SimplePrecedenceGrammar grammar) {
+        super(grammar);
     }
 
     @Override
-    protected void reduce(List<Symbol> output) throws SyntaxException {
+    protected void reduce(List<Symbol> output, Deque<Symbol> deque) throws SyntaxException {
         log.debug("REDUCE (> relation matched).");
         Symbol fromStack;
         Symbol stackTop;

@@ -1,5 +1,6 @@
 package com.avispa.parser.precedence.lexer;
 
+import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;

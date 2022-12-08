@@ -1,6 +1,9 @@
 package com.avispa.parser.shuntingyard.output;
 
-import com.avispa.parser.shuntingyard.Parser;
+import com.avispa.parser.lexer.LexerException;
+import com.avispa.parser.output.AbstractOutputTransformer;
+import com.avispa.parser.precedence.parser.SyntaxException;
+import com.avispa.parser.shuntingyard.ShuntingYard;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Operand;
@@ -16,17 +19,13 @@ import java.util.stream.IntStream;
 /**
  * @author Rafał Hiszpański
  */
-public final class Evaluator extends AbstractOutputTransformer<BigDecimal> {
+public final class Evaluator extends AbstractOutputTransformer<BigDecimal, Token> {
     public Evaluator() {
-        super();
-    }
-
-    public Evaluator(Parser parser) {
-        super(parser);
+        super(new ShuntingYard());
     }
 
     @Override
-    public BigDecimal parse(String expression) {
+    public BigDecimal parse(String expression) throws SyntaxException, LexerException {
         List<Token> output = getParser().parse(expression);
 
         if(output.isEmpty()) {

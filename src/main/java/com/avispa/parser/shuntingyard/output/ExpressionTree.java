@@ -1,6 +1,10 @@
 package com.avispa.parser.shuntingyard.output;
 
+import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.misc.tree.TreeNode;
+import com.avispa.parser.output.AbstractOutputTransformer;
+import com.avispa.parser.precedence.parser.SyntaxException;
+import com.avispa.parser.shuntingyard.ShuntingYard;
 import com.avispa.parser.shuntingyard.token.BinaryOperatorToken;
 import com.avispa.parser.shuntingyard.token.FunctionToken;
 import com.avispa.parser.shuntingyard.token.Operand;
@@ -14,10 +18,14 @@ import java.util.List;
 /**
  * @author Rafał Hiszpański
  */
-public final class ExpressionTree extends AbstractOutputTransformer<TreeNode<Token>>{
+public final class ExpressionTree extends AbstractOutputTransformer<TreeNode<Token>, Token> {
+
+    public ExpressionTree() {
+        super(new ShuntingYard());
+    }
 
     @Override
-    public TreeNode<Token> parse(String expression) {
+    public TreeNode<Token> parse(String expression) throws SyntaxException, LexerException {
         List<Token> output = getParser().parse(expression);
 
         if(output.isEmpty()) {

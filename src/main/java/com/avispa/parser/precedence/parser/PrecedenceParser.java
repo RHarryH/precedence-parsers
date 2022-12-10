@@ -46,7 +46,7 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
             } else if(grammar.precedenceGreaterThan(stackTop, nextLexeme)){
                 reduce(output, deque);
             } else {
-                throw new SyntaxException(nextLexeme.getValue());
+                throw new SyntaxException("Syntax error at the vicinity of: " + nextLexeme.getValue());
             }
 
             log.debug("Current stack state: {}", deque);

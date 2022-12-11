@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.avispa.parser.precedence.TestSymbols.expression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,7 +17,7 @@ class GrammarFileTest {
 
     @Test
     void givenCorrectGrammar_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-correct.txt").read();
+        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-correct.txt"),expression);
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -28,7 +29,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithAlternatives_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt").read();
+        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt"), expression);
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -40,7 +41,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithWhitespaceAfterAlternative_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt").read();
+        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt"), expression);
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -52,7 +53,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithIncorrectLine_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt").read();
+        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt"), expression);
 
         assertEquals("IncorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -64,14 +65,12 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithUndefinedTerminal_whenRead_thenThrowException() {
-        GrammarFile file = new GrammarFile("src/test/resources/grammar/grammar-undefined-terminal.txt");
-        assertThrows(IllegalStateException.class, file::read);
+        assertThrows(IllegalStateException.class, () -> new GrammarFile("src/test/resources/grammar/grammar-undefined-terminal.txt"));
     }
 
     @Test
     void givenGrammarWithWrongRegex_whenRead_thenThrowException() {
-        GrammarFile file = new GrammarFile("src/test/resources/grammar/grammar-wrong-regex.txt");
-        assertThrows(IllegalStateException.class, file::read);
+        assertThrows(IllegalStateException.class, () -> new GrammarFile("src/test/resources/grammar/grammar-wrong-regex.txt"));
     }
 
     private Set<String> terminalsToValues(Grammar grammar) {

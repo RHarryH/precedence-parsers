@@ -1,6 +1,7 @@
 package com.avispa.parser.precedence.parser;
 
 import com.avispa.parser.misc.tree.TreeNode;
+import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
@@ -11,6 +12,7 @@ import static com.avispa.parser.precedence.TestSymbols.add;
 import static com.avispa.parser.precedence.TestSymbols.expression;
 import static com.avispa.parser.precedence.TestSymbols.factor;
 import static com.avispa.parser.precedence.TestSymbols.lpar;
+import static com.avispa.parser.precedence.TestSymbols.marker;
 import static com.avispa.parser.precedence.TestSymbols.mul;
 import static com.avispa.parser.precedence.TestSymbols.number;
 import static com.avispa.parser.precedence.TestSymbols.rpar;
@@ -25,7 +27,7 @@ class ProductionsTreeBuilderTest {
     @Test
     void givenOperatorPrecedenceGrammar_whenBuildTree_thenCorrect() throws IncorrectGrammarException {
         // given
-        OperatorPrecedenceGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").readOperatorPrecedence();
+        ContextFreeGrammar grammar = new OperatorPrecedenceGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         TreeNode<Symbol> expectedTree = createExpectedTree();
 
@@ -38,7 +40,7 @@ class ProductionsTreeBuilderTest {
 
     private TreeNode<Symbol> createExpectedTree() {
         TreeNode<Symbol> expectedTree = new TreeNode<>(null);
-        expressionBranch(expectedTree);
+        startBranch(expectedTree);
         termBranch(expectedTree);
         factorBranch(expectedTree);
         numberBranch(expectedTree);
@@ -46,10 +48,14 @@ class ProductionsTreeBuilderTest {
         return expectedTree;
     }
 
-    private void expressionBranch(TreeNode<Symbol> expectedTree) {
+    private void startBranch(TreeNode<Symbol> expectedTree) {
+        TreeNode<Symbol> markerNode1 = new TreeNode<>(marker);
+        expectedTree.addChild(markerNode1);
         TreeNode<Symbol> expressionNode = new TreeNode<>(expression);
-        expectedTree.addChild(expressionNode);
-        expressionNode.addChild(new ProductionTreeNode(start, 0));
+        markerNode1.addChild(expressionNode);
+        TreeNode<Symbol> markerNode2 = new TreeNode<>(marker);
+        expressionNode.addChild(markerNode2);
+        markerNode2.addChild(new ProductionTreeNode(start, 0));
     }
 
     private void termBranch(TreeNode<Symbol> expectedTree) {

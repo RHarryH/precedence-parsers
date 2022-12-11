@@ -30,7 +30,7 @@ class SimplePrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(a)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
         var firstAll = new FirstAllSets(grammar);
         var lastAll = new LastAllSets(grammar);
         var first = new FirstSets(firstAll, grammar.getTerminals());
@@ -52,7 +52,7 @@ class SimplePrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a)), Production.of(B, List.of(a)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
         var firstAll = new FirstAllSets(grammar);
         var lastAll = new LastAllSets(grammar);
         var first = new FirstSets(firstAll, grammar.getTerminals());
@@ -81,7 +81,7 @@ class SimplePrecedenceSetsTest {
                 Production.of(D, List.of(a, b)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
         var firstAll = new FirstAllSets(grammar);
         var lastAll = new LastAllSets(grammar);
         var first = new FirstSets(firstAll, grammar.getTerminals());

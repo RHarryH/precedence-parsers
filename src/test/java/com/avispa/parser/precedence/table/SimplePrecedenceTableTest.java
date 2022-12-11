@@ -21,7 +21,6 @@ import static com.avispa.parser.precedence.TestSymbols.add;
 import static com.avispa.parser.precedence.TestSymbols.b;
 import static com.avispa.parser.precedence.TestSymbols.expression;
 import static com.avispa.parser.precedence.TestSymbols.factor;
-import static com.avispa.parser.precedence.TestSymbols.marker;
 import static com.avispa.parser.precedence.TestSymbols.mul;
 import static com.avispa.parser.precedence.TestSymbols.number;
 import static com.avispa.parser.precedence.TestSymbols.start;
@@ -41,7 +40,7 @@ class SimplePrecedenceTableTest {
 
         List<Production> productions = List.of(Production.of(A, List.of(B, a, a)), Production.of(B, List.of(b)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
 
         // when
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
@@ -51,12 +50,8 @@ class SimplePrecedenceTableTest {
         expected.put(Pair.of(B, a), Precedence.EQUALS);
 
         expected.put(Pair.of(a, a), Precedence.EQUALS);
-        expected.put(Pair.of(a, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(b, a), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(marker, B), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, b), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
     }
@@ -72,7 +67,7 @@ class SimplePrecedenceTableTest {
          */
         List<Production> productions = List.of(Production.of(start, List.of(A)), Production.of(A, List.of(A, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, A)), Production.of(B, List.of(a)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, start);
 
         // when/then
         assertThrows(PrecedenceTableException.class, () -> new OperatorPrecedenceTable(grammar));
@@ -87,9 +82,9 @@ class SimplePrecedenceTableTest {
          * A -> AaB | a
          * B -> BbA | a
          */
-        List<Production> productions = List.of(Production.of(start, List.of(A)), Production.of(A, List.of(A, a, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, b, A)), Production.of(B, List.of(a)));
+        List<Production> productions = List.of(Production.of(A, List.of(A, a, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, b, A)), Production.of(B, List.of(a)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
 
         // when/then
         assertThrows(PrecedenceTableException.class, () -> new SimplePrecedenceTable(grammar));
@@ -98,7 +93,7 @@ class SimplePrecedenceTableTest {
     @Test
     void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
 
         // when
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
@@ -109,11 +104,9 @@ class SimplePrecedenceTableTest {
 
         expected.put(Pair.of(term, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(term, mul), Precedence.EQUALS);
-        expected.put(Pair.of(term, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(factor, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(factor, mul), Precedence.GREATER_THAN);
-        expected.put(Pair.of(factor, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(add, term), Precedence.LESS_THAN_OR_EQUALS);
         expected.put(Pair.of(add, factor), Precedence.LESS_THAN);
@@ -124,12 +117,6 @@ class SimplePrecedenceTableTest {
 
         expected.put(Pair.of(number, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(number, mul), Precedence.GREATER_THAN);
-        expected.put(Pair.of(number, marker), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(marker, expression), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, term), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, factor), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, number), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
     }

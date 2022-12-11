@@ -19,12 +19,11 @@ import static com.avispa.parser.precedence.TestSymbols.B;
 import static com.avispa.parser.precedence.TestSymbols.a;
 import static com.avispa.parser.precedence.TestSymbols.add;
 import static com.avispa.parser.precedence.TestSymbols.b;
+import static com.avispa.parser.precedence.TestSymbols.expression;
 import static com.avispa.parser.precedence.TestSymbols.lpar;
-import static com.avispa.parser.precedence.TestSymbols.marker;
 import static com.avispa.parser.precedence.TestSymbols.mul;
 import static com.avispa.parser.precedence.TestSymbols.number;
 import static com.avispa.parser.precedence.TestSymbols.rpar;
-import static com.avispa.parser.precedence.TestSymbols.start;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -40,7 +39,7 @@ class OperatorPrecedenceTableTest {
 
         List<Production> productions = List.of(Production.of(A, List.of(B, a, a)), Production.of(B, List.of(b)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
 
         // when
         var precedenceTable = new OperatorPrecedenceTable(grammar);
@@ -48,12 +47,8 @@ class OperatorPrecedenceTableTest {
         // then
         Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
         expected.put(Pair.of(a, a), Precedence.EQUALS);
-        expected.put(Pair.of(a, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(b, a), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(marker, a), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, b), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
     }
@@ -61,7 +56,7 @@ class OperatorPrecedenceTableTest {
     @Test
     void givenOperatorPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         // when
         var precedenceTable = new OperatorPrecedenceTable(grammar);
@@ -73,7 +68,6 @@ class OperatorPrecedenceTableTest {
         expected.put(Pair.of(add, mul), Precedence.LESS_THAN);
         expected.put(Pair.of(add, number), Precedence.LESS_THAN);
         expected.put(Pair.of(add, rpar), Precedence.GREATER_THAN);
-        expected.put(Pair.of(add, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(lpar, add), Precedence.LESS_THAN);
         expected.put(Pair.of(lpar, lpar), Precedence.LESS_THAN);
@@ -86,22 +80,14 @@ class OperatorPrecedenceTableTest {
         expected.put(Pair.of(mul, mul), Precedence.GREATER_THAN);
         expected.put(Pair.of(mul, number), Precedence.LESS_THAN);
         expected.put(Pair.of(mul, rpar), Precedence.GREATER_THAN);
-        expected.put(Pair.of(mul, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(number, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(number, mul), Precedence.GREATER_THAN);
         expected.put(Pair.of(number, rpar), Precedence.GREATER_THAN);
-        expected.put(Pair.of(number, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(rpar, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(rpar, mul), Precedence.GREATER_THAN);
         expected.put(Pair.of(rpar, rpar), Precedence.GREATER_THAN);
-        expected.put(Pair.of(rpar, marker), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(marker, add), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, lpar), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, mul), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, number), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
     }
@@ -115,9 +101,9 @@ class OperatorPrecedenceTableTest {
          * A -> AB | a
          * B -> BA | a
          */
-        List<Production> productions = List.of(Production.of(start, List.of(A)), Production.of(A, List.of(A, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, A)), Production.of(B, List.of(a)));
+        List<Production> productions = List.of(Production.of(A, List.of(A, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, A)), Production.of(B, List.of(a)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
 
         // when/then
         assertThrows(PrecedenceTableException.class, () -> new OperatorPrecedenceTable(grammar));
@@ -132,9 +118,9 @@ class OperatorPrecedenceTableTest {
          * A -> AaB | a
          * B -> BbA | a
          */
-        List<Production> productions = List.of(Production.of(start, List.of(A)), Production.of(A, List.of(A, a, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, b, A)), Production.of(B, List.of(a)));
+        List<Production> productions = List.of(Production.of(A, List.of(A, a, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, b, A)), Production.of(B, List.of(a)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions);
+        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
 
         // when/then
         assertThrows(PrecedenceTableException.class, () -> new OperatorPrecedenceTable(grammar));
@@ -143,7 +129,7 @@ class OperatorPrecedenceTableTest {
     @Test
     void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
 
         // when
         var precedenceTable = new OperatorPrecedenceTable(grammar);
@@ -153,20 +139,13 @@ class OperatorPrecedenceTableTest {
         expected.put(Pair.of(add, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(add, mul), Precedence.LESS_THAN);
         expected.put(Pair.of(add, number), Precedence.LESS_THAN);
-        expected.put(Pair.of(add, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(mul, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(mul, mul), Precedence.GREATER_THAN);
         expected.put(Pair.of(mul, number), Precedence.LESS_THAN);
-        expected.put(Pair.of(mul, marker), Precedence.GREATER_THAN);
 
         expected.put(Pair.of(number, add), Precedence.GREATER_THAN);
         expected.put(Pair.of(number, mul), Precedence.GREATER_THAN);
-        expected.put(Pair.of(number, marker), Precedence.GREATER_THAN);
-
-        expected.put(Pair.of(marker, add), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, mul), Precedence.LESS_THAN);
-        expected.put(Pair.of(marker, number), Precedence.LESS_THAN);
 
         assertEquals(expected.entrySet(), precedenceTable.get().entrySet());
     }

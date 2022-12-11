@@ -6,7 +6,6 @@ NUMBER: [0-9];
 LEFT_PARENTHESIS: \(;
 RIGHT_PARENTHESIS: \);
 
-start: expression;
 expression: expression ADD term | term;
 term: term MUL factor | factor;
 factor: NUMBER | LEFT_PARENTHESIS expression RIGHT_PARENTHESIS;

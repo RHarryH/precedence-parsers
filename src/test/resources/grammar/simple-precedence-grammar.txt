@@ -4,6 +4,7 @@ ADD: \+;
 MUL: \*;
 NUMBER: [0-9];
 
+expression_prime: expression;
 expression: expression ADD term_prime | term_prime;
 term_prime: term;
 term: term MUL factor | factor;

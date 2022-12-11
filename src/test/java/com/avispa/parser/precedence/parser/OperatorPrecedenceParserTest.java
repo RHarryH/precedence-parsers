@@ -11,19 +11,24 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static com.avispa.parser.precedence.TestSymbols.add;
+import static com.avispa.parser.precedence.TestSymbols.expression;
 import static com.avispa.parser.precedence.TestSymbols.number;
+import static com.avispa.parser.precedence.function.PrecedenceFunctionsMode.NO_PRECEDENCE_FUNCTIONS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Rafał Hiszpański
  */
 class OperatorPrecedenceParserTest {
     private static OperatorPrecedenceParser parser;
+    private static OperatorPrecedenceParser parserWithoutPrecedenceFunctions;
 
     @BeforeAll
     static void init() throws IncorrectGrammarException {
-        OperatorPrecedenceGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").readOperatorPrecedence();
-        parser = new OperatorPrecedenceParser(grammar);
+        GrammarFile grammarFile = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt");
+        parser = new OperatorPrecedenceParser(new OperatorPrecedenceGrammar(grammarFile, expression));
+        parserWithoutPrecedenceFunctions = new OperatorPrecedenceParser(new OperatorPrecedenceGrammar(grammarFile, expression, NO_PRECEDENCE_FUNCTIONS));
     }
 
     @Test
@@ -56,5 +61,10 @@ class OperatorPrecedenceParserTest {
         Lexeme number_1 = Lexeme.of("1", number, 1);
         Lexeme number_2 = Lexeme.of("2", number, 2);
         assertEquals(List.of(number_2, number_1), parser.parse("12"));
+    }
+
+    @Test
+    void givenIncorrectInputWithoutPrecedenceFunctions_whenParse_thenSyntaxException() {
+        assertThrows(SyntaxException.class, () -> parserWithoutPrecedenceFunctions.parse("12"));
     }
 }

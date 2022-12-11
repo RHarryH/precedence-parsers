@@ -23,7 +23,6 @@ import static com.avispa.parser.precedence.TestSymbols.lpar;
 import static com.avispa.parser.precedence.TestSymbols.mul;
 import static com.avispa.parser.precedence.TestSymbols.number;
 import static com.avispa.parser.precedence.TestSymbols.rpar;
-import static com.avispa.parser.precedence.TestSymbols.start;
 import static com.avispa.parser.precedence.TestSymbols.term;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -40,7 +39,7 @@ class OperatorPrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(a)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
@@ -57,7 +56,7 @@ class OperatorPrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a)), Production.of(B, List.of(a)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
@@ -80,7 +79,7 @@ class OperatorPrecedenceSetsTest {
                 Production.of(D, List.of(a, b)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions);
+        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
@@ -99,19 +98,17 @@ class OperatorPrecedenceSetsTest {
     @Test
     void givenOperatorPrecedenceGrammar_whenCreateSets_thenSetsAreCorrect() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt").read();
+        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         // when
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
         // then
-        assertEquals(Set.of(lpar, add, mul, number), firstOp.getFor(start));
         assertEquals(Set.of(lpar, add, mul, number), firstOp.getFor(expression));
         assertEquals(Set.of(lpar, mul, number), firstOp.getFor(term));
         assertEquals(Set.of(lpar, number), firstOp.getFor(factor));
 
-        assertEquals(Set.of(rpar, add, mul, number), lastOp.getFor(start));
         assertEquals(Set.of(rpar, add, mul, number), lastOp.getFor(expression));
         assertEquals(Set.of(rpar, mul, number), lastOp.getFor(term));
         assertEquals(Set.of(rpar, number), lastOp.getFor(factor));

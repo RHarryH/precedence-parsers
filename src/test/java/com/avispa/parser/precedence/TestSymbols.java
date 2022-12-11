@@ -12,15 +12,16 @@ import lombok.NoArgsConstructor;
 public class TestSymbols {
     public static final NonTerminal start = NonTerminal.of("start");
     public static final NonTerminal expression = NonTerminal.of("expression");
-    public static final NonTerminal term_prime = NonTerminal.of("term_prime");
+    public static final NonTerminal expression_prime = NonTerminal.of("expression_prime");
     public static final NonTerminal term = NonTerminal.of("term");
+    public static final NonTerminal term_prime = NonTerminal.of("term_prime");
     public static final NonTerminal factor = NonTerminal.of("factor");
 
     public static final Terminal add = Terminal.of("ADD", "\\+");
     public static final Terminal mul = Terminal.of("MUL", "\\*");
     public static final Terminal lpar = Terminal.of("LEFT_PARENTHESIS", "\\(");
     public static final Terminal rpar = Terminal.of("RIGHT_PARENTHESIS", "\\)");
-    public static final Terminal marker = Terminal.of("MARKER", "\\$");
+    public static final Terminal marker = Terminal.BOUNDARY_MARKER;
     public static final Terminal number = Terminal.of("NUMBER", "[0-9]");
 
     public static final NonTerminal A = NonTerminal.of("A");

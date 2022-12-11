@@ -26,6 +26,14 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
     @Override
     protected void reduce(List<Production> output, Deque<Symbol> deque) throws SyntaxException {
         log.debug("REDUCE (> relation matched).");
+        try {
+            doReduce(output, deque);
+        } catch (ReductionException e){
+            throw new SyntaxException("No matching production: " + e.getMessage());
+        }
+    }
+
+    private void doReduce(List<Production> output, Deque<Symbol> deque) {
         Symbol fromStack;
         Symbol stackTop;
         TreeNode<Symbol> currentNode = productionsTree;
@@ -38,29 +46,32 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
             rhs.add(fromStack);
 
             Symbol terminal = fromStack.unwrap();
+            Symbol currentSymbol = currentNode.getValue();
             currentNode = currentNode.getChild(terminal)
                     .orElseThrow(() -> {
-                        throw new ReductionException("Couldn't find child matching " + terminal + " terminal.");
+                        throw new ReductionException("There is no production with [" + terminal + ", " + currentSymbol + "] symbols next to each other.");
                     });
-        } while(!grammar.precedenceLessThan(stackTop, fromStack));
+        } while (!grammar.precedenceLessThan(stackTop, fromStack));
 
         currentNode.findClosestLeaf()
                 .map(ProductionTreeNode.class::cast)
                 .ifPresentOrElse(leaf -> {
-                    deque.push(leaf.getValue()); // push reduced value back onto the stack
+                            deque.push(leaf.getValue()); // push reduced value back onto the stack
 
-                    if(log.isDebugEnabled()) {
-                        int productionId = leaf.getProductionId();
-                        Production production = grammar.getProduction(productionId);
-                        log.debug("Production found: {} (number: {})", productionId, production);
-                    }
+                            if (log.isDebugEnabled()) {
+                                int productionId = leaf.getProductionId();
+                                Production production = grammar.getProduction(productionId);
+                                log.debug("Production found: {} (number: {})", productionId, production);
+                            }
 
-                    Collections.reverse(rhs);
-                    Production concreteProduction = Production.of((NonTerminal) leaf.getValue(), rhs);
-                    log.debug("Production with lexemes included: {}", concreteProduction);
+                            Collections.reverse(rhs);
+                            Production concreteProduction = Production.of((NonTerminal) leaf.getValue(), rhs);
+                            log.debug("Production with lexemes included: {}", concreteProduction);
 
-                    output.add(concreteProduction);
-                },
-                () -> {throw new ReductionException("Direct leaf couldn't be found for ");});
+                            output.add(concreteProduction);
+                        },
+                        () -> {
+                            throw new ReductionException("Direct leaf couldn't be found for ");
+                        });
     }
 }

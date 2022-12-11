@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 public final class NonTerminal extends Symbol {
+    public static final NonTerminal START = NonTerminal.of("start");
 
     public static NonTerminal of(String name) {
         return new NonTerminal(name);

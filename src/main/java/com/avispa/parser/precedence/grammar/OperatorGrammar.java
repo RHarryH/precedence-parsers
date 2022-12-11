@@ -1,6 +1,9 @@
 package com.avispa.parser.precedence.grammar;
 
+import com.avispa.parser.precedence.function.GraphPrecedenceFunctions;
 import com.avispa.parser.precedence.function.PrecedenceFunctions;
+import com.avispa.parser.precedence.function.PrecedenceFunctionsException;
+import com.avispa.parser.precedence.function.PrecedenceFunctionsMode;
 import com.avispa.parser.precedence.table.Precedence;
 import com.avispa.parser.precedence.table.PrecedenceTable;
 import lombok.extern.slf4j.Slf4j;
@@ -19,14 +22,21 @@ public abstract class OperatorGrammar extends ContextFreeGrammar {
     protected PrecedenceFunctions functions;
     protected PrecedenceTable table;
 
-    OperatorGrammar(String name, Set<Terminal> terminals, List<Production> productions) throws IncorrectGrammarException {
-        super(name, terminals, productions);
+    private final PrecedenceFunctionsMode precedenceFunctionsMode;
+
+    protected OperatorGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start, PrecedenceFunctionsMode precedenceFunctionsMode) throws IncorrectGrammarException {
+        super(name, terminals, productions, start);
 
         if(!isOperatorGrammar()) {
             throw new IncorrectGrammarException("Grammar is not an operator grammar");
         }
 
-        addTerminal(Terminal.BOUNDARY_MARKER); // add boundary marker as known terminal symbol
+        this.precedenceFunctionsMode = precedenceFunctionsMode;
+
+        this.terminals.add(Terminal.BOUNDARY_MARKER);
+        this.nonTerminals.add(NonTerminal.START);
+        this.productions.add(0, Production.of(NonTerminal.START, List.of(Terminal.BOUNDARY_MARKER, this.start, Terminal.BOUNDARY_MARKER)));
+        this.start = NonTerminal.START;
     }
 
     private boolean isOperatorGrammar() {
@@ -64,7 +74,19 @@ public abstract class OperatorGrammar extends ContextFreeGrammar {
     }
 
     protected boolean hasLessThanOrEqualsConflict() {
-        return table.get().values().stream().anyMatch(Precedence.LESS_THAN_OR_EQUALS::equals);
+        return this.table.get().values().stream().anyMatch(Precedence.LESS_THAN_OR_EQUALS::equals);
+    }
+
+    protected void generatePrecedenceFunctions() {
+        if(PrecedenceFunctionsMode.GRAPH_PRECEDENCE_FUNCTIONS.equals(precedenceFunctionsMode)) {
+            try {
+                this.functions = new GraphPrecedenceFunctions(this.table);
+            } catch (PrecedenceFunctionsException e) {
+                log.warn("Precedence functions can't be calculated. Precedence table will be used instead.", e);
+            }
+        } else {
+            log.warn("Precedence functions are disabled.");
+        }
     }
 
     public boolean precedenceLessThan(Symbol a, Symbol b) {

@@ -16,8 +16,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import java.util.List;
 import java.util.Map;
 
-import static com.avispa.parser.precedence.grammar.Terminal.BOUNDARY_MARKER;
-
 /**
  * @author Rafał Hiszpański
  */
@@ -31,21 +29,20 @@ public class OperatorPrecedenceTable extends PrecedenceTable {
         this.firstOp = new FirstOpSets(cfg);
         this.lastOp = new LastOpSets(cfg);
 
-        this.table = construct(cfg.getProductions(), cfg.getStart());
+        this.table = construct(cfg.getProductions());
+
+        if(log.isDebugEnabled()) {
+            log.debug("Precedence table:");
+            log.debug("{}", this);
+        }
     }
 
     @Override
-    protected final Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions, NonTerminal start) {
-        Map<Pair<Symbol, Symbol>, Precedence> result = construct(productions);
+    protected final Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions) {
+        Map<Pair<Symbol, Symbol>, Precedence> result = super.construct(productions);
 
         // X ≐ Y when XZY (terminal, non-terminal, terminal)
         addEqualsForTriple(productions, result);
-
-        // $ ⋖ FIRST_OP(S)
-        addLessThanRelationForStartAndMarker(start, result);
-
-        // LAST_OP(S) ⋗ $
-        addGreaterThanRelationForMarkerAndStart(start, result);
 
         return result;
     }
@@ -102,24 +99,5 @@ public class OperatorPrecedenceTable extends PrecedenceTable {
 
         this.lastOp.getFor((NonTerminal) currentPair.getLeft())
                 .forEach(left -> addRelation(Pair.of(left, currentPair.getRight()), Precedence.GREATER_THAN, result));
-    }
-
-    private void addLessThanRelationForStartAndMarker(NonTerminal start, Map<Pair<Symbol, Symbol>, Precedence> result) {
-        log.debug("Adding relations: $ ⋖ FIRST_OP({})", start);
-
-        this.firstOp.getFor(start).forEach(right -> {
-            log.debug("Adding relation: {} ⋖ {}", BOUNDARY_MARKER, right);
-            result.put(Pair.of(BOUNDARY_MARKER, right), Precedence.LESS_THAN);
-        });
-    }
-
-    private void addGreaterThanRelationForMarkerAndStart(NonTerminal start, Map<Pair<Symbol, Symbol>, Precedence> result) {
-        log.debug("Adding relations: LAST_OP({}) ⋗ $", start);
-
-        this.lastOp.getFor(start).forEach(left -> {
-            log.debug("Adding relation: {} ⋗ {}", left, BOUNDARY_MARKER);
-
-            result.put(Pair.of(left, BOUNDARY_MARKER), Precedence.GREATER_THAN);
-        });
     }
 }

@@ -1,13 +1,14 @@
 package com.avispa.parser.precedence.grammar;
 
-import com.avispa.parser.precedence.function.GraphPrecedenceFunctions;
-import com.avispa.parser.precedence.function.PrecedenceFunctionsException;
+import com.avispa.parser.precedence.function.PrecedenceFunctionsMode;
 import com.avispa.parser.precedence.table.OperatorPrecedenceTable;
 import com.avispa.parser.precedence.table.PrecedenceTableException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Set;
+
+import static com.avispa.parser.precedence.function.PrecedenceFunctionsMode.GRAPH_PRECEDENCE_FUNCTIONS;
 
 /**
  * Grammar is an operator-precedence grammar when it is an operator grammar, and it is possible to construct and
@@ -16,8 +17,21 @@ import java.util.Set;
  */
 @Slf4j
 public class OperatorPrecedenceGrammar extends OperatorGrammar {
-    OperatorPrecedenceGrammar(String name, Set<Terminal> terminals, List<Production> productions) throws IncorrectGrammarException {
-        super(name, terminals, productions);
+
+    public OperatorPrecedenceGrammar(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
+        this(grammarFile, start, GRAPH_PRECEDENCE_FUNCTIONS);
+    }
+
+    public OperatorPrecedenceGrammar(GrammarFile grammarFile, NonTerminal start, PrecedenceFunctionsMode precedenceFunctionsMode) throws IncorrectGrammarException {
+        this(grammarFile.getName(), grammarFile.getTerminals(), grammarFile.getProductions(), start, precedenceFunctionsMode);
+    }
+
+    public OperatorPrecedenceGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start) throws IncorrectGrammarException {
+        this(name, terminals, productions, start, GRAPH_PRECEDENCE_FUNCTIONS);
+    }
+
+    public OperatorPrecedenceGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start, PrecedenceFunctionsMode precedenceFunctionsMode) throws IncorrectGrammarException {
+        super(name, terminals, productions, start, precedenceFunctionsMode);
 
         if(!isOperatorPrecedence()) {
             throw new IncorrectGrammarException("Grammar is not an operator-precedence grammar as operator-precedence table cannot be constructed.");
@@ -27,19 +41,7 @@ public class OperatorPrecedenceGrammar extends OperatorGrammar {
             throw new IllegalStateException("Weak-precedence detected. It is not supported for operator-precedence grammars");
         }
 
-        try {
-            this.functions = new GraphPrecedenceFunctions(this.table);
-        } catch (PrecedenceFunctionsException e) {
-            log.warn("Precedence functions can't be calculated. Precedence table will be used instead.", e);
-        }
-
-        if(log.isDebugEnabled()) {
-            if(null != functions) {
-                log.debug("Precedence functions: {}", functions);
-            } else {
-                log.debug("Precedence table: {}", table);
-            }
-        }
+        generatePrecedenceFunctions();
     }
 
     private boolean isOperatorPrecedence() {

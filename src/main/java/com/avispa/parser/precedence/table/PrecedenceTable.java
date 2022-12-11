@@ -2,7 +2,6 @@ package com.avispa.parser.precedence.table;
 
 import com.avispa.parser.misc.ListUtil;
 import com.avispa.parser.misc.TablePrinter;
-import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +17,6 @@ import java.util.Map;
 @Slf4j
 public abstract class PrecedenceTable {
     protected Map<Pair<Symbol, Symbol>, Precedence> table;
-
-    protected abstract Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions, NonTerminal start);
 
     protected Map<Pair<Symbol, Symbol>, Precedence> construct(List<Production> productions) {
         Map<Pair<Symbol, Symbol>, Precedence> result = new HashMap<>();

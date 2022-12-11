@@ -2,6 +2,7 @@ package com.avispa.parser.precedence.grammar;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,20 +17,25 @@ import java.util.stream.Collectors;
 public class ContextFreeGrammar implements Grammar {
     private final String name;
 
-    private final Set<Terminal> terminals;
-    private final Set<NonTerminal> nonTerminals;
-    private final List<Production> productions;
-    private NonTerminal start;
+    protected final Set<Terminal> terminals;
+    protected final Set<NonTerminal> nonTerminals;
+    protected final List<Production> productions;
+    protected NonTerminal start;
 
-    public ContextFreeGrammar(String name, Set<Terminal> terminals, List<Production> productions) throws IncorrectGrammarException {
+    public ContextFreeGrammar(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
+        this(grammarFile.getName(), grammarFile.getTerminals(), grammarFile.getProductions(), start);
+    }
+
+    public ContextFreeGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start) throws IncorrectGrammarException {
         this.name = name;
 
         this.terminals = new HashSet<>(terminals);
-        this.productions = productions;
+        this.productions = new ArrayList<>(productions);
 
         verifyTerminalsMatch(productions);
 
         this.nonTerminals = buildNonTerminalsList(productions);
+        this.start = getStartSymbol(start);
 
         if(this.terminals.isEmpty() || this.productions.isEmpty()) {
             throw new IncorrectGrammarException("Terminals and productions must be a non-empty collections");
@@ -81,53 +87,20 @@ public class ContextFreeGrammar implements Grammar {
             }
         }
 
-        this.start = findStartSymbol(lhsNonTerminals, productions);
-
-        lhsNonTerminals.add(start); // add start symbol to lhs, this becomes the full set of non-terminals
-
         return lhsNonTerminals;
     }
 
     /**
-     * Finds start symbol.
-     *
-     * First all non-terminals are candidates but when the non-terminal will be found on the productions right-hand
-     * side then it is eliminated. Non-terminal is not eliminated when it is left-hand side of the production in single
-     * production rule.
-     * @param nonTerminals non-terminals set
-     * @param productions productions list
+     * Checks if symbol is present on the non-terminals list and sets it as start symbol
+     * @param start
      * @return
-     * @throws IncorrectGrammarException
      */
-    private NonTerminal findStartSymbol(Set<NonTerminal> nonTerminals, List<Production> productions) throws IncorrectGrammarException {
-        Set<NonTerminal> candidates = new HashSet<>(nonTerminals);
-        for(Production production : productions) {
-            NonTerminal candidate = production.getLhs();
-
-            List<NonTerminal> rhsNonTerminals = production.getRhs()
-                    .stream()
-                    .filter(NonTerminal.class::isInstance)
-                    .map(NonTerminal.class::cast)
-                    .collect(Collectors.toList());
-
-            for(NonTerminal rhsNonTerminal : rhsNonTerminals) {
-                if(candidates.contains(rhsNonTerminal) && !rhsNonTerminal.equals(candidate)) {
-                    candidates.remove(rhsNonTerminal);
-                }
-            }
+    private NonTerminal getStartSymbol(NonTerminal start) throws IncorrectGrammarException {
+        if(this.nonTerminals.contains(start)) {
+            return start;
+        } else {
+            throw new IncorrectGrammarException("Start symbol is not defined on the non-terminals list");
         }
-
-        return candidates.stream().reduce((a, b) -> {
-            throw new IllegalStateException("Multiple start symbol candidates: " + a + ", " + b);
-        }).orElseThrow(() -> new IncorrectGrammarException("Start symbol not detected"));
-    }
-
-    /**
-     * Add special terminal symbol not defined directly in grammar.
-     * @param terminal
-     */
-    protected final void addTerminal(Terminal terminal) {
-        this.terminals.add(terminal);
     }
 
     public Set<Terminal> getTerminals() {

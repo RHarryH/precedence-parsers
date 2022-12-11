@@ -1,7 +1,6 @@
 package com.avispa.parser.precedence.grammar;
 
-import com.avispa.parser.precedence.function.GraphPrecedenceFunctions;
-import com.avispa.parser.precedence.function.PrecedenceFunctionsException;
+import com.avispa.parser.precedence.function.PrecedenceFunctionsMode;
 import com.avispa.parser.precedence.table.PrecedenceTableException;
 import com.avispa.parser.precedence.table.SimplePrecedenceTable;
 import lombok.Getter;
@@ -9,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Set;
+
+import static com.avispa.parser.precedence.function.PrecedenceFunctionsMode.GRAPH_PRECEDENCE_FUNCTIONS;
 
 /**
  * Simple precedence grammar is a grammar when precedence table contains all possible symbols and does not have any conflicts.
@@ -27,8 +28,20 @@ import java.util.Set;
 public class SimplePrecedenceGrammar extends OperatorGrammar {
     private final boolean weak;
 
-    SimplePrecedenceGrammar(String name, Set<Terminal> terminals, List<Production> productions) throws IncorrectGrammarException {
-        super(name, terminals, productions);
+    public SimplePrecedenceGrammar(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
+        this(grammarFile, start, GRAPH_PRECEDENCE_FUNCTIONS);
+    }
+
+    public SimplePrecedenceGrammar(GrammarFile grammarFile, NonTerminal start, PrecedenceFunctionsMode precedenceFunctionsMode) throws IncorrectGrammarException {
+        this(grammarFile.getName(), grammarFile.getTerminals(), grammarFile.getProductions(), start, precedenceFunctionsMode);
+    }
+
+    public SimplePrecedenceGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start) throws IncorrectGrammarException {
+        this(name, terminals, productions, start, GRAPH_PRECEDENCE_FUNCTIONS);
+    }
+
+    public SimplePrecedenceGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start, PrecedenceFunctionsMode precedenceFunctionsMode) throws IncorrectGrammarException {
+        super(name, terminals, productions, start, precedenceFunctionsMode);
 
         if(!isSimplePrecedence()) {
             throw new IncorrectGrammarException("Grammar is not a simple precedence grammar.");
@@ -37,23 +50,9 @@ public class SimplePrecedenceGrammar extends OperatorGrammar {
         this.weak = isWeakPrecedence();
 
         if(!this.weak) { // generate precedence functions only when there are no weak-precedence, not sure what should happen there
-            try {
-                this.functions = new GraphPrecedenceFunctions(this.table);
-            } catch (PrecedenceFunctionsException e) {
-                log.warn("Precedence functions can't be calculated. Precedence table will be used instead.", e);
-            }
+            generatePrecedenceFunctions();
         } else {
             log.warn("Precedence functions won't be calculated because weak-precedence grammar was detected.");
-        }
-
-        if(log.isDebugEnabled()) {
-            if(null != functions) {
-                log.debug("Precedence functions:");
-                log.debug("{}", functions);
-            } else {
-                log.debug("Precedence table:");
-                log.debug("{}", table);
-            }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.avispa.parser.precedence.grammar;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,41 +50,21 @@ public class GrammarFile {
      */
     private final Pattern parserLinePattern = Pattern.compile("^[a-z]\\w+: *(?:[A-Z]\\w+|[a-z]\\w+) *(?: +(?:[A-Z]\\w+|[a-z]\\w+) *){0,9}(?:\\| *(?:[A-Z]\\w+|[a-z]\\w+) *(?: +(?:[A-Z]\\w+|[a-z]\\w+) *){0,9}){0,9};$");
 
-    private final String fileName;
-
     private final Map<String, Terminal> terminals = new HashMap<>();
+    @Getter(AccessLevel.MODULE)
     private final List<Production> productions = new ArrayList<>();
+    @Getter(AccessLevel.MODULE)
     private String name;
 
     public GrammarFile(String fileName) {
-        this.fileName = fileName;
+        parseFile(fileName);
     }
 
-    public ContextFreeGrammar read() throws IncorrectGrammarException {
-        parseFile();
-
-        return new ContextFreeGrammar(name, new HashSet<>(terminals.values()), productions);
-    }
-
-    public OperatorPrecedenceGrammar readOperatorPrecedence() throws IncorrectGrammarException {
-        parseFile();
-
-        return new OperatorPrecedenceGrammar(name, new HashSet<>(terminals.values()), productions);
-    }
-
-    public SimplePrecedenceGrammar readSimplePrecedence() throws IncorrectGrammarException {
-        parseFile();
-
-        return new SimplePrecedenceGrammar(name, new HashSet<>(terminals.values()), productions);
-    }
-
-    private void parseFile() throws IncorrectGrammarException {
+    private void parseFile(String fileName) {
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
             stream.forEach(this::parseLine);
         } catch (IOException e) {
-            String message = String.format("Can't read input grammar file: %s", fileName);
-            log.error("Original exception: ", e);
-            throw new IncorrectGrammarException(message);
+            log.error("Can't read input grammar file: {}", fileName, e);
         }
     }
 
@@ -183,5 +166,9 @@ public class GrammarFile {
                 throw new IllegalStateException("Illegal symbol name");
             }
         }).collect(Collectors.toList());
+    }
+
+    Set<Terminal> getTerminals() {
+        return new HashSet<>(terminals.values());
     }
 }

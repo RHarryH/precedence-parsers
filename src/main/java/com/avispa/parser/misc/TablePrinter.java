@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
@@ -75,7 +76,7 @@ public class TablePrinter {
         this.horizontalHeader = getHeader(data, Pair::getRight);
 
         this.columns = this.horizontalHeader.length + 1;
-        this.columnWidth = getLongestHeaderValue(this.horizontalHeader) + 2;
+        this.columnWidth = getLongestHeaderValue(this.horizontalHeader, this.verticalHeader) + 2;
         this.newLine = System.lineSeparator();
     }
 
@@ -88,12 +89,13 @@ public class TablePrinter {
     }
 
     /**
-     * Gets longest value on header list
-     * @param header
+     * Gets longest value on header lists
+     * @param horizontalHeader
+     * @param verticalHeader
      * @return
      */
-    private int getLongestHeaderValue(String[] header) {
-        return Stream.of(header)
+    private int getLongestHeaderValue(String[] horizontalHeader, String[] verticalHeader) {
+        return Stream.concat(Arrays.stream(horizontalHeader), Arrays.stream(verticalHeader))
                 .map(String::length)
                 .max(Integer::compareTo)
                 .orElse(0);

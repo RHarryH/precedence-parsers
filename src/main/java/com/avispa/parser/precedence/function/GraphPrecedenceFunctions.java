@@ -116,18 +116,26 @@ public final class GraphPrecedenceFunctions implements PrecedenceFunctions {
     }
 
     /**
-     * If left or right symbol is present in any of existing nodes, append second one to it
+     * If left or right symbol is present in any of existing nodes, append second one to it. If nothing was fused,
+     * create new node.
      * @param left
      * @param right
      * @param nodes
      */
     private void fuseSymbols(Symbol left, Symbol right, Set<GraphNode> nodes) {
-        for(GraphNode node : nodes) {
-            if(node.containsF(left)) {
+        boolean fused = false;
+        for (GraphNode node : nodes) {
+            if (node.containsF(left)) {
                 node.addG(right);
-            } else if(node.containsG(right)) {
+                fused = true;
+            } else if (node.containsG(right)) {
                 node.addF(left);
+                fused = true;
             }
+        }
+
+        if(!fused) {
+            nodes.add(GraphNode.ofF(left).addG(right));
         }
     }
 

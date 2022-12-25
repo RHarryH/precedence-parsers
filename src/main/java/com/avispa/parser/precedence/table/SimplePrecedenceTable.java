@@ -1,10 +1,11 @@
 package com.avispa.parser.precedence.table;
 
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.table.set.FirstAllSets;
 import com.avispa.parser.precedence.table.set.FirstSets;
 import com.avispa.parser.precedence.table.set.LastAllSets;
+import com.avispa.parser.precedence.table.set.SimplePrecedenceSets;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,16 +18,20 @@ import java.util.Map;
 @Slf4j
 @Getter
 public class SimplePrecedenceTable extends PrecedenceTable {
-    private final FirstAllSets firstAll;
-    private final LastAllSets lastAll;
+    private final SimplePrecedenceSets firstAll;
+    private final SimplePrecedenceSets lastAll;
     private final FirstSets first;
 
-    public SimplePrecedenceTable(ContextFreeGrammar cfg) {
-        this.firstAll = new FirstAllSets(cfg);
-        this.lastAll = new LastAllSets(cfg);
-        this.first = new FirstSets(firstAll, cfg.getTerminals());
+    public SimplePrecedenceTable(Grammar grammar) throws PrecedenceTableException {
+        this.firstAll = new FirstAllSets(grammar);
+        this.lastAll = new LastAllSets(grammar);
+        this.first = new FirstSets(firstAll, grammar.getTerminals());
 
-        this.table = construct(cfg.getProductions());
+        try {
+            this.table = construct(grammar.getProductions());
+        } catch(RelationException e) {
+            throw new PrecedenceTableException(e.getMessage());
+        }
 
         if(log.isDebugEnabled()) {
             log.debug("Precedence table:");

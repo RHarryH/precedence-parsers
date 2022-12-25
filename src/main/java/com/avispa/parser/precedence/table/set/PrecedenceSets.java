@@ -1,9 +1,9 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.Symbol;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
+import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +41,7 @@ public abstract class PrecedenceSets<K, V> {
      * @param grammar
      * @return
      */
-    protected final Map<NonTerminal, List<Production>> groupProductionsByLhs(ContextFreeGrammar grammar) {
+    protected final Map<NonTerminal, List<Production>> groupProductionsByLhs(Grammar grammar) {
         return grammar.getProductions()
                 .stream()
                 .collect(Collectors.groupingBy(Production::getLhs));

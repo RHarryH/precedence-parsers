@@ -1,12 +1,13 @@
 package com.avispa.parser.precedence.function;
 
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
-import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.table.OperatorPrecedenceTable;
 import com.avispa.parser.precedence.table.Precedence;
+import com.avispa.parser.precedence.table.PrecedenceTableException;
 import com.avispa.parser.precedence.table.SimplePrecedenceTable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
@@ -104,9 +105,9 @@ class GraphPrecedenceFunctionsTest {
     }
 
     @Test
-    void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException {
+    void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException, PrecedenceTableException {
         // given
-        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt"), expression);
+        Grammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt"), expression);
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // when
@@ -130,9 +131,9 @@ class GraphPrecedenceFunctionsTest {
     }
 
     @Test
-    void givenOperatorPrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException {
+    void givenOperatorPrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException, PrecedenceTableException {
         // given
-        ContextFreeGrammar grammar = new OperatorPrecedenceGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
+        Grammar grammar = ContextFreeGrammar.fromWithBoundaryMarker(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
         OperatorPrecedenceTable precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // when

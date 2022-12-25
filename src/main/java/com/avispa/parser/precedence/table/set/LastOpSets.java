@@ -1,6 +1,6 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Slf4j
 public final class LastOpSets extends OperatorPrecedenceSets {
-    public LastOpSets(ContextFreeGrammar grammar) {
+    public LastOpSets(Grammar grammar) {
         super(grammar, "LAST_OP");
     }
 

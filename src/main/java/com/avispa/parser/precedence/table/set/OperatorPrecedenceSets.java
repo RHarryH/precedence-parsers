@@ -1,9 +1,9 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.Symbol;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,8 +18,8 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Terminal> {
-    OperatorPrecedenceSets(ContextFreeGrammar grammar, String setsName) {
+public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Terminal> {
+    OperatorPrecedenceSets(Grammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
         construct(grammar);
@@ -31,7 +31,7 @@ abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Termin
      *
      * @param grammar context free grammar for which sets should be built
      */
-    private void construct(ContextFreeGrammar grammar) {
+    private void construct(Grammar grammar) {
         // group productions by left-hand side non-terminals so alternatives can be processed in single external loop run
         Map<NonTerminal, List<Production>> productionsByLhs =
                 groupProductionsByLhs(grammar);

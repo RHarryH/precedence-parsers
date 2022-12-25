@@ -6,7 +6,7 @@ import com.avispa.parser.output.AbstractOutputTransformer;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Symbol;
-import com.avispa.parser.precedence.parser.SimplePrecedenceParser;
+import com.avispa.parser.precedence.parser.PrecedenceParser;
 import com.avispa.parser.precedence.parser.SyntaxException;
 
 import java.util.ArrayDeque;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class ParseTree extends AbstractOutputTransformer<TreeNode<Symbol>, Production> {
 
-    public ParseTree(SimplePrecedenceParser parser) {
+    public ParseTree(PrecedenceParser<Production> parser) {
         super(parser);
     }
 

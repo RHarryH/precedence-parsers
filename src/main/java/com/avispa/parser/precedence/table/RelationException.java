@@ -3,8 +3,8 @@ package com.avispa.parser.precedence.table;
 /**
  * @author Rafał Hiszpański
  */
-public class PrecedenceTableException extends Exception {
-    public PrecedenceTableException(String message) {
+class RelationException extends RuntimeException {
+    public RelationException(String message) {
         super(message);
     }
 }

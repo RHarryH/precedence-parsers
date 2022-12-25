@@ -4,7 +4,6 @@ import com.avispa.parser.misc.tree.TreeNode;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
-import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +26,7 @@ class ProductionsTreeBuilderTest {
     @Test
     void givenOperatorPrecedenceGrammar_whenBuildTree_thenCorrect() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new OperatorPrecedenceGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
+        ContextFreeGrammar grammar = ContextFreeGrammar.fromWithBoundaryMarker(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         TreeNode<Symbol> expectedTree = createExpectedTree();
 

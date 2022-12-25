@@ -17,7 +17,7 @@ class GrammarFileTest {
 
     @Test
     void givenCorrectGrammar_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-correct.txt"),expression);
+        Grammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/grammar-correct.txt"),expression);
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -29,7 +29,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithAlternatives_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt"), expression);
+        Grammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/grammar-alternative-correct.txt"), expression);
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -41,7 +41,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithWhitespaceAfterAlternative_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt"), expression);
+        Grammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/grammar-alternative-whitespaces.txt"), expression);
 
         assertEquals("CorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());
@@ -53,7 +53,7 @@ class GrammarFileTest {
 
     @Test
     void givenGrammarWithIncorrectLine_whenRead_thenCreated() throws IncorrectGrammarException {
-        Grammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt"), expression);
+        Grammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/grammar-incorrect-line.txt"), expression);
 
         assertEquals("IncorrectGrammar", grammar.getName());
         assertEquals("expression", grammar.getStart().getName());

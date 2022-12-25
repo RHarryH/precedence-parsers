@@ -4,7 +4,6 @@ import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
-import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +24,7 @@ class LexerTest {
 
     @BeforeAll
     static void init() throws IncorrectGrammarException {
-        grammar = new OperatorPrecedenceGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
+        grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
     }
 
     @Test

@@ -1,9 +1,9 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
-import com.avispa.parser.precedence.grammar.Symbol;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
+import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
@@ -15,9 +15,8 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-abstract class SimplePrecedenceSets extends PrecedenceSets<Symbol, Symbol> {
-
-    SimplePrecedenceSets(ContextFreeGrammar grammar, String setsName) {
+public abstract class SimplePrecedenceSets extends PrecedenceSets<Symbol, Symbol> {
+    SimplePrecedenceSets(Grammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
         construct(grammar);
@@ -28,7 +27,7 @@ abstract class SimplePrecedenceSets extends PrecedenceSets<Symbol, Symbol> {
      * Iterate through all productions to find sets elements
      * @param grammar context free grammar for which sets should be built
      */
-    private void construct(ContextFreeGrammar grammar) {
+    private void construct(Grammar grammar) {
         // group productions by left-hand side non-terminals so alternatives can be processed in single external loop run
         Map<NonTerminal, List<Production>> productionsByLhs =
                 groupProductionsByLhs(grammar);

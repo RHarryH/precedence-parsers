@@ -22,14 +22,14 @@ class ContextFreeGrammarTest {
     void givenEmptyTerminalsSet_whenCreatingGrammar_thenThrowException() {
         List<Production> productions = List.of(Production.of(A, List.of(B)), Production.of(B, List.of(A)));
 
-        assertThrows(IncorrectGrammarException.class, () -> new ContextFreeGrammar("Test", Set.of(), productions, A));
+        assertThrows(IncorrectGrammarException.class, () -> ContextFreeGrammar.from("Test", Set.of(), productions, A));
     }
 
     @Test
     void givenEmptyProductionsList_whenCreatingGrammar_thenThrowException() {
         Set<Terminal> terminals = Set.of(a, b);
 
-        assertThrows(IncorrectGrammarException.class, () -> new ContextFreeGrammar("Test", terminals, List.of(), A));
+        assertThrows(IncorrectGrammarException.class, () -> ContextFreeGrammar.from("Test", terminals, List.of(), A));
     }
 
     @Test
@@ -40,7 +40,7 @@ class ContextFreeGrammarTest {
         List<Production> productions = List.of(Production.of(A, List.of(b)));
 
         // when/then
-        assertThrows(IncorrectGrammarException.class, () -> new ContextFreeGrammar("Test", terminals, productions, A));
+        assertThrows(IncorrectGrammarException.class, () -> ContextFreeGrammar.from("Test", terminals, productions, A));
     }
 
     @Test
@@ -51,7 +51,7 @@ class ContextFreeGrammarTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a, a)), Production.of(B, List.of(b)));
 
         // when
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
 
         // then
         assertEquals(A, grammar.getStart());
@@ -65,7 +65,7 @@ class ContextFreeGrammarTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a, a)), Production.of(B, List.of(A)));
 
         // when/then
-        assertThrows(IncorrectGrammarException.class, () -> new ContextFreeGrammar("Test", terminals, productions, C));
+        assertThrows(IncorrectGrammarException.class, () -> ContextFreeGrammar.from("Test", terminals, productions, C));
     }
 
     @Test
@@ -76,7 +76,7 @@ class ContextFreeGrammarTest {
         List<Production> productions = List.of(Production.of(A, List.of(A, a, B)), Production.of(A, List.of(B)), Production.of(B, List.of(a)));
 
         // when
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
 
         // then
         assertEquals(A, grammar.getStart());
@@ -90,6 +90,6 @@ class ContextFreeGrammarTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a, a, NonTerminal.of("C"))), Production.of(B, List.of(b)));
 
         // when/then
-        assertThrows(IncorrectGrammarException.class, () -> new ContextFreeGrammar("Test", terminals, productions, A));
+        assertThrows(IncorrectGrammarException.class, () -> ContextFreeGrammar.from("Test", terminals, productions, A));
     }
 }

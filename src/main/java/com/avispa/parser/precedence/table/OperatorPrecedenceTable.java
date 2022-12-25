@@ -1,13 +1,14 @@
 package com.avispa.parser.precedence.table;
 
 import com.avispa.parser.misc.ListUtil;
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.table.set.FirstOpSets;
 import com.avispa.parser.precedence.table.set.LastOpSets;
+import com.avispa.parser.precedence.table.set.OperatorPrecedenceSets;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,14 +23,18 @@ import java.util.Map;
 @Getter
 @Slf4j
 public class OperatorPrecedenceTable extends PrecedenceTable {
-    private final FirstOpSets firstOp;
-    private final LastOpSets lastOp;
+    private final OperatorPrecedenceSets firstOp;
+    private final OperatorPrecedenceSets lastOp;
 
-    public OperatorPrecedenceTable(ContextFreeGrammar cfg) {
-        this.firstOp = new FirstOpSets(cfg);
-        this.lastOp = new LastOpSets(cfg);
+    public OperatorPrecedenceTable(Grammar grammar) throws PrecedenceTableException {
+        this.firstOp = new FirstOpSets(grammar);
+        this.lastOp = new LastOpSets(grammar);
 
-        this.table = construct(cfg.getProductions());
+        try {
+            this.table = construct(grammar.getProductions());
+        } catch(RelationException e) {
+            throw new PrecedenceTableException(e.getMessage());
+        }
 
         if(log.isDebugEnabled()) {
             log.debug("Precedence table:");
@@ -62,7 +67,7 @@ public class OperatorPrecedenceTable extends PrecedenceTable {
             // LAST_OP(Y) ⋗ X when YX (non-terminal, terminal)
             addGreaterThanRelation(currentPair, result);
         } else {
-            throw new PrecedenceTableException("Grammar is not an operator grammar as adjacent non-terminals were found");
+            throw new RelationException("Grammar is not an operator grammar as adjacent non-terminals were found");
         }
     }
 

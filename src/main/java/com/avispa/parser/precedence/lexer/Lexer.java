@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.lexer;
 
 import com.avispa.parser.lexer.LexerException;
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,7 +22,7 @@ public class Lexer {
     private final Map<Terminal, Integer> occurrenceCounterMap = new HashMap<>();
     private Lexeme lastLexeme = null;
 
-    public Lexer(String input, ContextFreeGrammar grammar) {
+    public Lexer(String input, Grammar grammar) {
         this.input = input;
         this.terminals = grammar.getTerminals();
     }

@@ -39,7 +39,7 @@ class OperatorPrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(a)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        var grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
@@ -56,7 +56,7 @@ class OperatorPrecedenceSetsTest {
         List<Production> productions = List.of(Production.of(A, List.of(B, a)), Production.of(B, List.of(a)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        var grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
@@ -79,7 +79,7 @@ class OperatorPrecedenceSetsTest {
                 Production.of(D, List.of(a, b)));
 
         // when
-        var grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        var grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
         var firstOp = new FirstOpSets(grammar);
         var lastOp = new LastOpSets(grammar);
 
@@ -98,7 +98,7 @@ class OperatorPrecedenceSetsTest {
     @Test
     void givenOperatorPrecedenceGrammar_whenCreateSets_thenSetsAreCorrect() throws IncorrectGrammarException {
         // given
-        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         // when
         var firstOp = new FirstOpSets(grammar);

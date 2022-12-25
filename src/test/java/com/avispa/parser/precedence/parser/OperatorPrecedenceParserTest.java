@@ -1,9 +1,9 @@
 package com.avispa.parser.precedence.parser;
 
 import com.avispa.parser.lexer.LexerException;
+import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
 import com.avispa.parser.precedence.grammar.GrammarFile;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
-import com.avispa.parser.precedence.grammar.OperatorPrecedenceGrammar;
 import com.avispa.parser.precedence.lexer.Lexeme;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import java.util.List;
 import static com.avispa.parser.precedence.TestSymbols.add;
 import static com.avispa.parser.precedence.TestSymbols.expression;
 import static com.avispa.parser.precedence.TestSymbols.number;
-import static com.avispa.parser.precedence.function.PrecedenceFunctionsMode.NO_PRECEDENCE_FUNCTIONS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -27,8 +26,8 @@ class OperatorPrecedenceParserTest {
     @BeforeAll
     static void init() throws IncorrectGrammarException {
         GrammarFile grammarFile = new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt");
-        parser = new OperatorPrecedenceParser(new OperatorPrecedenceGrammar(grammarFile, expression));
-        parserWithoutPrecedenceFunctions = new OperatorPrecedenceParser(new OperatorPrecedenceGrammar(grammarFile, expression, NO_PRECEDENCE_FUNCTIONS));
+        parser = ParserFactory.newOperatorPrecedenceParser(ContextFreeGrammar.fromWithBoundaryMarker(grammarFile, expression));
+        parserWithoutPrecedenceFunctions = ParserFactory.newOperatorPrecedenceParser(ContextFreeGrammar.fromWithBoundaryMarker(grammarFile, expression), false);
     }
 
     @Test

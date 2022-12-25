@@ -63,7 +63,7 @@ public abstract class PrecedenceTable {
             } else {
                 String message = String.format("Conflict detected. Tried to insert %s precedence while there is already %s precedence for %s symbols", precedence, currentPrecedence, pair);
                 log.error(message);
-                throw new PrecedenceTableException(message);
+                throw new RelationException(message);
             }
         } else {
             result.put(pair, precedence);

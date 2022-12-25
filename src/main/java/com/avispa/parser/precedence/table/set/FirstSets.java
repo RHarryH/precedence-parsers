@@ -1,7 +1,7 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.NonTerminal;
+import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 @Slf4j
 public class FirstSets extends PrecedenceSets<Symbol, Terminal> {
-    public FirstSets(FirstAllSets firstAll, Set<Terminal> terminals) {
+    public FirstSets(SimplePrecedenceSets firstAll, Set<Terminal> terminals) {
         super("FIRST");
         log.debug("Constructing {} set.", name);
         initialize(terminals);
@@ -35,7 +35,7 @@ public class FirstSets extends PrecedenceSets<Symbol, Terminal> {
      * Updates FIRST set by adding entries for non-terminals. FIRST for non-terminal is a FIRST_ALL for that non-terminal
      * with terminals only.
      */
-    private void construct(FirstAllSets firstAll) {
+    private void construct(SimplePrecedenceSets firstAll) {
         var firstAllMap = firstAll.get();
         for(var firstAllForSymbol : firstAllMap.entrySet()) {
             Symbol setSymbol = firstAllForSymbol.getKey();

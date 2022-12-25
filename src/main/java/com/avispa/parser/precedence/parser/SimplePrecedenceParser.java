@@ -2,10 +2,12 @@ package com.avispa.parser.precedence.parser;
 
 
 import com.avispa.parser.misc.tree.TreeNode;
+import com.avispa.parser.precedence.function.PrecedenceFunctions;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.NonTerminal;
 import com.avispa.parser.precedence.grammar.Production;
-import com.avispa.parser.precedence.grammar.SimplePrecedenceGrammar;
 import com.avispa.parser.precedence.grammar.Symbol;
+import com.avispa.parser.precedence.table.PrecedenceTable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -17,8 +19,12 @@ import java.util.List;
 public class SimplePrecedenceParser extends PrecedenceParser<Production> {
     private final TreeNode<Symbol> productionsTree;
 
-    public SimplePrecedenceParser(SimplePrecedenceGrammar grammar) {
-        super(grammar);
+    SimplePrecedenceParser(Grammar grammar, PrecedenceTable table) {
+        this(grammar, table, null);
+    }
+
+    SimplePrecedenceParser(Grammar grammar, PrecedenceTable table, PrecedenceFunctions functions) {
+        super(grammar, table, functions);
 
         this.productionsTree = ProductionsTreeBuilder.build(grammar.getProductions());
     }
@@ -47,11 +53,17 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
 
             Symbol terminal = fromStack.unwrap();
             Symbol currentSymbol = currentNode.getValue();
+
             currentNode = currentNode.getChild(terminal)
                     .orElseThrow(() -> {
                         throw new ReductionException("There is no production with [" + terminal + ", " + currentSymbol + "] symbols next to each other.");
                     });
-        } while (!grammar.precedenceLessThan(stackTop, fromStack));
+        } while (!precedenceLessThan(stackTop, fromStack));
+
+        while(currentNode.getChild(deque.peek().unwrap()).isPresent()) {
+            rhs.add(deque.peek());
+            currentNode = currentNode.getChild(deque.pop().unwrap()).get();
+        }
 
         currentNode.findClosestLeaf()
                 .map(ProductionTreeNode.class::cast)

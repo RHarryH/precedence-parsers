@@ -1,6 +1,6 @@
 package com.avispa.parser.precedence.table.set;
 
-import com.avispa.parser.precedence.grammar.ContextFreeGrammar;
+import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.Symbol;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 public final class FirstAllSets extends SimplePrecedenceSets {
 
-    public FirstAllSets(ContextFreeGrammar grammar) {
+    public FirstAllSets(Grammar grammar) {
         super(grammar, "FIRST_ALL");
     }
 

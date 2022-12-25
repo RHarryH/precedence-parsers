@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Formal grammar
+ *
  * @author Rafał Hiszpański
  */
 public interface Grammar {
@@ -12,5 +14,6 @@ public interface Grammar {
     Set<Terminal> getTerminals();
     Set<NonTerminal> getNonTerminals();
     List<Production> getProductions();
+    Production getProduction(int index);
     NonTerminal getStart();
 }

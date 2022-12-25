@@ -22,11 +22,29 @@ public class ContextFreeGrammar implements Grammar {
     protected final List<Production> productions;
     protected NonTerminal start;
 
-    public ContextFreeGrammar(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
+    public static ContextFreeGrammar from(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start) throws IncorrectGrammarException {
+        return new ContextFreeGrammar(name, terminals, productions, start);
+    }
+
+    public static ContextFreeGrammar from(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
+        return new ContextFreeGrammar(grammarFile, start);
+    }
+
+    public static ContextFreeGrammar fromWithBoundaryMarker(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
+        Set<Terminal> terminals = grammarFile.getTerminals();
+        terminals.add(Terminal.BOUNDARY_MARKER);
+
+        List<Production> productions = grammarFile.getProductions();
+        productions.add(0, Production.of(NonTerminal.START, List.of(Terminal.BOUNDARY_MARKER, start, Terminal.BOUNDARY_MARKER)));
+
+        return new ContextFreeGrammar(grammarFile.getName(), terminals, productions, NonTerminal.START);
+    }
+
+    private ContextFreeGrammar(GrammarFile grammarFile, NonTerminal start) throws IncorrectGrammarException {
         this(grammarFile.getName(), grammarFile.getTerminals(), grammarFile.getProductions(), start);
     }
 
-    public ContextFreeGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start) throws IncorrectGrammarException {
+    private ContextFreeGrammar(String name, Set<Terminal> terminals, List<Production> productions, NonTerminal start) throws IncorrectGrammarException {
         this.name = name;
 
         this.terminals = new HashSet<>(terminals);

@@ -33,13 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class OperatorPrecedenceTableTest {
 
     @Test
-    void givenSimpleGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
+    void givenSimpleGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException {
         // given
         Set<Terminal> terminals = Set.of(a, b);
 
         List<Production> productions = List.of(Production.of(A, List.of(B, a, a)), Production.of(B, List.of(b)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
 
         // when
         var precedenceTable = new OperatorPrecedenceTable(grammar);
@@ -54,9 +54,9 @@ class OperatorPrecedenceTableTest {
     }
 
     @Test
-    void givenOperatorPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
+    void givenOperatorPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException {
         // given
-        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         // when
         var precedenceTable = new OperatorPrecedenceTable(grammar);
@@ -103,7 +103,7 @@ class OperatorPrecedenceTableTest {
          */
         List<Production> productions = List.of(Production.of(A, List.of(A, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, A)), Production.of(B, List.of(a)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
 
         // when/then
         assertThrows(PrecedenceTableException.class, () -> new OperatorPrecedenceTable(grammar));
@@ -120,16 +120,16 @@ class OperatorPrecedenceTableTest {
          */
         List<Production> productions = List.of(Production.of(A, List.of(A, a, B)), Production.of(A, List.of(a)), Production.of(B, List.of(B, b, A)), Production.of(B, List.of(a)));
 
-        ContextFreeGrammar grammar = new ContextFreeGrammar("Test", terminals, productions, A);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
 
         // when/then
         assertThrows(PrecedenceTableException.class, () -> new OperatorPrecedenceTable(grammar));
     }
 
     @Test
-    void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException {
+    void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException {
         // given
-        ContextFreeGrammar grammar = new ContextFreeGrammar(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
+        ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
 
         // when
         var precedenceTable = new OperatorPrecedenceTable(grammar);

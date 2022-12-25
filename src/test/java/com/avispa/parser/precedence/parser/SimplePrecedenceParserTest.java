@@ -87,6 +87,11 @@ class SimplePrecedenceParserTest {
         assertEquals(expectedProductions, weakParser.parse("5+6"));
     }
 
+    @Test
+    void givenEmptyString_whenParseUsingWeakPrecedenceGrammar_thenEmptyProductionList() throws SyntaxException, LexerException {
+        assertEquals(List.of(), weakParser.parse(""));
+    }
+
     private List<Production> getAdditionProductions(String addend1, String addend2) {
         Lexeme number_1 = Lexeme.of(addend1, number, 1);
         Lexeme add_1 = Lexeme.of("+", add, 1);

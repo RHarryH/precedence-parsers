@@ -11,7 +11,6 @@ import com.avispa.parser.precedence.table.PrecedenceTable;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
@@ -26,30 +25,33 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
     SimplePrecedenceParser(Grammar grammar, PrecedenceTable table, PrecedenceFunctions functions) {
         super(grammar, table, functions);
 
-        this.productionsTree = ProductionsTreeBuilder.build(grammar.getProductions());
+        this.productionsTree =  ProductionsTreeBuilder.build(grammar.getProductions());
     }
 
     @Override
-    protected void reduce(List<Production> output, Deque<Symbol> deque) throws SyntaxException {
+    protected void reduce(List<Production> output, Deque<Symbol> symbolStack) throws SyntaxException {
         log.debug("REDUCE (> relation matched).");
         try {
-            doReduce(output, deque);
+            doReduce(output, symbolStack);
         } catch (ReductionException e){
             throw new SyntaxException("No matching production: " + e.getMessage());
         }
     }
 
-    private void doReduce(List<Production> output, Deque<Symbol> deque) {
+    private void doReduce(List<Production> output, Deque<Symbol> symbolStack) {
         Symbol fromStack;
         Symbol stackTop;
         TreeNode<Symbol> currentNode = productionsTree;
         List<Symbol> rhs = new ArrayList<>();
 
         do {
-            fromStack = deque.pop();
-            stackTop = deque.peek();
+            fromStack = symbolStack.pop();
+            stackTop = symbolStack.peek();
+            if(null == stackTop) {
+                throw new ReductionException("Stack is empty. At least boundary marker is expected to be left");
+            }
 
-            rhs.add(fromStack);
+            rhs.add(0, fromStack); // add always to the beginning so there is no need to reverse list later
 
             Symbol terminal = fromStack.unwrap();
             Symbol currentSymbol = currentNode.getValue();
@@ -58,32 +60,54 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
                     .orElseThrow(() -> {
                         throw new ReductionException("There is no production with [" + terminal + ", " + currentSymbol + "] symbols next to each other.");
                     });
-        } while (!precedenceLessThan(stackTop, fromStack));
+        } while (!precedenceLessThan(stackTop, fromStack) || currentNode.hasNonLeafChild(stackTop.unwrap()));
 
-        while(currentNode.getChild(deque.peek().unwrap()).isPresent()) {
-            rhs.add(deque.peek());
-            currentNode = currentNode.getChild(deque.pop().unwrap()).get();
-        }
+        findMatchingProduction(currentNode, symbolStack, output, rhs);
+    }
 
-        currentNode.findClosestLeaf()
+    /**
+     * Finds matching production, left-hand non-terminal is pushed on the symbol stack for further reduction. Production
+     * is set to output in its concrete form (lexemes instead of terminals)
+     *
+     * @param node current node should point to the first symbol in found production rhs
+     * @param symbolStack stack of symbols to parse
+     * @param output productions output
+     * @param rhs parsed right-hand side of production
+     */
+    private void findMatchingProduction(TreeNode<Symbol> node, Deque<Symbol> symbolStack, List<Production> output, List<Symbol> rhs) {
+        node.findClosestLeaf()
                 .map(ProductionTreeNode.class::cast)
-                .ifPresentOrElse(leaf -> {
-                            deque.push(leaf.getValue()); // push reduced value back onto the stack
+                .ifPresentOrElse(
+                        leaf -> {
+                            NonTerminal lhs = (NonTerminal)leaf.getValue();
 
-                            if (log.isDebugEnabled()) {
-                                int productionId = leaf.getProductionId();
-                                Production production = grammar.getProduction(productionId);
-                                log.debug("Production found: {} (number: {})", productionId, production);
-                            }
+                            symbolStack.push(lhs); // push reduced value back onto the stack
 
-                            Collections.reverse(rhs);
-                            Production concreteProduction = Production.of((NonTerminal) leaf.getValue(), rhs);
-                            log.debug("Production with lexemes included: {}", concreteProduction);
-
+                            Production concreteProduction = getConcreteProduction(lhs, rhs, leaf.getProductionId());
                             output.add(concreteProduction);
                         },
                         () -> {
                             throw new ReductionException("Direct leaf couldn't be found for ");
                         });
+    }
+
+    /**
+     * Builds concrete production from production tree leaf and list of right-hand side symbol obtained during parsing.
+     * Concrete production is a production with exact lexemes instead of terminals.
+     *
+     * @param lhs left-hand side of found production
+     * @param rhs right-hand side of found production with lexemes instead of terminals
+     * @param productionId id of the production obtained from production tree, currently used only for debug purposes
+     * @return
+     */
+    private Production getConcreteProduction(NonTerminal lhs, List<Symbol> rhs, int productionId) {
+        if (log.isDebugEnabled()) {
+            Production production = grammar.getProduction(productionId);
+            log.debug("Production found: {} (number: {})", productionId, production);
+        }
+
+        Production concreteProduction = Production.of(lhs, rhs);
+        log.debug("Production with lexemes included: {}", concreteProduction);
+        return concreteProduction;
     }
 }

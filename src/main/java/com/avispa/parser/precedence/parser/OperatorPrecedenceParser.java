@@ -20,14 +20,14 @@ public class OperatorPrecedenceParser extends PrecedenceParser<Symbol> {
     }
 
     @Override
-    protected void reduce(List<Symbol> output, Deque<Symbol> deque) throws SyntaxException {
+    protected void reduce(List<Symbol> output, Deque<Symbol> symbolStack) throws SyntaxException {
         log.debug("REDUCE (> relation matched).");
         Symbol fromStack;
         Symbol stackTop;
 
         do {
-            fromStack = deque.pop();
-            stackTop = deque.peek();
+            fromStack = symbolStack.pop();
+            stackTop = symbolStack.peek();
 
             log.info("Adding {} to the output", fromStack);
             output.add(fromStack);

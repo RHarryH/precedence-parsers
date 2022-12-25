@@ -24,16 +24,6 @@ public class TreeNode<T> {
         children.add(child);
     }
 
-    public Optional<TreeNode<T>> getChild(T value) {
-        for(var child : children) {
-            if(child.getValue().equals(value)) {
-                return Optional.of(child);
-            }
-        }
-
-        return Optional.empty();
-    }
-
     /**
      * Adds child as the first node on children list
      * @param child
@@ -43,21 +33,41 @@ public class TreeNode<T> {
     }
 
     /**
-     * Returns direct leaf of current node
+     * Get direct child with exact value
+     * @param value
+     * @return
+     */
+    public Optional<TreeNode<T>> getChild(T value) {
+        return children.stream()
+                .filter(child -> child.getValue().equals(value))
+                .findFirst();
+    }
+
+    /**
+     * Returns first direct leaf of current node
      * @return
      */
     public Optional<TreeNode<T>> findClosestLeaf() {
-        for(TreeNode<T> child : children) {
-            if(child.isLeaf()) {
-                return Optional.of(child);
-            }
-        }
-
-        return Optional.empty();
+        return children.stream()
+                .filter(TreeNode::isLeaf)
+                .findFirst();
     }
 
+    /**
+     * Checks if node does not have any children.
+     * @return
+     */
     public boolean isLeaf() {
         return children.isEmpty();
+    }
+
+    /**
+     * Returns true if node have at least one child, which is not a leaf
+     * @param value
+     * @return
+     */
+    public boolean hasNonLeafChild(T value) {
+        return children.stream().anyMatch(child -> !child.isLeaf() && child.getValue().equals(value));
     }
 
     @Override

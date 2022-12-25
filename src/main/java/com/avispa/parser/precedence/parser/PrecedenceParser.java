@@ -39,26 +39,26 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
     public List<O> parse(String input) throws LexerException, SyntaxException {
         input = "$" + input + "$"; // add markers
 
-        Deque<Symbol> deque = new ArrayDeque<>();
+        Deque<Symbol> symbolStack = new ArrayDeque<>();
         Lexer lexer = new Lexer(input, grammar);
 
         List<O> output = new ArrayList<>();
         
         while(lexer.hasCharactersLeft()) {
-            Symbol stackTop = deque.peek();
+            Symbol stackTop = symbolStack.peek();
             Lexeme nextLexeme = lexer.peekNext();
 
             log.trace("Stack top: {}, next lexeme: {}", stackTop, nextLexeme);
 
             if(null == stackTop || precedenceLessThan(stackTop, nextLexeme) || precedenceEquals(stackTop, nextLexeme)) {
-                shift(lexer, deque);
+                shift(lexer, symbolStack);
             } else if(precedenceGreaterThan(stackTop, nextLexeme)){
-                reduce(output, deque);
+                reduce(output, symbolStack);
             } else {
                 throw new SyntaxException("Syntax error at the vicinity of: " + nextLexeme.getValue());
             }
 
-            log.debug("Current stack state: {}", deque);
+            log.debug("Current stack state: {}", symbolStack);
         }
 
         log.trace("Output: {}", output);
@@ -66,13 +66,13 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
         return output;
     }
 
-    private void shift(Lexer lexer, Deque<Symbol> deque) throws LexerException {
+    private void shift(Lexer lexer, Deque<Symbol> symbolStack) throws LexerException {
         Lexeme lexeme = lexer.getNext();
         log.debug("SHIFT (< or = relation matched). Pushing {} on stack.", lexeme);
-        deque.push(lexeme);
+        symbolStack.push(lexeme);
     }
 
-    protected abstract void reduce(List<O> output, Deque<Symbol> deque) throws SyntaxException;
+    protected abstract void reduce(List<O> output, Deque<Symbol> symbolStack) throws SyntaxException;
 
     protected boolean precedenceLessThan(Symbol a, Symbol b) {
         a = a.unwrap();

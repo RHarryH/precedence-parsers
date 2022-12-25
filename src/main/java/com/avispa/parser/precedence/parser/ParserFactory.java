@@ -4,9 +4,9 @@ import com.avispa.parser.precedence.function.GraphPrecedenceFunctions;
 import com.avispa.parser.precedence.function.PrecedenceFunctions;
 import com.avispa.parser.precedence.function.PrecedenceFunctionsException;
 import com.avispa.parser.precedence.grammar.Grammar;
+import com.avispa.parser.precedence.grammar.validation.GrammarValidator;
 import com.avispa.parser.precedence.grammar.validation.OperatorGrammarValidator;
 import com.avispa.parser.precedence.grammar.validation.SimplePrecedenceGrammarValidator;
-import com.avispa.parser.precedence.grammar.validation.WeakGrammarValidator;
 import com.avispa.parser.precedence.table.OperatorPrecedenceTable;
 import com.avispa.parser.precedence.table.PrecedenceTable;
 import com.avispa.parser.precedence.table.PrecedenceTableException;
@@ -49,12 +49,12 @@ public class ParserFactory {
      * @return new operator-precedence parser instance
      */
     public static OperatorPrecedenceParser newOperatorPrecedenceParser(Grammar grammar, boolean usePrecedenceFunctions) {
-        WeakGrammarValidator validator = new OperatorGrammarValidator();
+        GrammarValidator validator = new OperatorGrammarValidator();
 
         try {
             PrecedenceTable table = new OperatorPrecedenceTable(grammar);
 
-            if (!validator.isWeak(table)) {
+            if (!table.hasLessThanOrEqualsConflict()) {
                 if (validator.is(grammar)) {
                     if(usePrecedenceFunctions) {
                         PrecedenceFunctions functions = getPrecedenceFunctions(table);
@@ -95,7 +95,7 @@ public class ParserFactory {
      * @return new simple precedence parser instance
      */
     public static SimplePrecedenceParser newSimplePrecedenceParser(Grammar grammar, boolean usePrecedenceFunctions) {
-        WeakGrammarValidator validator = new SimplePrecedenceGrammarValidator();
+        GrammarValidator validator = new SimplePrecedenceGrammarValidator();
 
         try {
             PrecedenceTable table = new SimplePrecedenceTable(grammar);
@@ -104,7 +104,7 @@ public class ParserFactory {
                 if(usePrecedenceFunctions) {
                     PrecedenceFunctions functions = null;
 
-                    if (validator.isWeak(table)) {
+                    if (table.hasLessThanOrEqualsConflict()) {
                         log.warn("Precedence functions won't be calculated because weak-precedence grammar was detected.");
                     } else {
                         functions = getPrecedenceFunctions(table);

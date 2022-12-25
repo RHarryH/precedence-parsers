@@ -15,7 +15,7 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public class OperatorGrammarValidator implements WeakGrammarValidator {
+public class OperatorGrammarValidator implements GrammarValidator {
 
     @Override
     public boolean is(Grammar grammar) {

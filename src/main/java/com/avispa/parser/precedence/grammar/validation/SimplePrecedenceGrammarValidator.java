@@ -21,7 +21,7 @@ import java.util.List;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public class SimplePrecedenceGrammarValidator implements WeakGrammarValidator {
+public class SimplePrecedenceGrammarValidator implements GrammarValidator {
 
     @Override
     public boolean is(Grammar grammar) {

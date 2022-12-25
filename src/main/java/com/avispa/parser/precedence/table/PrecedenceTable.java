@@ -32,6 +32,12 @@ public abstract class PrecedenceTable {
         return result;
     }
 
+    public boolean hasLessThanOrEqualsConflict() {
+        return table.values()
+                .stream()
+                .anyMatch(Precedence.LESS_THAN_OR_EQUALS::equals);
+    }
+
     protected abstract void addRelations(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result);
 
     protected abstract void addEqualsRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result);

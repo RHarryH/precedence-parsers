@@ -4,7 +4,7 @@ import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.output.AbstractOutputTransformer;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Symbol;
-import com.avispa.parser.precedence.parser.SimplePrecedenceParser;
+import com.avispa.parser.precedence.parser.PrecedenceParser;
 import com.avispa.parser.precedence.parser.SyntaxException;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public final class Derivation extends AbstractOutputTransformer<List<List<Symbol>>, Production> {
 
-    public Derivation(SimplePrecedenceParser parser) {
+    public Derivation(PrecedenceParser<Production> parser) {
         super(parser);
     }
 

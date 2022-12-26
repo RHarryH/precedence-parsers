@@ -6,6 +6,7 @@ import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.precedence.function.PrecedenceFunctions;
 import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.Symbol;
+import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.lexer.Lexeme;
 import com.avispa.parser.precedence.lexer.Lexer;
 import com.avispa.parser.precedence.table.Precedence;
@@ -37,12 +38,14 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
 
     @Override
     public List<O> parse(String input) throws LexerException, SyntaxException {
-        input = "$" + input + "$"; // add markers
+        input = input + "$"; // add end marker (start marker will be automatically added on stack)
 
         Deque<Symbol> symbolStack = new ArrayDeque<>();
         Lexer lexer = new Lexer(input, grammar);
 
         List<O> output = new ArrayList<>();
+
+        symbolStack.push(Terminal.BOUNDARY_MARKER); // initialize stack with boundary marker
         
         while(lexer.hasCharactersLeft()) {
             Symbol stackTop = symbolStack.peek();
@@ -50,7 +53,12 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
 
             log.trace("Stack top: {}, next lexeme: {}", stackTop, nextLexeme);
 
-            if(null == stackTop || precedenceLessThan(stackTop, nextLexeme) || precedenceEquals(stackTop, nextLexeme)) {
+            // end condition, input is end marker and on the stack is boundary marker
+            if(stackTop != null && Terminal.BOUNDARY_MARKER.equals(stackTop.unwrap()) && Terminal.BOUNDARY_MARKER.equals(nextLexeme.getTerminal())) {
+                break;
+            }
+
+            if(precedenceLessThan(stackTop, nextLexeme) || precedenceEquals(stackTop, nextLexeme)) {
                 shift(lexer, symbolStack);
             } else if(precedenceGreaterThan(stackTop, nextLexeme)){
                 reduce(output, symbolStack);

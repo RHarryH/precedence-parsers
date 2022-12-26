@@ -81,15 +81,15 @@ class SimplePrecedenceParserTest {
     }
 
     @Test
+    void givenEmptyString_whenParseUsingWeakPrecedenceGrammar_thenEmptyProductionList() throws SyntaxException, LexerException {
+        assertEquals(List.of(), weakParser.parse(""));
+    }
+
+    @Test
     void givenCorrectInput_whenParseUsingWeakPrecedenceGrammar_thenOutputReturned() throws SyntaxException, LexerException {
         List<Production> expectedProductions = getWeakAdditionProductions("5", "6");
 
         assertEquals(expectedProductions, weakParser.parse("5+6"));
-    }
-
-    @Test
-    void givenEmptyString_whenParseUsingWeakPrecedenceGrammar_thenEmptyProductionList() throws SyntaxException, LexerException {
-        assertEquals(List.of(), weakParser.parse(""));
     }
 
     private List<Production> getAdditionProductions(String addend1, String addend2) {

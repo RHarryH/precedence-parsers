@@ -62,11 +62,11 @@ public class TreeNode<T> {
     }
 
     /**
-     * Returns true if node have at least one child, which is not a leaf
+     * Returns true if node have child with specific value, which is not a leaf
      * @param value
      * @return
      */
-    public boolean hasNonLeafChild(T value) {
+    public boolean hasNonLeafChildOf(T value) {
         return children.stream().anyMatch(child -> !child.isLeaf() && child.getValue().equals(value));
     }
 

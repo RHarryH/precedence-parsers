@@ -60,9 +60,9 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
                     .orElseThrow(() -> {
                         throw new ReductionException("There is no production with [" + terminal + ", " + currentSymbol + "] symbols next to each other.");
                     });
-        } while (!precedenceLessThan(stackTop, fromStack) || currentNode.hasNonLeafChild(stackTop.unwrap()));
+        } while (!precedenceLessThan(stackTop, fromStack) || currentNode.hasNonLeafChildOf(stackTop.unwrap()));
 
-        findMatchingProduction(currentNode, symbolStack, output, rhs);
+        matchProduction(currentNode, symbolStack, output, rhs);
     }
 
     /**
@@ -74,7 +74,7 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
      * @param output productions output
      * @param rhs parsed right-hand side of production
      */
-    private void findMatchingProduction(TreeNode<Symbol> node, Deque<Symbol> symbolStack, List<Production> output, List<Symbol> rhs) {
+    private void matchProduction(TreeNode<Symbol> node, Deque<Symbol> symbolStack, List<Production> output, List<Symbol> rhs) {
         node.findClosestLeaf()
                 .map(ProductionTreeNode.class::cast)
                 .ifPresentOrElse(
@@ -87,7 +87,7 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
                             output.add(concreteProduction);
                         },
                         () -> {
-                            throw new ReductionException("Direct leaf couldn't be found for ");
+                            throw new ReductionException("Direct leaf couldn't be found for " + node.getValue());
                         });
     }
 

@@ -1,5 +1,6 @@
 package com.avispa.parser.misc;
 
+import com.avispa.parser.precedence.grammar.Terminal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -56,7 +57,7 @@ public class TablePrinter {
             } else if (Character.isLowerCase(a.charAt(0)) && Character.isUpperCase(b.charAt(0))) {
                 return -1;
             } else {
-                final String marker = "MARKER";
+                final String marker = Terminal.BOUNDARY_MARKER.getName();
                 // move marker token always to the end
                 if (a.equals(marker) && !b.equals(marker)) {
                     return 1;

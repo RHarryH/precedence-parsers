@@ -6,7 +6,7 @@
 
     <groupId>com.avispa</groupId>
     <artifactId>precedence-parsers</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>Precedence Parsers</name>
     <description>Simple tool supporting shunting-yard algorithm and simple/weak precedence parsers</description>

@@ -2,6 +2,7 @@ name: Basic build with badges generation
 on: [push]
 jobs:
   build_job: # job name
+    runs-on: ubuntu-22.04
     steps:
     - name: Build with Maven
       run: mvn -B test

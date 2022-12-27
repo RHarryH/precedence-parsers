@@ -1,4 +1,4 @@
-![Coverage](.github/badges/jacoco.svg)
+![Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg) ![Coverage](.github/badges/jacoco.svg)
 
 # Precedence parsers
 

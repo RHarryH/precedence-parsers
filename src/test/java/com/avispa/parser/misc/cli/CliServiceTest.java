@@ -26,8 +26,8 @@ class CliServiceTest {
     }
 
     @Test
-    void givenInput_whenMissingInputArgument_thenThrowException() {
-        assertThrows(MissingArgumentException.class, () -> cliService.process(new String[]{"-input"}));
+    void givenInput_whenMissingInputArgument_thenThrowException() throws MissingArgumentException {
+        assertEquals("", cliService.process(new String[]{"-input"}));
     }
 
     @Test
@@ -36,8 +36,8 @@ class CliServiceTest {
     }
 
     @Test
-    void givenInput_whenMissingOutputArgument_thenReturnListOfTokens() {
-        assertThrows(MissingArgumentException.class, () -> cliService.process(new String[]{"-input", "2+2", "-output"}));
+    void givenInput_whenMissingOutputArgument_thenReturnListOfTokens() throws MissingArgumentException {
+        assertEquals("", cliService.process(new String[]{"-input", "2+2", "-output"}));
     }
 
     @Test
@@ -57,5 +57,69 @@ class CliServiceTest {
     @Test
     void givenInput_whenRPNOutput_thenReturnRPN() throws MissingArgumentException {
         assertEquals("2 2 +", cliService.process(new String[]{"-input", "2+2", "-output", OutputMode.REVERSE_POLISH_NOTATION.getName()}));
+    }
+
+    @Test
+    void givenInput_whenEvaluatedOutput_thenReturnResult() throws MissingArgumentException {
+        assertEquals("4", cliService.process(new String[]{"-input", "2+2", "-output", OutputMode.EVALUATED.getName()}));
+    }
+
+    @Test
+    void givenInput_whenUnknownOutput_thenReturnNothing() throws MissingArgumentException {
+        assertEquals("", cliService.process(new String[]{"-input", "2+2", "-output", "unknown-output"}));
+    }
+
+    @Test
+    void givenGrammarAndInput_whenMissingStartSymbol_thenReturnNothing() throws MissingArgumentException {
+        assertEquals("", cliService.process(new String[]{"-input", "2+2", "-grammar", "src/test/resources/grammar/simple-precedence-grammar.txt"}));
+    }
+
+    @Test
+    void givenGrammarAndInput_whenDefaultOutput_thenReturnListOfProductions() throws MissingArgumentException {
+        assertEquals("[factor -> [NUMBER_1:2], term -> [factor], term_prime -> [term], expression -> [term_prime], factor -> [NUMBER_2:2], term -> [factor], term_prime -> [term], expression -> [expression, ADD_1:+, term_prime], expression_prime -> [expression]]",
+                cliService.process(new String[]{"-input", "2+2", "-grammar", "src/test/resources/grammar/simple-precedence-grammar.txt", "-start-symbol", "expression_prime"}));
+    }
+
+    @Test
+    void givenGrammarAndInput_whenParseTreeOutput_thenReturnParseTree() throws MissingArgumentException {
+        String newLine = System.lineSeparator();
+        String expectedParseTreeOutput =
+                "expression_prime" + newLine +
+                "└── expression" + newLine +
+                "    ├── term_prime" + newLine +
+                "    │   └── term" + newLine +
+                "    │       └── factor" + newLine +
+                "    │           └── NUMBER_2:2" + newLine +
+                "    ├── ADD_1:+" + newLine +
+                "    └── expression" + newLine +
+                "        └── term_prime" + newLine +
+                "            └── term" + newLine +
+                "                └── factor" + newLine +
+                "                    └── NUMBER_1:2" + newLine;
+
+        assertEquals(expectedParseTreeOutput,
+                cliService.process(new String[]{"-input", "2+2", "-output", OutputMode.PARSE_TREE.getName(), "-grammar", "src/test/resources/grammar/simple-precedence-grammar.txt", "-start-symbol", "expression_prime"}));
+    }
+
+    @Test
+    void givenGrammarAndInput_whenDerivationOutput_thenReturnDerivation() throws MissingArgumentException {
+        assertEquals("[[expression_prime], [expression], [expression, ADD_1:+, term_prime], [expression, ADD_1:+, term], [expression, ADD_1:+, factor], [expression, ADD_1:+, NUMBER_2:2], [term_prime, ADD_1:+, NUMBER_2:2], [term, ADD_1:+, NUMBER_2:2], [factor, ADD_1:+, NUMBER_2:2], [NUMBER_1:2, ADD_1:+, NUMBER_2:2]]",
+                cliService.process(new String[]{"-input", "2+2", "-output", OutputMode.DERIVATION.getName(), "-grammar", "src/test/resources/grammar/simple-precedence-grammar.txt", "-start-symbol", "expression_prime"}));
+    }
+
+    @Test
+    void givenNonExistingGrammarFile_whenProcess_thenReturnNothing() throws MissingArgumentException {
+        assertEquals("",
+                cliService.process(new String[]{"-input", "2+2", "-grammar", "non-existing-grammar-file.txt", "-start-symbol", "expression_prime"}));
+    }
+
+    @Test
+    void givenGrammar_whenUnknownSymbol_thenReturnNothing() throws MissingArgumentException {
+        assertEquals("", cliService.process(new String[]{"-input", "a", "-output", OutputMode.DERIVATION.getName(), "-grammar", "src/test/resources/grammar/simple-precedence-grammar.txt", "-start-symbol", "expression_prime"}));
+    }
+
+    @Test
+    void givenGrammar_whenSyntaxError_thenReturnNothing() throws MissingArgumentException {
+        assertEquals("", cliService.process(new String[]{"-input", "12", "-output", OutputMode.DERIVATION.getName(), "-grammar", "src/test/resources/grammar/simple-precedence-grammar.txt", "-start-symbol", "expression_prime"}));
     }
 }

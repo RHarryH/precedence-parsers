@@ -56,15 +56,13 @@ public class GrammarFile {
     @Getter(AccessLevel.MODULE)
     private String name;
 
-    public GrammarFile(String fileName) {
+    public GrammarFile(String fileName) throws IOException {
         parseFile(fileName);
     }
 
-    private void parseFile(String fileName) {
+    private void parseFile(String fileName) throws IOException {
         try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
             stream.forEach(this::parseLine);
-        } catch (IOException e) {
-            log.error("Can't read input grammar file: {}", fileName, e);
         }
     }
 

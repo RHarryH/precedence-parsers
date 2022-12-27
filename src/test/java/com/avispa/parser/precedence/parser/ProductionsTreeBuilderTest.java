@@ -7,6 +7,8 @@ import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.Symbol;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static com.avispa.parser.precedence.TestSymbols.add;
 import static com.avispa.parser.precedence.TestSymbols.expression;
 import static com.avispa.parser.precedence.TestSymbols.factor;
@@ -24,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class ProductionsTreeBuilderTest {
     @Test
-    void givenOperatorPrecedenceGrammar_whenBuildTree_thenCorrect() throws IncorrectGrammarException {
+    void givenOperatorPrecedenceGrammar_whenBuildTree_thenCorrect() throws IncorrectGrammarException, IOException {
         // given
         ContextFreeGrammar grammar = ContextFreeGrammar.fromWithBoundaryMarker(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,7 +106,7 @@ class GraphPrecedenceFunctionsTest {
     }
 
     @Test
-    void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException, PrecedenceTableException {
+    void givenSimplePrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException, PrecedenceTableException, IOException {
         // given
         Grammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt"), expression);
         SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
@@ -131,7 +132,7 @@ class GraphPrecedenceFunctionsTest {
     }
 
     @Test
-    void givenOperatorPrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException, PrecedenceTableException {
+    void givenOperatorPrecedenceGrammar_whenPrecedenceFunctionsCreated_thenTheyExistAndAreCorrect() throws IncorrectGrammarException, PrecedenceFunctionsException, PrecedenceTableException, IOException {
         // given
         Grammar grammar = ContextFreeGrammar.fromWithBoundaryMarker(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
         OperatorPrecedenceTable precedenceTable = new OperatorPrecedenceTable(grammar);

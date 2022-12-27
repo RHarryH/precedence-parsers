@@ -33,7 +33,7 @@ public class OperatorPrecedenceTable extends PrecedenceTable {
         try {
             this.table = construct(grammar.getProductions());
         } catch(RelationException e) {
-            throw new PrecedenceTableException(e.getMessage());
+            throw new PrecedenceTableException("Can't create operator-precedence table", e);
         }
 
         if(log.isDebugEnabled()) {

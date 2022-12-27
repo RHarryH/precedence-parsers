@@ -33,7 +33,7 @@ public class ParserFactory {
      * @param grammar formal grammar matching requirements for operator-precedence grammar
      * @return new operator-precedence parser instance
      */
-    public static OperatorPrecedenceParser newOperatorPrecedenceParser(Grammar grammar) {
+    public static OperatorPrecedenceParser newOperatorPrecedenceParser(Grammar grammar) throws ParserCreationException {
         return newOperatorPrecedenceParser(grammar, true);
     }
 
@@ -48,7 +48,7 @@ public class ParserFactory {
      * @param usePrecedenceFunctions true to use precedence functions
      * @return new operator-precedence parser instance
      */
-    public static OperatorPrecedenceParser newOperatorPrecedenceParser(Grammar grammar, boolean usePrecedenceFunctions) {
+    public static OperatorPrecedenceParser newOperatorPrecedenceParser(Grammar grammar, boolean usePrecedenceFunctions) throws ParserCreationException {
         GrammarValidator validator = new OperatorGrammarValidator();
 
         try {
@@ -62,16 +62,15 @@ public class ParserFactory {
                     } else {
                         return new OperatorPrecedenceParser(grammar, table);
                     }
+                } else {
+                    throw new ParserCreationException("Grammar is not a valid operator-precedence grammar");
                 }
             } else {
-                log.error("Weak-precedence detected. It is not supported for operator-precedence grammars.");
+                throw new ParserCreationException("Weak-precedence detected. It is not supported for operator-precedence grammars.");
             }
         } catch (PrecedenceTableException e) {
-            log.error(e.getMessage());
-            log.error("Grammar is not an operator-precedence grammar as operator-precedence table cannot be constructed.");
+            throw new ParserCreationException("Parser can't be created", e);
         }
-
-        return null;
     }
 
     /**
@@ -81,7 +80,7 @@ public class ParserFactory {
      * @param grammar formal grammar matching requirements for simple precedence grammar
      * @return new simple precedence parser instance
      */
-    public static SimplePrecedenceParser newSimplePrecedenceParser(Grammar grammar) {
+    public static SimplePrecedenceParser newSimplePrecedenceParser(Grammar grammar) throws ParserCreationException {
         return newSimplePrecedenceParser(grammar, true);
     }
 
@@ -94,7 +93,7 @@ public class ParserFactory {
      * @param usePrecedenceFunctions true to use precedence functions
      * @return new simple precedence parser instance
      */
-    public static SimplePrecedenceParser newSimplePrecedenceParser(Grammar grammar, boolean usePrecedenceFunctions) {
+    public static SimplePrecedenceParser newSimplePrecedenceParser(Grammar grammar, boolean usePrecedenceFunctions) throws ParserCreationException {
         GrammarValidator validator = new SimplePrecedenceGrammarValidator();
 
         try {
@@ -114,12 +113,12 @@ public class ParserFactory {
                 } else {
                     return new SimplePrecedenceParser(grammar, table);
                 }
+            } else {
+                throw new ParserCreationException("Grammar is not a valid simple precedence grammar");
             }
         } catch (PrecedenceTableException e) {
-            log.error(e.getMessage());
+            throw new ParserCreationException("Parser can't be created", e);
         }
-
-        return null;
     }
 
     private static PrecedenceFunctions getPrecedenceFunctions(PrecedenceTable table) {

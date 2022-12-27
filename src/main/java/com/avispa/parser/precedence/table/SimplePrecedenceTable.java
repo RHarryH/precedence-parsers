@@ -30,7 +30,7 @@ public class SimplePrecedenceTable extends PrecedenceTable {
         try {
             this.table = construct(grammar.getProductions());
         } catch(RelationException e) {
-            throw new PrecedenceTableException(e.getMessage());
+            throw new PrecedenceTableException("Can't create simple precedence table", e);
         }
 
         if(log.isDebugEnabled()) {

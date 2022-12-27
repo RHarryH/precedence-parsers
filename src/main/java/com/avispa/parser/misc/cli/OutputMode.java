@@ -10,6 +10,9 @@ public enum OutputMode {
     TOKEN_LIST("token-list"),
     EVALUATED("evaluate"),
     EXPRESSION_TREE("expression-tree"),
+    PARSE_TREE("parse-tree"),
+    DERIVATION("derivation"),
+    PRODUCTION_LIST("production-list"),
     REVERSE_POLISH_NOTATION("rpn");
 
     private final String name;

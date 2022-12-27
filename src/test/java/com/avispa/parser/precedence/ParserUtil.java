@@ -5,6 +5,7 @@ import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.IncorrectGrammarException;
 import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
+import com.avispa.parser.precedence.parser.ParserCreationException;
 import com.avispa.parser.precedence.parser.ParserFactory;
 import com.avispa.parser.precedence.parser.PrecedenceParser;
 import lombok.AccessLevel;
@@ -36,8 +37,8 @@ public class ParserUtil {
         try {
             Grammar grammar = ContextFreeGrammar.from("Test", terminals, productions, A);
             return ParserFactory.newSimplePrecedenceParser(grammar);
-        } catch (IncorrectGrammarException e) {
-            throw new IllegalStateException("Parser should be initialized");
+        } catch (IncorrectGrammarException | ParserCreationException e) {
+            throw new IllegalStateException("Parser should be initialized", e);
         }
     }
 }

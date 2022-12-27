@@ -10,8 +10,10 @@ import java.util.stream.Collectors;
  */
 @Getter
 public enum ToolOption {
-    INPUT("i", "input", true, "Input expression for shunting-yard algorithm"),
+    INPUT("i", "input", true, "Input string for shunting-yard algorithm or parser (depending if grammar is provided)"),
     OUTPUT("o", "output", true, String.format("Output mode. Possible values are: %s", getOptionsList())),
+    GRAMMAR("g", "grammar", true, "Grammar file"),
+    START("s", "start-symbol", true, "Start symbol for provided grammar"),
     HELP("h", "help", false, "Prints this help details");
 
     private static String getOptionsList() {

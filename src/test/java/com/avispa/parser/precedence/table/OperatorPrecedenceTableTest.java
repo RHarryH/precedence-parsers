@@ -9,6 +9,7 @@ import com.avispa.parser.precedence.grammar.Terminal;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ class OperatorPrecedenceTableTest {
     }
 
     @Test
-    void givenOperatorPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException {
+    void givenOperatorPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException, IOException {
         // given
         ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
@@ -127,7 +128,7 @@ class OperatorPrecedenceTableTest {
     }
 
     @Test
-    void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException {
+    void givenWeakPrecedenceGrammar_whenPrecedenceTable_thenCorrectTable() throws IncorrectGrammarException, PrecedenceTableException, IOException {
         // given
         ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
 

@@ -10,6 +10,7 @@ import com.avispa.parser.precedence.lexer.Lexeme;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.avispa.parser.precedence.TestSymbols.add;
@@ -31,7 +32,7 @@ class SimplePrecedenceParserTest {
     private static SimplePrecedenceParser weakParser;
 
     @BeforeAll
-    static void init() throws IncorrectGrammarException {
+    static void init() throws IncorrectGrammarException, IOException, ParserCreationException {
         GrammarFile simpleGrammarFile = new GrammarFile("src/test/resources/grammar/simple-precedence-grammar.txt");
         GrammarFile weakGrammarFile = new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt");
 

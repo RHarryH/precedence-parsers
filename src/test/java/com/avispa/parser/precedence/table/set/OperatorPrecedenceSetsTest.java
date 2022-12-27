@@ -7,6 +7,7 @@ import com.avispa.parser.precedence.grammar.Production;
 import com.avispa.parser.precedence.grammar.Terminal;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -96,7 +97,7 @@ class OperatorPrecedenceSetsTest {
     }
 
     @Test
-    void givenOperatorPrecedenceGrammar_whenCreateSets_thenSetsAreCorrect() throws IncorrectGrammarException {
+    void givenOperatorPrecedenceGrammar_whenCreateSets_thenSetsAreCorrect() throws IncorrectGrammarException, IOException {
         // given
         ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 

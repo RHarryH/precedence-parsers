@@ -1,3 +1,5 @@
+![Coverage](.github/badges/jacoco.svg)
+
 # Precedence parsers
 
 This tool presents the implementation of parsers for precedence grammars. Supported algorithms:

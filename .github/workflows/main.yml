@@ -1,4 +1,4 @@
-name: Basic build with badges generation
+name: build
 on: [push]
 jobs:
   build_job: # job name

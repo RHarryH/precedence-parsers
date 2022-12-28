@@ -1,4 +1,4 @@
-![Status](https://github.com//RHarryH/precedence-parsers/actions/workflows/main.yml/badge.svg) ![Coverage](.github/badges/jacoco.svg)
+![Status](https://github.com//RHarryH/precedence-parsers/actions/workflows/main.yml/badge.svg) ![Coverage](.github/badges/jacoco.svg)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Precedence parsers
 

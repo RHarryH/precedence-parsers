@@ -62,14 +62,12 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
 
     @Override
     public List<O> parse(String input) throws LexerException, SyntaxException {
-        input = input + "$"; // add end marker (start marker will be automatically added on stack)
+        input = "$" + input + "$";
 
         Deque<Symbol> symbolStack = new ArrayDeque<>();
         Lexer lexer = new Lexer(input, grammar);
 
         List<O> output = new ArrayList<>();
-
-        symbolStack.push(Terminal.BOUNDARY_MARKER); // initialize stack with boundary marker
         
         while(lexer.hasCharactersLeft()) {
             Symbol stackTop = symbolStack.peek();
@@ -82,7 +80,7 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
                 break;
             }
 
-            if(precedenceLessThan(stackTop, nextLexeme) || precedenceEquals(stackTop, nextLexeme)) {
+            if(stackTop == null || precedenceLessThan(stackTop, nextLexeme) || precedenceEquals(stackTop, nextLexeme)) {
                 shift(lexer, symbolStack);
             } else if(precedenceGreaterThan(stackTop, nextLexeme)){
                 reduce(output, symbolStack);

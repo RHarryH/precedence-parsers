@@ -136,9 +136,11 @@ as simple precedence grammar have to met following conditions:
 - does not have conflicts in precedence table
 
 However, when conflicts are detected, grammar might be considered as weak-precedence grammar. This kind of grammar accepts
-conflict between ⋖ and ≐ precedences, merging them into single ⩿ precedence. Some sources add extra requirements for this
-kind of grammars but this tool selects just the longest matching production. Therefore, both simple precedence and weak-precedence
-grammars can be parsed by single parser implementation.
+conflict between ⋖ and ≐ precedences, merging them into single ⩿ precedence when extra condition is true:
+- `A -> aXb` and `B -> b` are productions and there are no relations `X ⋖ B` and `X ≐ B` (or simply `X ⩿ B`). In other words none of the production's right-hand side is a tail of another production's right-hand side.
+
+Parser for weak-precedence grammar selects the longest matching production. Both simple precedence and weak-precedence
+grammars are parsed by single parser implementation.
 
 ### Lexeme notation
 

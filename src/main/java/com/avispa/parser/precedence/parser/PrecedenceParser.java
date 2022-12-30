@@ -30,7 +30,6 @@ import com.avispa.parser.lexer.LexerException;
 import com.avispa.parser.precedence.function.PrecedenceFunctions;
 import com.avispa.parser.precedence.grammar.Grammar;
 import com.avispa.parser.precedence.grammar.Symbol;
-import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.lexer.Lexeme;
 import com.avispa.parser.precedence.lexer.Lexer;
 import com.avispa.parser.precedence.table.Precedence;
@@ -39,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
@@ -46,7 +46,7 @@ import java.util.List;
 public abstract class PrecedenceParser<O> implements Parser<O> {
     protected final Grammar grammar;
 
-    private final PrecedenceTable table;
+    protected final PrecedenceTable table;
     private final PrecedenceFunctions functions;
 
     protected PrecedenceParser(Grammar grammar, PrecedenceTable table, PrecedenceFunctions functions) {
@@ -62,6 +62,9 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
 
     @Override
     public List<O> parse(String input) throws LexerException, SyntaxException {
+        if(input.isEmpty()) {
+            return List.of();
+        }
         input = "$" + input + "$";
 
         Deque<Symbol> symbolStack = new ArrayDeque<>();
@@ -74,11 +77,6 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
             Lexeme nextLexeme = lexer.peekNext();
 
             log.trace("Stack top: {}, next lexeme: {}", stackTop, nextLexeme);
-
-            // end condition, input is end marker and on the stack is boundary marker
-            if(stackTop != null && Terminal.BOUNDARY_MARKER.equals(stackTop.unwrap()) && Terminal.BOUNDARY_MARKER.equals(nextLexeme.getTerminal())) {
-                break;
-            }
 
             if(stackTop == null || precedenceLessThan(stackTop, nextLexeme) || precedenceEquals(stackTop, nextLexeme)) {
                 shift(lexer, symbolStack);
@@ -93,7 +91,7 @@ public abstract class PrecedenceParser<O> implements Parser<O> {
 
         log.trace("Output: {}", output);
         
-        return output;
+        return Collections.unmodifiableList(output);
     }
 
     private void shift(Lexer lexer, Deque<Symbol> symbolStack) throws LexerException {

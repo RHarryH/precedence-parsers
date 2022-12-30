@@ -32,7 +32,6 @@ import com.avispa.parser.precedence.grammar.Symbol;
 import com.avispa.parser.precedence.grammar.Terminal;
 import com.avispa.parser.precedence.table.set.FirstOpSets;
 import com.avispa.parser.precedence.table.set.LastOpSets;
-import com.avispa.parser.precedence.table.set.OperatorPrecedenceSets;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,23 +46,8 @@ import java.util.Map;
 @Getter
 @Slf4j
 public class OperatorPrecedenceTable extends PrecedenceTable {
-    private final OperatorPrecedenceSets firstOp;
-    private final OperatorPrecedenceSets lastOp;
-
     public OperatorPrecedenceTable(Grammar grammar) throws PrecedenceTableException {
-        this.firstOp = new FirstOpSets(grammar);
-        this.lastOp = new LastOpSets(grammar);
-
-        try {
-            this.table = construct(grammar.getProductions());
-        } catch(RelationException e) {
-            throw new PrecedenceTableException("Can't create operator-precedence table", e);
-        }
-
-        if(log.isDebugEnabled()) {
-            log.debug("Precedence table:");
-            log.debug("{}", this);
-        }
+        super(grammar, new FirstOpSets(grammar), new LastOpSets(grammar));
     }
 
     @Override
@@ -106,27 +90,5 @@ public class OperatorPrecedenceTable extends PrecedenceTable {
                         addEqualsRelation(Pair.of(triple.getLeft(), triple.getRight()), result);
                     }
                 });
-    }
-
-    @Override
-    protected final void addEqualsRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result) {
-        var castedPair = Pair.of(currentPair.getLeft(), currentPair.getRight());
-        addRelation(castedPair, Precedence.EQUALS, result);
-    }
-
-    @Override
-    protected final void addLessThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result) {
-        log.debug("Adding relations: {} ⋖ FIRST_OP({})", currentPair.getLeft(), currentPair.getRight());
-
-        this.firstOp.getFor((NonTerminal) currentPair.getRight())
-                .forEach(right -> addRelation(Pair.of(currentPair.getLeft(), right), Precedence.LESS_THAN, result));
-    }
-
-    @Override
-    protected final void addGreaterThanRelation(Pair<Symbol, Symbol> currentPair, Map<Pair<Symbol, Symbol>, Precedence> result) {
-        log.debug("Adding relations: LAST_OP({}) ⋗ {}", currentPair.getLeft(), currentPair.getRight());
-
-        this.lastOp.getFor((NonTerminal) currentPair.getLeft())
-                .forEach(left -> addRelation(Pair.of(left, currentPair.getRight()), Precedence.GREATER_THAN, result));
     }
 }

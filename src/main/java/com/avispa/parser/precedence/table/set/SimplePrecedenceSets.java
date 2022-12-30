@@ -39,7 +39,7 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class SimplePrecedenceSets extends PrecedenceSets<Symbol, Symbol> {
+public abstract class SimplePrecedenceSets extends PrecedenceSets {
     SimplePrecedenceSets(Grammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
@@ -75,7 +75,7 @@ public abstract class SimplePrecedenceSets extends PrecedenceSets<Symbol, Symbol
      * @param productionsByLhs list of productions grouped by lhs non-terminal
      * @param visited set of already visited nodes for top lhs non-terminal
      */
-    private void constructFor(NonTerminal topLhs, NonTerminal currentLhs, List<Production> currentRhsProductions, Map<NonTerminal, List<Production>> productionsByLhs, Set<NonTerminal> visited) {
+    private void constructFor(NonTerminal topLhs, NonTerminal currentLhs, List<Production> currentRhsProductions, Map<NonTerminal, List<Production>> productionsByLhs, Set<Symbol> visited) {
         visited.add(currentLhs); // do not visit already visiting symbol to avoid endless loop
 
         for (Production production : currentRhsProductions) { // for all alternatives

@@ -84,7 +84,7 @@ public class SimplePrecedenceParser extends PrecedenceParser<Production> {
                     .orElseThrow(() -> {
                         throw new ReductionException("There is no production with [" + terminal + ", " + currentSymbol + "] symbols next to each other.");
                     });
-        } while (!precedenceLessThan(stackTop, fromStack) || currentNode.hasNonLeafChildOf(stackTop.unwrap()));
+        } while (table.isWeakPrecedence() ? currentNode.hasNonLeafChildOf(stackTop.unwrap()) : !precedenceLessThan(stackTop, fromStack));
 
         matchProduction(currentNode, symbolStack, output, rhs);
     }

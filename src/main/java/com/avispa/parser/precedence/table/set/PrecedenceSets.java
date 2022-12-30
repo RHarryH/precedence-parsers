@@ -43,8 +43,8 @@ import java.util.stream.Collectors;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class PrecedenceSets<K, V> {
-    protected final Map<K, Set<V>> sets = new HashMap<>();
+public abstract class PrecedenceSets {
+    protected final Map<Symbol, Set<Symbol>> sets = new HashMap<>();
     @Getter
     protected final String name;
 
@@ -83,7 +83,7 @@ public abstract class PrecedenceSets<K, V> {
      * @param lhs
      * @param symbol
      */
-    protected final void update(K lhs, V symbol) {
+    protected final void update(Symbol lhs, Symbol symbol) {
         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
                 .add(symbol);
     }
@@ -93,7 +93,7 @@ public abstract class PrecedenceSets<K, V> {
      * @param lhs
      * @param symbols
      */
-    protected final void update(K lhs, Set<V> symbols) {
+    protected final void update(Symbol lhs, Set<Symbol> symbols) {
         this.sets.computeIfAbsent(lhs, key -> new HashSet<>())
                 .addAll(symbols);
     }
@@ -103,7 +103,7 @@ public abstract class PrecedenceSets<K, V> {
      * @param symbol
      * @return
      */
-    public final Set<V> getFor(K symbol) {
+    public final Set<Symbol> getFor(Symbol symbol) {
         return Collections.unmodifiableSet(this.sets.getOrDefault(symbol, Set.of()));
     }
 
@@ -111,7 +111,7 @@ public abstract class PrecedenceSets<K, V> {
      * Get all generated sets
      * @return
      */
-    public final Map<K, Set<V>> get() {
+    public final Map<Symbol, Set<Symbol>> get() {
         return Collections.unmodifiableMap(this.sets);
     }
 

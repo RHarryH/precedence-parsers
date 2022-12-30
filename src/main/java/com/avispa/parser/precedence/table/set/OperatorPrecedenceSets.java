@@ -42,7 +42,7 @@ import java.util.Set;
  * @author Rafał Hiszpański
  */
 @Slf4j
-public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal, Terminal> {
+public abstract class OperatorPrecedenceSets extends PrecedenceSets {
     OperatorPrecedenceSets(Grammar grammar, String setsName) {
         super(setsName);
         log.debug("Constructing {} set for '{}' grammar.", setsName, grammar.getName());
@@ -71,10 +71,10 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
      * @param lhs current lhs non-terminal
      * @param productionsByLhs list of productions grouped by lhs non-terminal
      */
-    private Set<Terminal> constructFor(NonTerminal lhs, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
+    private Set<Symbol> constructFor(NonTerminal lhs, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
         log.debug("Started processing of '{}' non-terminal.", lhs);
 
-        Set<Terminal> set = new HashSet<>();
+        Set<Symbol> set = new HashSet<>();
         for (Production production : productionsByLhs.get(lhs)) { // for all alternatives
             set.addAll(constructDownstream(lhs, production.getRhs(), productionsByLhs, recursionChain));
         }
@@ -94,10 +94,10 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
      * @param recursionChain
      * @return
      */
-    private Set<Terminal> constructDownstream(NonTerminal lhs, List<Symbol> rhsSymbols, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
+    private Set<Symbol> constructDownstream(NonTerminal lhs, List<Symbol> rhsSymbols, Map<NonTerminal, List<Production>> productionsByLhs, Deque<NonTerminal> recursionChain) {
         Symbol symbol = findSymbol(rhsSymbols);
 
-        Set<Terminal> downstreamTerminals = new HashSet<>();
+        Set<Symbol> downstreamTerminals = new HashSet<>();
         if(NonTerminal.isOf(symbol)) {
             NonTerminal nonTerminal = (NonTerminal) symbol;
 
@@ -119,7 +119,7 @@ public abstract class OperatorPrecedenceSets extends PrecedenceSets<NonTerminal,
                 downstreamTerminals.add(terminal); // add found terminal to propagate it upstream
             }
         } else {
-            downstreamTerminals.add((Terminal) symbol);
+            downstreamTerminals.add(symbol);
         }
 
         log.debug("Generated set for '{}' non-terminal: {}", lhs, downstreamTerminals);

@@ -84,7 +84,7 @@ class OperatorPrecedenceTableTest {
         ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/operator-precedence-grammar.txt"), expression);
 
         // when
-        var precedenceTable = new OperatorPrecedenceTable(grammar);
+        PrecedenceTable precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
         Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();
@@ -157,7 +157,7 @@ class OperatorPrecedenceTableTest {
         ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
 
         // when
-        var precedenceTable = new OperatorPrecedenceTable(grammar);
+        PrecedenceTable precedenceTable = new OperatorPrecedenceTable(grammar);
 
         // then
         Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();

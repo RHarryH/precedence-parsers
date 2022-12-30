@@ -121,7 +121,7 @@ class SimplePrecedenceTableTest {
         ContextFreeGrammar grammar = ContextFreeGrammar.from(new GrammarFile("src/test/resources/grammar/weak-precedence-grammar.txt"), expression);
 
         // when
-        SimplePrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
+        PrecedenceTable precedenceTable = new SimplePrecedenceTable(grammar);
 
         // then
         Map<Pair<Symbol, Symbol>, Precedence> expected = new HashMap<>();

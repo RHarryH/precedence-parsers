@@ -78,7 +78,7 @@ public class ParserFactory {
         try {
             PrecedenceTable table = new OperatorPrecedenceTable(grammar);
 
-            if (!table.hasLessThanOrEqualsConflict()) {
+            if (!table.isWeakPrecedence()) {
                 if (validator.is(grammar)) {
                     if(usePrecedenceFunctions) {
                         PrecedenceFunctions functions = getPrecedenceFunctions(table);
@@ -90,7 +90,7 @@ public class ParserFactory {
                     throw new ParserCreationException("Grammar is not a valid operator-precedence grammar");
                 }
             } else {
-                throw new ParserCreationException("Weak-precedence detected. It is not supported for operator-precedence grammars.");
+                throw new ParserCreationException("Weak-precedence detected in precedence table. It is not supported for operator-precedence grammars.");
             }
         } catch (PrecedenceTableException e) {
             throw new ParserCreationException("Parser can't be created", e);
@@ -124,15 +124,15 @@ public class ParserFactory {
             PrecedenceTable table = new SimplePrecedenceTable(grammar);
 
             if (validator.is(grammar)) {
-                if(usePrecedenceFunctions) {
-                    PrecedenceFunctions functions = null;
-
-                    if (table.hasLessThanOrEqualsConflict()) {
-                        log.warn("Precedence functions won't be calculated because weak-precedence grammar was detected.");
+                if(table.isWithWeakPrecedenceConflict()) {
+                    if(table.isWeakPrecedence()) {
+                        log.warn("Precedence functions won't be calculated because precedence table is of a weak-precedence.");
+                        return new SimplePrecedenceParser(grammar, table);
                     } else {
-                        functions = getPrecedenceFunctions(table);
+                        throw new ParserCreationException("Weak-precedence conflict detected but grammar is not weak-precedence");
                     }
-
+                } else if(usePrecedenceFunctions) {
+                    PrecedenceFunctions functions = getPrecedenceFunctions(table);
                     return new SimplePrecedenceParser(grammar, table, functions);
                 } else {
                     return new SimplePrecedenceParser(grammar, table);
